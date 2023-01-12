@@ -245,6 +245,22 @@ public static class ExtensionMethods
         return null;
     }
 
+    public static void RemoveChildren(this Transform transform)
+    {
+        foreach (Transform child in transform.GetChildren())
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+    }
+
+    public static void RemoveChildrenImmediate(this Transform transform)
+    {
+        foreach (Transform child in transform.GetChildren())
+        {
+            GameObject.DestroyImmediate(child.gameObject);
+        }
+    }
+
     public static float GetCoordinate(this Transform transform, TransformComponent component, Axis axis, Space space)
     {
         switch (component)
