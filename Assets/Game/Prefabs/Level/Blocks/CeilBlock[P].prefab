@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4793454751304758903}
-  m_Layer: 0
-  m_Name: CeilBlock
+  m_Layer: 7
+  m_Name: CeilBlock[P]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 4793454751778024464}
   - component: {fileID: 4793454751778024467}
   - component: {fileID: 4793454751778024466}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}

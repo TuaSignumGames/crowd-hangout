@@ -28,11 +28,13 @@ public class LevelGenerator : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        Generate();
     }
 
     private void Start()
     {
-        Generate();
+        PlayerController.Instance.Initialize();
     }
 
     public void Generate()
