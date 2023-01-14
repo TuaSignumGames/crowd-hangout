@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -34,7 +35,9 @@ public class PlayerController : MonoBehaviour
             {
                 if (rope.Connect(targetBlockTransform.position))
                 {
-                    ball.ApplyVelocity(Vector3.Cross(rope.Direction, new Vector3(0, 0, 1f)));
+                    ball.Swing(ballSettings.motionSpeed);
+
+                    //ball.ApplyVelocity(Vector3.Cross(rope.Direction, new Vector3(0, 0, 1f)));
                 }
             }
         }
@@ -44,6 +47,7 @@ public class PlayerController : MonoBehaviour
             {
                 targetBlockTransform = null;
 
+                ball.Release();
                 rope.Disconnect();
             }
         }
@@ -63,6 +67,8 @@ public class PlayerController : MonoBehaviour
                 targetBlockTransform = RaycastBlock(new Vector2(0.5f, 1f));
             }
         }
+
+        rope.Update();
     }
 
     private Transform RaycastBlock(Vector2 direction)
@@ -80,11 +86,16 @@ public class PlayerController : MonoBehaviour
     private IEnumerator InitializationCoroutine()
     {
         ball = new BallProcessor(ballSettings);
-        rope = new RopeProcessor(ropeSettings, ball.Transform);
+        rope = new RopeProcessor(ropeSettings);
+
+        ball.AssignRope(rope);
+        rope.AssignBall(ball);
 
         while (!(targetBlockTransform = RaycastBlock(new Vector2(0, 1f)))) { yield return null; }
 
         rope.ConnectImmediate(targetBlockTransform.position);
+
+        rope.Update();
     }
 
     [System.Serializable]
@@ -102,12 +113,23 @@ public class PlayerController : MonoBehaviour
         public Transform lineTransform;
         public Transform endTransform;
         [Space]
+        public Transform swingContainer;
+        [Space]
         public float throwingSpeed;
     }
 
     public class BallProcessor
     {
         private BallSettings ballData;
+
+        private RopeProcessor assignedRope;
+
+        private Vector3 previousSwingPosition;
+        private Vector3 swingVelocityDelta;
+
+        private float angularSpeedDelta;
+
+        public BallSettings Data => ballData;
 
         public Transform Transform => ballData.gameObject.transform;
 
@@ -116,9 +138,38 @@ public class PlayerController : MonoBehaviour
             ballData = settings;
         }
 
-        public void ApplyVelocity(Vector3 direction)
+        public void AssignRope(RopeProcessor ropeProcessor)
         {
-            ballData.rigidbody.velocity = direction * ballData.motionSpeed;
+            assignedRope = ropeProcessor;
+        }
+
+        public void Swing(float linearSpeed)
+        {
+            if (Transform.parent == null)
+            {
+                ballData.rigidbody.isKinematic = true;
+
+                Transform.SetParent(assignedRope.Data.swingContainer);
+
+                previousSwingPosition = Transform.position;
+
+                angularSpeedDelta = linearSpeed / assignedRope.Length * 57.325f * Time.fixedDeltaTime;
+            }
+
+            assignedRope.Data.swingContainer.localEulerAngles += new Vector3(0, 0, angularSpeedDelta);
+
+            swingVelocityDelta = Transform.position - previousSwingPosition;
+
+            previousSwingPosition = Transform.position;
+        }
+
+        public void Release()
+        {
+            Transform.parent = null;
+
+            ballData.rigidbody.isKinematic = false;
+
+            ballData.rigidbody.velocity = swingVelocityDelta / Time.fixedDeltaTime;
         }
     }
 
@@ -126,7 +177,7 @@ public class PlayerController : MonoBehaviour
     {
         private RopeSettings ropeData;
 
-        private Transform sourceTransform;
+        private BallProcessor assignedBall;
 
         private float targetRopeLenght;
         private float actualRopeLenght;
@@ -136,15 +187,20 @@ public class PlayerController : MonoBehaviour
         private bool isLaunched;
         private bool isConnected;
 
-        public Vector3 Direction => ropeData.lineTransform.up;
+        public RopeSettings Data => ropeData;
+
+        public Vector3 ConnectionPoint => ropeData.swingContainer.position;
+
+        public Vector3 Vector => ConnectionPoint - assignedBall.Transform.position;
+        public Vector3 Direction => Vector.normalized;
+
+        public float Length => actualRopeLenght;
 
         public bool IsConnected => isConnected;
 
-        public RopeProcessor(RopeSettings settings, Transform ballTransform)
+        public RopeProcessor(RopeSettings settings)
         {
             ropeData = settings;
-
-            sourceTransform = ballTransform;
 
             ropeData.lineTransform.localScale = Vector3.zero;
             ropeData.endTransform.localScale = Vector3.zero;
@@ -152,24 +208,35 @@ public class PlayerController : MonoBehaviour
             ropeLenghtDelta = ropeData.throwingSpeed * Time.fixedDeltaTime;
         }
 
-        public bool Connect(Vector3 point)
+        public void AssignBall(BallProcessor ballProcessor)
         {
-            if (!isConnected)
-            {
-                targetRopeLenght = (point - sourceTransform.position).GetPlanarMagnitude(Axis.Z);
+            assignedBall = ballProcessor;
+        }
 
-                actualRopeLenght += ropeLenghtDelta;
-
-                ropeData.lineTransform.localScale = new Vector3(1f, actualRopeLenght, 1f);
-            }
-            else
+        public void Update()
+        {
+            if (isConnected)
             {
-                ropeData.endTransform.position = point;
+                ropeData.endTransform.position = ConnectionPoint;
                 ropeData.endTransform.localScale = new Vector3(1f, 1f, 1f);
             }
 
-            ropeData.lineTransform.position = sourceTransform.position;
-            ropeData.lineTransform.up = (point - sourceTransform.position).normalized;
+            ropeData.lineTransform.position = assignedBall.Transform.position;
+            ropeData.lineTransform.up = Direction;
+
+            ropeData.lineTransform.localScale = new Vector3(1f, actualRopeLenght, 1f);
+        }
+
+        public bool Connect(Vector3 point)
+        {
+            ropeData.swingContainer.position = point;
+
+            if (!isConnected)
+            {
+                targetRopeLenght = Vector.GetPlanarMagnitude(Axis.Z);
+
+                actualRopeLenght += ropeLenghtDelta;
+            }
 
             isConnected = actualRopeLenght >= targetRopeLenght;
 
@@ -178,20 +245,14 @@ public class PlayerController : MonoBehaviour
 
         public void ConnectImmediate(Vector3 point)
         {
+            ropeData.swingContainer.position = point;
+
             if (!isConnected)
             {
-                targetRopeLenght = (point - sourceTransform.position).GetPlanarMagnitude(Axis.Z);
+                targetRopeLenght = (ConnectionPoint - assignedBall.Transform.position).GetPlanarMagnitude(Axis.Z);
 
                 actualRopeLenght = targetRopeLenght;
-
-                ropeData.lineTransform.localScale = new Vector3(1f, actualRopeLenght, 1f);
-
-                ropeData.endTransform.position = point;
-                ropeData.endTransform.localScale = new Vector3(1f, 1f, 1f);
             }
-
-            ropeData.lineTransform.position = sourceTransform.position;
-            ropeData.lineTransform.up = (point - sourceTransform.position).normalized;
 
             isConnected = true;
         }
