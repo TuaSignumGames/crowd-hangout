@@ -11,16 +11,20 @@ public class CameraController : MonoBehaviour
     public Transform targetTransform;
     public float motionLerpingFactor;
 
+    private Vector3 targetOffset;
+
     private void Awake()
     {
         Instance = this;
+
+        targetOffset = transform.position;
     }
 
     private void FixedUpdate()
     {
         if (targetTransform)
         {
-            transform.position = Vector3.Lerp(transform.position, targetTransform.position, motionLerpingFactor);
+            transform.position = Vector3.Lerp(transform.position, targetTransform.position + targetOffset, motionLerpingFactor);
         }
     }
 
