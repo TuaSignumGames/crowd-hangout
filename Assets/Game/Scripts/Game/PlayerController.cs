@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
 
     private Transform targetBlockTransform;
 
+    private bool isLevelStarted;
+
     private void Awake()
     {
         Instance = this;
@@ -29,26 +31,27 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (InputManager.touchPresent)
+        if (isLevelStarted)
         {
-            if (targetBlockTransform)
+            if (InputManager.touchPresent)
             {
-                if (rope.Connect(targetBlockTransform.position))
+                if (targetBlockTransform)
                 {
-                    ball.Swing(ballSettings.motionSpeed);
-
-                    //ball.ApplyVelocity(Vector3.Cross(rope.Direction, new Vector3(0, 0, 1f)));
+                    if (rope.Connect(targetBlockTransform.position))
+                    {
+                        ball.Swing(ballSettings.motionSpeed);
+                    }
                 }
             }
-        }
-        else
-        {
-            if (rope.IsConnected)
+            else
             {
-                targetBlockTransform = null;
+                if (rope.IsConnected)
+                {
+                    targetBlockTransform = null;
 
-                ball.Release();
-                rope.Disconnect();
+                    ball.Release();
+                    rope.Disconnect();
+                }
             }
         }
     }
@@ -57,10 +60,7 @@ public class PlayerController : MonoBehaviour
     {
         if (InputManager.touch)
         {
-            if (ballSettings.rigidbody.isKinematic)
-            {
-                ballSettings.rigidbody.isKinematic = false;
-            }
+            isLevelStarted = true;
 
             if (!rope.IsConnected)
             {
@@ -75,7 +75,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Physics.Raycast(ball.Transform.position, direction, out hitInfo, 100f, 1 << 7))
         {
-            print($" - Raycasted block coord: {hitInfo.transform.parent.position.x}");
+            //print($" - Raycasted block coord: {hitInfo.transform.parent.position.x}");
 
             return hitInfo.transform.parent;
         }
@@ -94,8 +94,6 @@ public class PlayerController : MonoBehaviour
         while (!(targetBlockTransform = RaycastBlock(new Vector2(0, 1f)))) { yield return null; }
 
         rope.ConnectImmediate(targetBlockTransform.position);
-
-        rope.Update();
     }
 
     [System.Serializable]
@@ -152,7 +150,10 @@ public class PlayerController : MonoBehaviour
                 Transform.SetParent(assignedRope.Data.swingContainer);
 
                 previousSwingPosition = Transform.position;
+            }
 
+            if (angularSpeedDelta == 0)
+            {
                 angularSpeedDelta = linearSpeed / assignedRope.Length * 57.325f * Time.fixedDeltaTime;
             }
 
@@ -165,11 +166,11 @@ public class PlayerController : MonoBehaviour
 
         public void Release()
         {
-            Transform.parent = null;
-
             ballData.rigidbody.isKinematic = false;
 
             ballData.rigidbody.velocity = swingVelocityDelta / Time.fixedDeltaTime;
+
+            angularSpeedDelta = 0;
         }
     }
 
@@ -237,6 +238,13 @@ public class PlayerController : MonoBehaviour
 
                 actualRopeLenght += ropeLenghtDelta;
             }
+            else
+            {
+                if (ropeData.swingContainer.childCount == 0)
+                {
+                    assignedBall.Transform.SetParent(ropeData.swingContainer);
+                }
+            }
 
             isConnected = actualRopeLenght >= targetRopeLenght;
 
@@ -252,6 +260,8 @@ public class PlayerController : MonoBehaviour
                 targetRopeLenght = (ConnectionPoint - assignedBall.Transform.position).GetPlanarMagnitude(Axis.Z);
 
                 actualRopeLenght = targetRopeLenght;
+
+                assignedBall.Transform.SetParent(ropeData.swingContainer);
             }
 
             isConnected = true;
@@ -260,6 +270,8 @@ public class PlayerController : MonoBehaviour
         public void Disconnect()
         {
             isConnected = false;
+
+            assignedBall.Transform.SetParent(null);
 
             targetRopeLenght = 0;
             actualRopeLenght = 0;
