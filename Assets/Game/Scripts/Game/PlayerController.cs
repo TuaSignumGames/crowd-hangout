@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
 
     private Transform targetBlockTransform;
 
+    private Vector2 raycastDirection;
+
     private bool isLevelStarted;
 
     private void Awake()
@@ -26,6 +28,8 @@ public class PlayerController : MonoBehaviour
 
     public void Initialize()
     {
+        raycastDirection = new Vector2(Mathf.Cos(ropeSettings.throwingAngle * Mathf.Deg2Rad), Mathf.Sin(ropeSettings.throwingAngle * Mathf.Deg2Rad));
+
         StartCoroutine(InitializationCoroutine());
     }
 
@@ -54,6 +58,8 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+
+        ball.Update();
     }
 
     private void LateUpdate()
@@ -64,7 +70,7 @@ public class PlayerController : MonoBehaviour
 
             if (!rope.IsConnected)
             {
-                targetBlockTransform = RaycastBlock(new Vector2(0.5f, 1f));
+                targetBlockTransform = RaycastBlock(raycastDirection);
             }
         }
 
@@ -75,8 +81,6 @@ public class PlayerController : MonoBehaviour
     {
         if (Physics.Raycast(ball.Transform.position, direction, out hitInfo, 100f, 1 << 7))
         {
-            //print($" - Raycasted block coord: {hitInfo.transform.parent.position.x}");
-
             return hitInfo.transform.parent;
         }
 
@@ -114,6 +118,7 @@ public class PlayerController : MonoBehaviour
         public Transform swingContainer;
         [Space]
         public float throwingSpeed;
+        public float throwingAngle;
     }
 
     public class BallProcessor
@@ -125,6 +130,7 @@ public class PlayerController : MonoBehaviour
         private Vector3 previousSwingPosition;
         private Vector3 swingVelocityDelta;
 
+        private float ropeThrowingAngle;
         private float angularSpeedDelta;
 
         public BallSettings Data => ballData;
@@ -139,6 +145,20 @@ public class PlayerController : MonoBehaviour
         public void AssignRope(RopeProcessor ropeProcessor)
         {
             assignedRope = ropeProcessor;
+
+            ropeThrowingAngle = assignedRope.Data.throwingAngle - 90f;
+        }
+
+        public void Update()
+        {
+            if (assignedRope.IsConnected)
+            {
+                Transform.up = Vector3.Lerp(Transform.up, assignedRope.Direction, 0.1f);
+            }
+            else
+            {
+                Transform.eulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Transform.eulerAngles.z, ropeThrowingAngle, 0.1f));
+            }
         }
 
         public void Swing(float linearSpeed)
