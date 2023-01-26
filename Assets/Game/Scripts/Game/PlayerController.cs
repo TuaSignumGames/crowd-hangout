@@ -104,8 +104,10 @@ public class PlayerController : MonoBehaviour
     public class BallSettings
     {
         public Rigidbody rigidbody;
-        [Space]
         public float motionSpeed;
+        [Space]
+        public List<Transform> baseCells;
+        public Transform exoCellsContainer;
     }
 
     [System.Serializable]
