@@ -103,7 +103,6 @@ public class PlayerController : MonoBehaviour
     [System.Serializable]
     public class BallSettings
     {
-        public GameObject gameObject;
         public Rigidbody rigidbody;
         [Space]
         public float motionSpeed;
@@ -135,7 +134,7 @@ public class PlayerController : MonoBehaviour
 
         public BallSettings Data => ballData;
 
-        public Transform Transform => ballData.gameObject.transform;
+        public Transform Transform => ballData.rigidbody.transform;
 
         public BallProcessor(BallSettings settings)
         {
