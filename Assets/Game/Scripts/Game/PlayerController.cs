@@ -30,7 +30,15 @@ public class PlayerController : MonoBehaviour
     {
         raycastDirection = new Vector2(Mathf.Cos(ropeSettings.throwingAngle * Mathf.Deg2Rad), Mathf.Sin(ropeSettings.throwingAngle * Mathf.Deg2Rad));
 
-        StartCoroutine(InitializationCoroutine());
+        ball = new BallProcessor(ballSettings);
+        rope = new RopeProcessor(ropeSettings);
+
+        ball.AssignRope(rope);
+        rope.AssignBall(ball);
+
+        ballSettings.proceduralCells.GenerateBall();
+
+        StartCoroutine(InitialRopeConnectionCoroutine());
     }
 
     private void FixedUpdate()
@@ -87,14 +95,8 @@ public class PlayerController : MonoBehaviour
         return null;
     }
 
-    private IEnumerator InitializationCoroutine()
+    private IEnumerator InitialRopeConnectionCoroutine()
     {
-        ball = new BallProcessor(ballSettings);
-        rope = new RopeProcessor(ropeSettings);
-
-        ball.AssignRope(rope);
-        rope.AssignBall(ball);
-
         while (!(targetBlockTransform = RaycastBlock(new Vector2(0, 1f)))) { yield return null; }
 
         rope.ConnectImmediate(targetBlockTransform.position);
@@ -107,7 +109,7 @@ public class PlayerController : MonoBehaviour
         public float motionSpeed;
         [Space]
         public List<Transform> baseCells;
-        public Transform exoCellsContainer;
+        public HumanballGenerator proceduralCells;
     }
 
     [System.Serializable]
@@ -120,6 +122,55 @@ public class PlayerController : MonoBehaviour
         [Space]
         public float throwingSpeed;
         public float throwingAngle;
+    }
+
+    [System.Serializable]
+    public class HumanballGenerator
+    {
+        public Transform cellsContainer;
+        public Transform cellSpawnerPivot;
+        [Space]
+        public GameObject cellSource;
+        public Vector2 cellSize;
+        public LayerData[] layers;
+
+        private Vector2 cellAngularSize;
+
+        private int stagesCount;
+        private int stageSize;
+
+        public void GenerateBall()
+        {
+            for (int i = 0; i < layers.Length; i++)
+            {
+                GenerateLayer(layers[i]);
+            }
+        }
+
+        private void GenerateLayer(LayerData layerData)
+        {
+            cellAngularSize = new Vector2(cellSize.x * 180f / (6.2832f * layerData.radius), cellSize.y * 180f / (6.2832f * layerData.radius));
+
+            print($" - Cell angular size: {cellAngularSize}");
+
+            stagesCount = Mathf.RoundToInt(180f / cellAngularSize.y + 1);
+
+            for (int i = 0; i < stagesCount; i++)
+            {
+                cellSpawnerPivot.SetCoordinate(TransformComponent.Rotation, Axis.X, Space.Self, -90f + cellAngularSize.y * i);
+
+                stageSize = 1 + Mathf.FloorToInt(6.2832f * layerData.radius * Mathf.Sin((90f + cellSpawnerPivot.localEulerAngles.x) * Mathf.Deg2Rad) / cellSize.x);
+
+                print($"{cellSpawnerPivot.localEulerAngles.x}: {stageSize}");
+            }
+        }
+
+        [System.Serializable]
+        public struct LayerData
+        {
+            public float radius;
+            public float angularRange;
+        }
     }
 
     public class BallProcessor

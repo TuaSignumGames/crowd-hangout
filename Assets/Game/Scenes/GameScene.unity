@@ -736,38 +736,6 @@ Transform:
   m_Father: {fileID: 2043381523}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &115765086
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 115765087}
-  m_Layer: 0
-  m_Name: SpawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &115765087
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 115765086}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.6}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 496353721}
-  m_Father: {fileID: 2070375743}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &118950752
 GameObject:
   m_ObjectHideFlags: 0
@@ -3566,12 +3534,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 496353720}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1765931676}
-  m_Father: {fileID: 115765087}
+  m_Father: {fileID: 2070375743}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &508252848
@@ -10857,7 +10825,14 @@ MonoBehaviour:
     - {fileID: 619398492}
     - {fileID: 1322993727}
     - {fileID: 288141580}
-    exoCellsContainer: {fileID: 1767914246}
+    proceduralCells:
+      cellsContainer: {fileID: 1767914246}
+      cellSpawnerPivot: {fileID: 2070375743}
+      cellSource: {fileID: 496353720}
+      cellSize: {x: 0.6, y: 1.6}
+      layers:
+      - radius: 0.6
+        angularRange: 240
   ropeSettings:
     lineTransform: {fileID: 107896591}
     endTransform: {fileID: 408018672}
@@ -14647,6 +14622,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
+      propertyPath: rigSettings.randomizePose
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
 --- !u!4 &1765931676 stripped
@@ -17423,12 +17402,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2070375742}
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: -0.85, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 115765087}
+  - {fileID: 496353721}
   m_Father: {fileID: 2097472858}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
