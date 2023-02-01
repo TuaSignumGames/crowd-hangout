@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine;
+using static PlayerController.HumanballGenerator;
+
+// TODO Replace HumanController's from Cell to world  
 
 public class PlayerController : MonoBehaviour
 {
@@ -37,6 +40,8 @@ public class PlayerController : MonoBehaviour
         rope.AssignBall(ball);
 
         ballSettings.proceduralCells.GenerateBall();
+
+        ball.humanCells = ballSettings.proceduralCells.HumanCells;
 
         StartCoroutine(InitialRopeConnectionCoroutine());
     }
@@ -127,41 +132,135 @@ public class PlayerController : MonoBehaviour
     [System.Serializable]
     public class HumanballGenerator
     {
+        public Pointer cellPointer;
         public Transform cellsContainer;
-        public Transform cellSpawnerPivot;
         [Space]
-        public GameObject cellSource;
+        public GameObject cellPrefab;
         public Vector2 cellSize;
         public LayerData[] layers;
 
+        private List<HumanCell> humanCells;
+
+        private HumanCell newHumanCell;
+
+        private GameObject newStageContainer;
+        private GameObject newLayerContainer;
+
         private Vector2 cellAngularSize;
+        private Vector2 pointerEulerAngles;
+
+        private float verticalAngularStep;
+        private float horizontalAngularStep;
 
         private int stagesCount;
         private int stageSize;
 
+        private int layerCellCounter;
+
+        public List<HumanCell> HumanCells => humanCells;
+
         public void GenerateBall()
         {
+            humanCells = new List<HumanCell>();
+
             for (int i = 0; i < layers.Length; i++)
             {
+                CreateLayerContainer(i);
+
                 GenerateLayer(layers[i]);
+
+                print($" - Layer[{i}]: {layerCellCounter}");
             }
         }
 
         private void GenerateLayer(LayerData layerData)
         {
-            cellAngularSize = new Vector2(cellSize.x * 180f / (6.2832f * layerData.radius), cellSize.y * 180f / (6.2832f * layerData.radius));
+            layerCellCounter = 0;
 
-            print($" - Cell angular size: {cellAngularSize}");
+            cellAngularSize = new Vector2(cellSize.x * 360f / (6.2832f * layerData.radius), cellSize.y * 180f / (6.2832f * layerData.radius));
 
-            stagesCount = Mathf.RoundToInt(180f / cellAngularSize.y + 1);
+            stagesCount = Mathf.RoundToInt(180f / cellAngularSize.y) + 1;
+
+            verticalAngularStep = 180f / (stagesCount - 1);
 
             for (int i = 0; i < stagesCount; i++)
             {
-                cellSpawnerPivot.SetCoordinate(TransformComponent.Rotation, Axis.X, Space.Self, -90f + cellAngularSize.y * i);
+                pointerEulerAngles.x = (-90f + verticalAngularStep * i).ToSignedAngle();
 
-                stageSize = 1 + Mathf.FloorToInt(6.2832f * layerData.radius * Mathf.Sin((90f + cellSpawnerPivot.localEulerAngles.x) * Mathf.Deg2Rad) / cellSize.x);
+                stageSize = Mathf.FloorToInt(6.2832f * layerData.radius * Mathf.Abs(Mathf.Sin((90f + pointerEulerAngles.x) * Mathf.Deg2Rad)) / cellSize.x);
 
-                print($"{cellSpawnerPivot.localEulerAngles.x}: {stageSize}");
+                if (stageSize > 0)
+                {
+                    CreateStageContainer(i);
+
+                    horizontalAngularStep = 360f / stageSize;
+
+                    for (int j = 0; j < stageSize; j++)
+                    {
+                        pointerEulerAngles.y = (90f + horizontalAngularStep * j).ToSignedAngle();
+
+                        cellPointer.SetPlacement(pointerEulerAngles.y, pointerEulerAngles.x, layerData.radius);
+
+                        InstantiateCell();
+
+                        layerCellCounter++;
+                    }
+                }
+            }
+        }
+
+        private void InstantiateCell()
+        {
+            newHumanCell = new HumanCell(Instantiate(cellPrefab, newStageContainer.transform));
+
+            newHumanCell.transform.position = cellPointer.Placement.position;
+            newHumanCell.transform.forward = cellPointer.Placement.direction;
+
+            humanCells.Add(newHumanCell);
+        }
+
+        private void CreateStageContainer(int stageIndex)
+        {
+            newStageContainer = new GameObject($"Stage[{stageIndex}]");
+
+            newStageContainer.transform.SetParent(newLayerContainer.transform);
+        }
+
+        private void CreateLayerContainer(int layerIndex)
+        {
+            newLayerContainer = new GameObject($"Layer[{layerIndex}]");
+
+            newLayerContainer.transform.SetParent(cellsContainer);
+        }
+
+        [System.Serializable]
+        public class Pointer
+        {
+            public Transform pivotTransform;
+            public Transform pointTransform;
+
+            private PointerData placement;
+
+            public PointerData Placement => placement;
+
+            public void SetPlacement(float yaw, float pitch, float distance)
+            {
+                pivotTransform.localEulerAngles = new Vector3(pitch, yaw, 0);
+                pointTransform.localPosition = new Vector3(0, 0, distance);
+
+                placement = new PointerData(pointTransform.position, pointTransform.forward);
+            }
+        }
+
+        public struct PointerData
+        {
+            public Vector3 position;
+            public Vector3 direction;
+
+            public PointerData(Vector3 position, Vector3 direction)
+            {
+                this.position = position;
+                this.direction = direction;
             }
         }
 
@@ -169,7 +268,22 @@ public class PlayerController : MonoBehaviour
         public struct LayerData
         {
             public float radius;
-            public float angularRange;
+        }
+    }
+
+    public class HumanCell
+    {
+        private GameObject gameObject;
+
+        private HumanController humanController;
+
+        public Transform transform => gameObject.transform;
+
+        public HumanCell(GameObject gameObject)
+        {
+            this.gameObject = gameObject;
+
+            humanController = gameObject.GetComponentInChildren<HumanController>();
         }
     }
 
@@ -184,6 +298,8 @@ public class PlayerController : MonoBehaviour
 
         private float ropeThrowingAngle;
         private float angularSpeedDelta;
+
+        public List<HumanCell> humanCells;
 
         public BallSettings Data => ballData;
 

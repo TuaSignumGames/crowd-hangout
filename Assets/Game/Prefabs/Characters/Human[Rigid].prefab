@@ -118,11 +118,11 @@ MonoBehaviour:
     - title: Shin[L]
       transform: {fileID: 6910209334232954065}
       bendRangeFloor: {x: 0, y: 0, z: 0}
-      bendRangeCeil: {x: 10, y: 0, z: 0}
+      bendRangeCeil: {x: 20, y: 0, z: 0}
     - title: Shin[R]
       transform: {fileID: 4248416822146238241}
       bendRangeFloor: {x: 0, y: 0, z: 0}
-      bendRangeCeil: {x: 10, y: 0, z: 0}
+      bendRangeCeil: {x: 20, y: 0, z: 0}
     - title: Foot[L]
       transform: {fileID: 3579481817634671141}
       bendRangeFloor: {x: 0, y: 0, z: 0}
