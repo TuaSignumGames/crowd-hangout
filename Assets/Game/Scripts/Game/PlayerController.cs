@@ -2,9 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine;
-using static PlayerController.HumanballGenerator;
-
-// TODO Replace HumanController's from Cell to world  
 
 public class PlayerController : MonoBehaviour
 {
@@ -13,7 +10,8 @@ public class PlayerController : MonoBehaviour
     public BallSettings ballSettings;
     public RopeSettings ropeSettings;
 
-    private BallProcessor ball;
+    public BallProcessor ball;
+
     private RopeProcessor rope;
 
     private RaycastHit hitInfo;
@@ -39,9 +37,7 @@ public class PlayerController : MonoBehaviour
         ball.AssignRope(rope);
         rope.AssignBall(ball);
 
-        ballSettings.proceduralCells.GenerateBall();
-
-        ball.humanCells = ballSettings.proceduralCells.HumanCells;
+        InitializeBallCells();
 
         StartCoroutine(InitialRopeConnectionCoroutine());
     }
@@ -88,6 +84,20 @@ public class PlayerController : MonoBehaviour
         }
 
         rope.Update();
+    }
+
+    private void InitializeBallCells()
+    {
+        ball.humanCells = new List<HumanCell>();
+
+        for (int i = 0; i < ballSettings.baseCells.Count; i++)
+        {
+            ball.humanCells.Add(new HumanCell(ballSettings.baseCells[i].gameObject));
+        }
+
+        ball.humanCells.AddRange(ballSettings.proceduralCells.GenerateCells());
+
+        print($" - Total cells: {ball.humanCells.Count}");
     }
 
     private Transform RaycastBlock(Vector2 direction)
@@ -157,9 +167,7 @@ public class PlayerController : MonoBehaviour
 
         private int layerCellCounter;
 
-        public List<HumanCell> HumanCells => humanCells;
-
-        public void GenerateBall()
+        public List<HumanCell> GenerateCells()
         {
             humanCells = new List<HumanCell>();
 
@@ -171,6 +179,8 @@ public class PlayerController : MonoBehaviour
 
                 print($" - Layer[{i}]: {layerCellCounter}");
             }
+
+            return humanCells;
         }
 
         private void GenerateLayer(LayerData layerData)
@@ -275,7 +285,7 @@ public class PlayerController : MonoBehaviour
     {
         private GameObject gameObject;
 
-        private HumanController humanController;
+        private HumanController placedHuman;
 
         public Transform transform => gameObject.transform;
 
@@ -283,7 +293,24 @@ public class PlayerController : MonoBehaviour
         {
             this.gameObject = gameObject;
 
-            humanController = gameObject.GetComponentInChildren<HumanController>();
+            if (transform.childCount > 0)
+            {
+                placedHuman = transform.GetComponentInChildren<HumanController>();
+
+                placedHuman.Initialize(false);
+            }
+        }
+
+        public void PutHuman(HumanController humanController)
+        {
+            placedHuman = humanController;
+
+            placedHuman.rigSettings.RandomizePose();
+        }
+
+        public void EjectHuman()
+        {
+            placedHuman = null;
         }
     }
 
@@ -327,6 +354,16 @@ public class PlayerController : MonoBehaviour
             {
                 Transform.eulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Transform.eulerAngles.z, ropeThrowingAngle, 0.1f));
             }
+        }
+
+        public void StickHuman(HumanController humanController)
+        {
+            print($" - Human stick attempt");
+        }
+
+        public void UnstickHuman(HumanController humanController)
+        {
+
         }
 
         public void Swing(float linearSpeed)

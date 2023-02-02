@@ -9,14 +9,33 @@ public class HumanController : MonoBehaviour
     [Space]
     public HumanRig rigSettings;
 
-    private void Start()
+    private bool isFree = true;
+
+    public void Initialize(bool isFree)
     {
-        rigSettings.Initialize();
+        this.isFree = isFree;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        transform.SetParent(null);
+        if (other.gameObject.layer == 8)
+        {
+            if (isFree)
+            {
+                isFree = false;
+
+                PlayerController.Instance.ball.StickHuman(this);
+            }
+        }
+        else
+        {
+            if (!isFree)
+            {
+                isFree = true;
+
+                PlayerController.Instance.ball.UnstickHuman(this);
+            }
+        }
     }
 
     [System.Serializable]
@@ -25,21 +44,28 @@ public class HumanController : MonoBehaviour
         public List<HumanBone> bones;
         public Transform leftHandContainer;
         public Transform rightHandContainer;
-        public bool randomizePose;
 
-        public void Initialize()
-        {
-            if (randomizePose)
-            {
-                RandomizePose();
-            }
-        }
-
-        private void RandomizePose()
+        public void RandomizePose()
         {
             for (int i = 0; i < bones.Count; i++)
             {
                 bones[i].BendRandomly();
+            }
+        }
+
+        public void SavePose()
+        {
+            for (int i = 0; i < bones.Count; i++)
+            {
+                bones[i].SaveTransform();
+            }
+        }
+
+        public void LoadPose()
+        {
+            for (int i = 0; i < bones.Count; i++)
+            {
+                bones[i].LoadTransform();
             }
         }
     }
@@ -53,9 +79,21 @@ public class HumanController : MonoBehaviour
         public Vector3 bendRangeFloor;
         public Vector3 bendRangeCeil;
 
+        private TransformData savedTransformData;
+
         public void BendRandomly()
         {
             transform.localEulerAngles += new Vector3(Random.Range(bendRangeFloor.x, bendRangeCeil.x), Random.Range(bendRangeFloor.y, bendRangeCeil.y), Random.Range(bendRangeFloor.z, bendRangeCeil.z));
+        }
+
+        public void SaveTransform()
+        {
+            savedTransformData = new TransformData(transform, Space.Self);
+        }
+
+        public void LoadTransform()
+        {
+            transform.ApplyData(savedTransformData);
         }
     }
 }
