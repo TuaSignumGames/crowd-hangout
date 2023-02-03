@@ -24,7 +24,7 @@ public class HumanController : MonoBehaviour
             {
                 isFree = false;
 
-                PlayerController.Instance.ball.StickHuman(this);
+                PlayerController.Instance.Ball.StickHuman(this);
             }
         }
         else
@@ -33,7 +33,7 @@ public class HumanController : MonoBehaviour
             {
                 isFree = true;
 
-                PlayerController.Instance.ball.UnstickHuman(this);
+                PlayerController.Instance.Ball.UnstickHuman(this);
             }
         }
     }
