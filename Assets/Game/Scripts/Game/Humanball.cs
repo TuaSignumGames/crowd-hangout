@@ -28,10 +28,21 @@ public class Humanball
     {
         for (int i = 0; i < layers.Count; i++)
         {
-            if (layers[i].AddHuman(human))
+            if (i == 0)
             {
-                return;
+                if (layers[i].AddHumanInNext(human))
+                {
+                    return;
+                }
             }
+            else
+            {
+                if (layers[i].AddHumanInClosest(human))
+                {
+                    return;
+                }
+            }
+
         }
     }
 

@@ -8,6 +8,8 @@ public class HumanballCell
 
     private HumanController placedHuman;
 
+    private HumanPose placedHumanPose;
+
     public Transform transform => gameObject.transform;
 
     public HumanController Human => placedHuman;
@@ -21,8 +23,6 @@ public class HumanballCell
         if (transform.childCount > 0)
         {
             placedHuman = transform.GetComponentInChildren<HumanController>();
-
-            placedHuman.Initialize(false);
         }
     }
 
@@ -30,11 +30,35 @@ public class HumanballCell
     {
         placedHuman = human;
 
-        //placedHuman.rigSettings.RandomizePose();
+        placedHuman.transform.SetParent(transform);
+
+        placedHuman.transform.localPosition = Vector3.zero;
+        placedHuman.transform.forward = transform.forward;
+
+        Debug.Log(placedHumanPose);
+
+        if (placedHumanPose != null)
+        {
+            placedHuman.ApplyPose(placedHumanPose);
+        }
     }
 
     public void EjectHuman()
     {
+        placedHuman.transform.SetParent(null);
+
         placedHuman = null;
+    }
+
+    public void CropPose()
+    {
+        if (placedHuman)
+        {
+            placedHumanPose = placedHuman.actualPose;
+
+            GameObject.Destroy(placedHuman.gameObject);
+
+            placedHuman = null;
+        }
     }
 }

@@ -24,10 +24,32 @@ public class HumanballLayer
         this.container = container;
         this.cells = new List<HumanballCell>(cells);
 
-        availableCellsCount = cells.Count;
+        for (int i = 0; i < cells.Count; i++)
+        {
+            if (cells[i].IsAvailable)
+            {
+                availableCellsCount++;
+            }
+        }
     }
 
-    public bool AddHuman(HumanController human)
+    public bool AddHumanInNext(HumanController human)
+    {
+        if (availableCellsCount == 0)
+        {
+            return false;
+        }
+        else
+        {
+            cells[cells.Count - availableCellsCount].PutHuman(human);
+
+            availableCellsCount--;
+
+            return true;
+        }
+    }
+
+    public bool AddHumanInClosest(HumanController human)
     {
         if (availableCellsCount == 0)
         {

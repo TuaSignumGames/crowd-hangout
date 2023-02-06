@@ -30,9 +30,24 @@ public class HumanballProcessor
 
     private void InitializeBallStructure()
     {
-        // TODO Add 'Base Cells' as Layer[0], add prcedural Layers 
+        List<HumanballCell> baseLayerCells = new List<HumanballCell>();
 
-        //structure = new Humanball(ballData.proceduralCells.GenerateLayers());
+        for (int i = 0; i < ballData.baseCells.Count; i++)
+        {
+            baseLayerCells.Add(new HumanballCell(ballData.baseCells[i].gameObject));
+
+            if (i > 0)
+            {
+                baseLayerCells[i].CropPose();
+            }
+        }
+
+        List<HumanballLayer> structureLayers = new List<HumanballLayer>();
+
+        structureLayers.Add(ballData.proceduralCells.GenerateLayer(baseLayerCells, "B"));
+        structureLayers.AddRange(ballData.proceduralCells.GenerateProceduralLayers());
+
+        structure = new Humanball(structureLayers);
     }
 
     public void AssignRope(RopeProcessor ropeProcessor)
@@ -58,12 +73,12 @@ public class HumanballProcessor
     {
         Debug.Log($" - Human stick attempt");
 
-        
+        structure.AddHuman(humanController);
     }
 
     public void UnstickHuman(HumanController humanController)
     {
-
+        structure.RemoveHuman(humanController);
     }
 
     public void Swing(float linearSpeed)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static HumanballGenerator;
 
 [System.Serializable]
 public class HumanballGenerator
@@ -30,15 +31,15 @@ public class HumanballGenerator
     private int stagesCount;
     private int stageSize;
 
-    public List<HumanballLayer> GenerateLayers()
+    public List<HumanballLayer> GenerateProceduralLayers()
     {
         humanballLayers = new List<HumanballLayer>();
 
         for (int i = 0; i < layers.Length; i++)
         {
-            CreateLayerContainer(i);
+            CreateLayerContainer(i.ToString());
 
-            humanballLayers.Add(GenerateLayer(layers[i]));
+            humanballLayers.Add(GenerateProceduralLayer(layers[i]));
 
             Debug.Log($" - Layer[{i}]: {humanballLayers[i].AvailableCellsCount}");
         }
@@ -46,7 +47,21 @@ public class HumanballGenerator
         return humanballLayers;
     }
 
-    private HumanballLayer GenerateLayer(LayerData layerData)
+    public HumanballLayer GenerateLayer(IList<HumanballCell> layerCells, string layerTag = "")
+    {
+        humanballCells = new List<HumanballCell>(layerCells);
+
+        CreateLayerContainer(layerTag);
+
+        for (int i = 0; i < humanballCells.Count; i++)
+        {
+            humanballCells[i].transform.SetParent(newLayerContainer.transform);
+        }
+
+        return new HumanballLayer(newLayerContainer, humanballCells);
+    }
+
+    private HumanballLayer GenerateProceduralLayer(LayerData layerData)
     {
         humanballCells = new List<HumanballCell>();
 
@@ -99,9 +114,9 @@ public class HumanballGenerator
         newStageContainer.transform.SetParent(newLayerContainer.transform);
     }
 
-    private void CreateLayerContainer(int layerIndex)
+    private void CreateLayerContainer(string layerTag)
     {
-        newLayerContainer = new GameObject($"Layer[{layerIndex}]");
+        newLayerContainer = new GameObject($"Layer[{layerTag}]");
 
         newLayerContainer.transform.SetParent(cellsContainer);
     }

@@ -9,11 +9,30 @@ public class HumanController : MonoBehaviour
     [Space]
     public HumanRig rigSettings;
 
+    public HumanPose actualPose;
+
     private bool isFree = true;
 
     public void Initialize(bool isFree)
     {
         this.isFree = isFree;
+    }
+
+    public void ApplyPose(HumanPose pose)
+    {
+        actualPose = pose;
+
+        transform.ApplyData(actualPose.bodyTransformData);
+
+        for (int i = 0; i < actualPose.boneTransformDatas.Length; i++)
+        {
+            rigSettings.bones[i].transform.ApplyData(actualPose.boneTransformDatas[i]);
+        }
+    }
+
+    public void PeekPose()
+    {
+        actualPose = new HumanPose(transform, rigSettings.bones);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -35,65 +54,6 @@ public class HumanController : MonoBehaviour
 
                 PlayerController.Instance.Ball.UnstickHuman(this);
             }
-        }
-    }
-
-    [System.Serializable]
-    public class HumanRig
-    {
-        public List<HumanBone> bones;
-        public Transform leftHandContainer;
-        public Transform rightHandContainer;
-
-        public void RandomizePose()
-        {
-            for (int i = 0; i < bones.Count; i++)
-            {
-                bones[i].BendRandomly();
-            }
-        }
-
-        public void SavePose()
-        {
-            for (int i = 0; i < bones.Count; i++)
-            {
-                bones[i].SaveTransform();
-            }
-        }
-
-        public void LoadPose()
-        {
-            for (int i = 0; i < bones.Count; i++)
-            {
-                bones[i].LoadTransform();
-            }
-        }
-    }
-
-    [System.Serializable]
-    public class HumanBone
-    {
-        public string title;
-        [Space]
-        public Transform transform;
-        public Vector3 bendRangeFloor;
-        public Vector3 bendRangeCeil;
-
-        private TransformData savedTransformData;
-
-        public void BendRandomly()
-        {
-            transform.localEulerAngles += new Vector3(Random.Range(bendRangeFloor.x, bendRangeCeil.x), Random.Range(bendRangeFloor.y, bendRangeCeil.y), Random.Range(bendRangeFloor.z, bendRangeCeil.z));
-        }
-
-        public void SaveTransform()
-        {
-            savedTransformData = new TransformData(transform, Space.Self);
-        }
-
-        public void LoadTransform()
-        {
-            transform.ApplyData(savedTransformData);
         }
     }
 }
