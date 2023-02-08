@@ -9,7 +9,6 @@ public class HumanballGenerator
     public Pointer cellPointer;
     public Transform cellsContainer;
     [Space]
-    public GameObject cellPrefab;
     public Vector2 cellSize;
     public LayerData[] layers;
 
@@ -99,7 +98,9 @@ public class HumanballGenerator
 
     private HumanballCell InstantiateHumanballCell()
     {
-        newHumanballCell = new HumanballCell(GameObject.Instantiate(cellPrefab, newStageContainer.transform));
+        newHumanballCell = new HumanballCell(new GameObject("HumanCell"));
+
+        newHumanballCell.transform.SetParent(newStageContainer.transform);
 
         newHumanballCell.transform.position = cellPointer.Placement.position;
         newHumanballCell.transform.forward = cellPointer.Placement.direction;

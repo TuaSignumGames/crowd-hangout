@@ -13,6 +13,7 @@ public class HumanballCell
     public Transform transform => gameObject.transform;
 
     public HumanController Human => placedHuman;
+    public HumanPose Pose => placedHumanPose;
 
     public bool IsAvailable => placedHuman == null;
 
@@ -30,31 +31,29 @@ public class HumanballCell
     {
         placedHuman = human;
 
-        placedHuman.transform.SetParent(transform);
-
-        placedHuman.transform.localPosition = Vector3.zero;
-        placedHuman.transform.forward = transform.forward;
-
-        Debug.Log(placedHumanPose);
-
-        if (placedHumanPose != null)
-        {
-            placedHuman.ApplyPose(placedHumanPose);
-        }
+        placedHuman.PlaceInCell(this);
     }
 
     public void EjectHuman()
     {
-        placedHuman.transform.SetParent(null);
+        placedHuman.DropFromCell();
 
         placedHuman = null;
     }
 
-    public void CropPose()
+    public void TrySavePose()
     {
         if (placedHuman)
         {
-            placedHumanPose = placedHuman.actualPose;
+            placedHumanPose = placedHuman.PeekPose();
+        }
+    }
+
+    public void TryCropPose()
+    {
+        if (placedHuman)
+        {
+            placedHumanPose = placedHuman.PeekPose();
 
             GameObject.Destroy(placedHuman.gameObject);
 

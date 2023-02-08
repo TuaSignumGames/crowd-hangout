@@ -36,9 +36,13 @@ public class HumanballProcessor
         {
             baseLayerCells.Add(new HumanballCell(ballData.baseCells[i].gameObject));
 
-            if (i > 0)
+            if (i == 0)
             {
-                baseLayerCells[i].CropPose();
+                baseLayerCells[i].TrySavePose();
+            }
+            else
+            {
+                baseLayerCells[i].TryCropPose();
             }
         }
 
@@ -71,8 +75,6 @@ public class HumanballProcessor
 
     public void StickHuman(HumanController humanController)
     {
-        Debug.Log($" - Human stick attempt");
-
         structure.AddHuman(humanController);
     }
 

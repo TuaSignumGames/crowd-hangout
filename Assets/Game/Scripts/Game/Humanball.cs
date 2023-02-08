@@ -30,14 +30,14 @@ public class Humanball
         {
             if (i == 0)
             {
-                if (layers[i].AddHumanInNext(human))
+                if (layers[i].AddHumanInNextCell(human))
                 {
                     return;
                 }
             }
             else
             {
-                if (layers[i].AddHumanInClosest(human))
+                if (layers[i].AddHumanInClosestCell(human))
                 {
                     return;
                 }

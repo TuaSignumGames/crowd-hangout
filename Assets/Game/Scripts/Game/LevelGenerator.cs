@@ -7,6 +7,8 @@ public class LevelGenerator : MonoBehaviour
     public static LevelGenerator Instance;
 
     public BlockSettings blockSettings;
+    public CollectibleSettings collectibleSettings;
+    [Space]
     public List<WavePatternInfo> wavePatternSettings;
     [Space]
     public float levelLength;
@@ -14,6 +16,7 @@ public class LevelGenerator : MonoBehaviour
     private List<BlockPair> blockPairs;
 
     private BlockPair newBlockPair;
+    private Collectible newCollectible;
 
     private GameObject newBlockPairContainer;
 
@@ -29,7 +32,11 @@ public class LevelGenerator : MonoBehaviour
     {
         Instance = this;
 
+        HumanController.defaultPose = collectibleSettings.humanPrefab.PeekPose();
+
         Generate();
+
+        PlaceCollectibles();
     }
 
     private void Start()
@@ -72,6 +79,22 @@ public class LevelGenerator : MonoBehaviour
         transform.position = new Vector3(-blockSettings.blockLength * 3f, -offsetMap[3], 0);
     }
 
+    private void PlaceCollectibles()
+    {
+        for (int i = 0; i < blockPairs.Count; i++)
+        {
+            if (i > 5)
+            {
+                if (Random.Range(0, 101) < 80)
+                {
+                    newCollectible = Instantiate(collectibleSettings.humanCollectiblePrefabs[0], blockPairs[i].container.transform);
+
+                    newCollectible.Initialize(blockPairs[i]);
+                }
+            }
+        }
+    }
+
     private BlockPair InstantiateBlockPair(Vector3 origin)
     {
         newBlockPairContainer = new GameObject("BlockPair");
@@ -83,6 +106,8 @@ public class LevelGenerator : MonoBehaviour
 
         newBlockPair.ceilBlock.transform.localPosition = new Vector3(0, blockSettings.caveHeightRange.x / 2f + Random.Range(-blockSettings.blockDisplacementLimit, blockSettings.blockDisplacementLimit), 0);
         newBlockPair.floorBlock.transform.localPosition = new Vector3(0, -blockSettings.caveHeightRange.x / 2f + Random.Range(-blockSettings.blockDisplacementLimit, blockSettings.blockDisplacementLimit), 0);
+
+        blockPairs.Add(newBlockPair);
 
         return newBlockPair;
     }
@@ -110,6 +135,24 @@ public class LevelGenerator : MonoBehaviour
     }
 
     [System.Serializable]
+    public class CollectibleSettings
+    {
+        // TODO 
+        //
+        // Human prefab to bake default pose
+        //
+        // Collectible prefabs
+        // HumanCollectible prefabs
+        // Crowd(?)Collectible prefabs
+        // AmmoCollectible prefabs
+        // Multiplier prefabs
+
+        public HumanController humanPrefab;
+        [Space]
+        public List<HumanCollectible> humanCollectiblePrefabs;
+    }
+
+    [System.Serializable]
     public class WavePatternInfo
     {
         [HideInInspector]
@@ -117,24 +160,5 @@ public class LevelGenerator : MonoBehaviour
 
         public float waveHeight;
         public float waveFrequency;
-    }
-
-    public class BlockPair
-    {
-        public GameObject ceilBlock;
-        public GameObject floorBlock;
-
-        public GameObject container;
-
-        public BlockPair(GameObject ceilBlock, GameObject floorBlock, GameObject container)
-        {
-            this.ceilBlock = ceilBlock;
-            this.floorBlock = floorBlock;
-
-            this.container = container;
-
-            this.ceilBlock.transform.SetParent(container.transform);
-            this.floorBlock.transform.SetParent(container.transform);
-        }
     }
 }

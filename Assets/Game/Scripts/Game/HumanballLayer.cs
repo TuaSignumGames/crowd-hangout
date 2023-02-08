@@ -33,7 +33,7 @@ public class HumanballLayer
         }
     }
 
-    public bool AddHumanInNext(HumanController human)
+    public bool AddHumanInNextCell(HumanController human)
     {
         if (availableCellsCount == 0)
         {
@@ -49,7 +49,7 @@ public class HumanballLayer
         }
     }
 
-    public bool AddHumanInClosest(HumanController human)
+    public bool AddHumanInClosestCell(HumanController human)
     {
         if (availableCellsCount == 0)
         {

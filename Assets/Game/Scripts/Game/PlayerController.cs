@@ -38,6 +38,8 @@ public class PlayerController : MonoBehaviour
         ball.AssignRope(rope);
         rope.AssignBall(ball);
 
+        HumanController.InitializeAnimatorHashes();
+
         StartCoroutine(InitialRopeConnectionCoroutine());
     }
 
