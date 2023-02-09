@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 381102904024632304}
   - component: {fileID: 381102904024632307}
   m_Layer: 8
-  m_Name: Human[Rigid]
+  m_Name: EnemyHuman[Rigid]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -133,7 +133,6 @@ MonoBehaviour:
       bendRangeCeil: {x: 0, y: 0, z: 0}
     leftHandContainer: {fileID: 2823959169948718720}
     rightHandContainer: {fileID: 6083994725384915180}
-    randomizePose: 0
 --- !u!1 &4638869977158584142
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,7 +281,7 @@ PrefabInstance:
     - target: {fileID: 1630794972795428178, guid: a3992dd944af6482d9f78c786f806bcb, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: dfd8c93f61be44fed93840e9344d7b4d, type: 2}
+      objectReference: {fileID: 2100000, guid: a1557c96280594424ba225b39ab49919, type: 2}
     - target: {fileID: 2035582688616703362, guid: a3992dd944af6482d9f78c786f806bcb, type: 3}
       propertyPath: m_Name
       value: Human

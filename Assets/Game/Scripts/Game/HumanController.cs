@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO Implement BattlePath 
+
 public enum HumanAnimationType { Running, Flying, Attacking, Falling, Dying }
 
 public class HumanController : MonoBehaviour
@@ -10,8 +12,13 @@ public class HumanController : MonoBehaviour
     public Animator animator;
     [Space]
     public HumanRig rigSettings;
+    public List<Weapon> weaponSettings;
 
     public HumanPose actualPose;
+
+    private Weapon currentWeapon;
+
+    private float healthPoints;
 
     public static HumanPose defaultPose;
 
@@ -81,6 +88,11 @@ public class HumanController : MonoBehaviour
         }
     }
 
+    public void Damage(float value)
+    {
+        healthPoints -= value;
+    }
+
     private void PlayAnimation(HumanAnimationType animationType)
     {
         animator.enabled = true;
@@ -89,7 +101,7 @@ public class HumanController : MonoBehaviour
         {
             case HumanAnimationType.Running: animator.SetBool(animatorGroundedHash, true); animator.SetBool(animatorRunningHash, true); break;
             case HumanAnimationType.Flying: animator.SetTrigger(animatorFlyHash); break;
-            case HumanAnimationType.Attacking: animator.SetInteger(animatorAttackIdHash, 0); animator.SetBool(animatorAttackingHash, true); break;
+            case HumanAnimationType.Attacking: animator.SetInteger(animatorAttackIdHash, currentWeapon.attackAnimationID); animator.SetBool(animatorAttackingHash, true); break;
             case HumanAnimationType.Falling: animator.SetBool(animatorGroundedHash, false); break;
             case HumanAnimationType.Dying: animator.SetInteger(animatorAttackIdHash, Random.Range(0, 5)); animator.SetTrigger(animatorDefeatHash); break;
         }
@@ -102,6 +114,20 @@ public class HumanController : MonoBehaviour
             if (other.gameObject.layer == 7)
             {
                 PlayerController.Instance.Ball.UnstickHuman(this);
+            }
+        }
+    }
+
+    private void OnValidate()
+    {
+        if (weaponSettings.Count > 0)
+        {
+            for (int i = 0; i < weaponSettings.Count; i++)
+            {
+                if (weaponSettings[i].weaponContainer)
+                {
+                    weaponSettings[i].title = weaponSettings[i].weaponContainer.name;
+                }
             }
         }
     }
