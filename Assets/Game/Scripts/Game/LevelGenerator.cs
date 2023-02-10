@@ -2,25 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO Transition to BattlePath 
+
 public class LevelGenerator : MonoBehaviour
 {
     public static LevelGenerator Instance;
 
     public BlockSettings blockSettings;
+    public List<WavePatternInfo> wavePatternSettings;
+    [Space]
     public CollectibleSettings collectibleSettings;
     [Space]
-    public List<WavePatternInfo> wavePatternSettings;
+    public BattlePathSettings battlePathSettings;
     [Space]
     public float levelLength;
 
     private List<BlockPair> blockPairs;
+    private List<BattlePathStage> battlePathStages;
 
     private BlockPair newBlockPair;
+    private BattlePathStage newBattlePathStage;
     private Collectible newCollectible;
 
     private GameObject newBlockPairContainer;
 
     private Vector2 perlinNoiseOrigin;
+
+    private Vector3 battlePathStartPosition;
 
     private List<float> offsetMap;
 
@@ -46,11 +54,18 @@ public class LevelGenerator : MonoBehaviour
 
     public void Generate()
     {
-        if (transform.childCount > 0)
-        {
-            transform.RemoveChildrenImmediate();
+        GenerateBlocks();
 
-            transform.position = Vector3.zero;
+        GenerateBattlePath(10);
+    }
+
+    private void GenerateBlocks()
+    {
+        if (blockSettings.blocksContainer.childCount > 0)
+        {
+            blockSettings.blocksContainer.RemoveChildrenImmediate();
+
+            blockSettings.blocksContainer.position = Vector3.zero;
         }
 
         blockPairs = new List<BlockPair>();
@@ -76,7 +91,28 @@ public class LevelGenerator : MonoBehaviour
             InstantiateBlockPair(new Vector3(i * blockSettings.blockLength, offsetMap[i]));
         }
 
-        transform.position = new Vector3(-blockSettings.blockLength * 3f, -offsetMap[3], 0);
+        blockSettings.blocksContainer.position = new Vector3(-blockSettings.blockLength * 3f, -offsetMap[3], 0);
+    }
+
+    private void GenerateBattlePath(int stagesCount)
+    {
+        if (battlePathSettings.battlePathContainer.childCount > 0)
+        {
+            battlePathSettings.battlePathContainer.RemoveChildrenImmediate();
+        }
+
+        battlePathStartPosition = newBlockPair.floorBlockPosition + new Vector3(blockSettings.blockLength / 2f, 0, 0);
+
+        battlePathStages = new List<BattlePathStage>();
+
+        for (int i = 0; i < stagesCount; i++)
+        {
+            newBattlePathStage = new BattlePathStage(Instantiate(battlePathSettings.stagePrefab, battlePathSettings.battlePathContainer), i % 2 == 0);
+
+            newBattlePathStage.Initialize(battlePathStartPosition + new Vector3(i * newBattlePathStage.size.x, 0, 0), 100f + i * 100f, null);
+
+            battlePathStages.Add(newBattlePathStage);
+        }
     }
 
     private void PlaceCollectibles()
@@ -100,7 +136,7 @@ public class LevelGenerator : MonoBehaviour
         newBlockPairContainer = new GameObject("BlockPair");
 
         newBlockPairContainer.transform.position = origin;
-        newBlockPairContainer.transform.SetParent(transform);
+        newBlockPairContainer.transform.SetParent(blockSettings.blocksContainer);
 
         newBlockPair = new BlockPair(Instantiate(blockSettings.ceilBlockPrefabs.GetRandom()), Instantiate(blockSettings.floorBlockPrefabs.GetRandom()), newBlockPairContainer);
 
@@ -126,12 +162,21 @@ public class LevelGenerator : MonoBehaviour
     [System.Serializable]
     public class BlockSettings
     {
+        public Transform blocksContainer;
         public GameObject[] ceilBlockPrefabs;
         public GameObject[] floorBlockPrefabs;
         public float blockLength;
         [Space]
         public Vector2 caveHeightRange;
         public float blockDisplacementLimit;
+    }
+
+    [System.Serializable]
+    public class BattlePathSettings
+    {
+        public Transform battlePathContainer;
+        public GameObject stagePrefab;
+        public List<GameObject> guardPrefabs;
     }
 
     [System.Serializable]

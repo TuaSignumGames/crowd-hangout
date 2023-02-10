@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO Implement BattlePath 
+// TODO
+// Motion processor for human 
+// AI for BattlePath 
 
 public enum HumanAnimationType { Running, Flying, Attacking, Falling, Dying }
 

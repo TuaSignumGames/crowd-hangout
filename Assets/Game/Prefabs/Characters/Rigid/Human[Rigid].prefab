@@ -159,7 +159,7 @@ MonoBehaviour:
     ammoContainer: {fileID: 7463677023535137702}
     damageRate: 1
     reloadingTime: 0.5
-    attackDistance: 0.5
+    attackDistance: 5
     projectileSpeed: 0
     directionAngularOffset: 0
     attackAnimationID: 2
@@ -169,7 +169,7 @@ MonoBehaviour:
     ammoContainer: {fileID: 2862717599313583601}
     damageRate: 1
     reloadingTime: 0.5
-    attackDistance: 0.5
+    attackDistance: 8
     projectileSpeed: 0
     directionAngularOffset: 0
     attackAnimationID: 3
@@ -179,7 +179,7 @@ MonoBehaviour:
     ammoContainer: {fileID: 2862717599313583601}
     damageRate: 1
     reloadingTime: 0.5
-    attackDistance: 0.5
+    attackDistance: 8
     projectileSpeed: 0
     directionAngularOffset: 0
     attackAnimationID: 4

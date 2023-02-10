@@ -9,6 +9,10 @@ public class BlockPair
 
     public GameObject container;
 
+    public Vector3 position => container.transform.position;
+    public Vector3 ceilBlockPosition => ceilBlock.transform.position;
+    public Vector3 floorBlockPosition => floorBlock.transform.position;
+
     public BlockPair(GameObject ceilBlock, GameObject floorBlock, GameObject container)
     {
         this.ceilBlock = ceilBlock;
