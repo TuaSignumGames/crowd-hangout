@@ -6,6 +6,8 @@ public class Humanball
 {
     private List<HumanballLayer> layers;
 
+    private List<HumanballCell> requestedCells;
+
     private int cellsCount;
 
     private int counter;
@@ -55,6 +57,42 @@ public class Humanball
                 return;
             }
         }
+    }
+
+    public List<HumanballCell> GetFilledCells()
+    {
+        requestedCells = new List<HumanballCell>();
+
+        for (int i = 0; i < layers.Count; i++)
+        {
+            for (int j = 0; j < layers[i].cells.Count; j++)
+            {
+                if (!layers[i].cells[j].IsAvailable)
+                {
+                    requestedCells.Add(layers[i].cells[j]);
+                }
+            }
+        }
+
+        return requestedCells;
+    }
+
+    public List<HumanballCell> GetEmptyCells()
+    {
+        requestedCells = new List<HumanballCell>();
+
+        for (int i = 0; i < layers.Count; i++)
+        {
+            for (int j = 0; j < layers[i].cells.Count; j++)
+            {
+                if (layers[i].cells[j].IsAvailable)
+                {
+                    requestedCells.Add(layers[i].cells[j]);
+                }
+            }
+        }
+
+        return requestedCells;
     }
 
     private int GetAvailableCellsCount()

@@ -54,7 +54,6 @@ MonoBehaviour:
     swingContainer: {fileID: 7153101168938727752}
     swingAmplitude: 0
     swingPeriod: 0
-  useRope: 1
   collectableHuman: {fileID: 7353560770460508853}
 --- !u!65 &2584718004563188467
 BoxCollider:
@@ -474,6 +473,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
       propertyPath: rigSettings.randomizePose
       value: 0
       objectReference: {fileID: 0}
@@ -694,7 +697,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 7153101168330795334}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 51839a59094274d36b2fbad764830815, type: 3}
   m_Name: 

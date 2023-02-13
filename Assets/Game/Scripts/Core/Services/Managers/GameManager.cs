@@ -47,7 +47,7 @@ public class GameManager : Service<GameManager>
 
             LevelManager.Instance.InitializeLevel();
 
-            //UIManager.Instance.SetBackgroundTriggerEvent(UnityEngine.EventSystems.EventTriggerType.PointerDown, LevelManager.Instance.OnLevelStarted);
+            UIManager.Instance.SetBackgroundTriggerEvent(UnityEngine.EventSystems.EventTriggerType.PointerDown, LevelManager.Instance.OnLevelStarted);
 
             if (OnGameSceneLoaded != null)
             {

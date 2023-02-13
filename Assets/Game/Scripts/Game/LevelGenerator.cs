@@ -2,7 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO Transition to BattlePath 
+// TODO
+//
+// Level
+//  - Adaptive cave width [D2]
+//  - Add Collectible types (Building, Baloon, Humanball, Multiplier) [D3]
+//  - Cave correction for Collectibles [D4]
+//  - Collectibles generation pattern [D4]
+//
+// Character
+//  - AI for BattlePath [D2]
+//  - Camera scale-by-size adaptation [D2]
+//
+// Upgrades [D5]
+//  - Health
+//  - Population
+//  - Weapon
+//
+// Polishing [D5] 
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -18,7 +35,10 @@ public class LevelGenerator : MonoBehaviour
     public float levelLength;
 
     private List<BlockPair> blockPairs;
-    private List<BattlePathStage> battlePathStages;
+
+    private BattlePath battlePath;
+
+    private Transform humanballTransform;
 
     private BlockPair newBlockPair;
     private BattlePathStage newBattlePathStage;
@@ -28,13 +48,15 @@ public class LevelGenerator : MonoBehaviour
 
     private Vector2 perlinNoiseOrigin;
 
-    private Vector3 battlePathStartPosition;
-
     private List<float> offsetMap;
 
     private float perlinValue;
 
     private int blockPairsCount;
+
+    private bool isCavePassed;
+
+    public BattlePath BattlePath => battlePath;
 
     private void Awake()
     {
@@ -50,6 +72,8 @@ public class LevelGenerator : MonoBehaviour
     private void Start()
     {
         PlayerController.Instance.Initialize();
+
+        humanballTransform = PlayerController.Instance.Ball.Transform;
     }
 
     public void Generate()
@@ -57,6 +81,14 @@ public class LevelGenerator : MonoBehaviour
         GenerateBlocks();
 
         GenerateBattlePath(10);
+    }
+
+    private void LateUpdate()
+    {
+        if (!isCavePassed)
+        {
+            CheckForBattlePath();
+        }
     }
 
     private void GenerateBlocks()
@@ -96,22 +128,22 @@ public class LevelGenerator : MonoBehaviour
 
     private void GenerateBattlePath(int stagesCount)
     {
-        if (battlePathSettings.battlePathContainer.childCount > 0)
+        if (battlePathSettings.stagesContainer.childCount > 0)
         {
-            battlePathSettings.battlePathContainer.RemoveChildrenImmediate();
+            battlePathSettings.stagesContainer.RemoveChildrenImmediate();
         }
 
-        battlePathStartPosition = newBlockPair.floorBlockPosition + new Vector3(blockSettings.blockLength / 2f, 0, 0);
+        battlePath = new BattlePath(battlePathSettings.pathContainer.gameObject);
 
-        battlePathStages = new List<BattlePathStage>();
+        battlePath.transform.position = newBlockPair.floorBlockPosition + new Vector3(blockSettings.blockLength / 2f, 0, 0);
 
         for (int i = 0; i < stagesCount; i++)
         {
-            newBattlePathStage = new BattlePathStage(Instantiate(battlePathSettings.stagePrefab, battlePathSettings.battlePathContainer), i % 2 == 0);
+            newBattlePathStage = new BattlePathStage(Instantiate(battlePathSettings.stagePrefab, battlePathSettings.stagesContainer), i % 2 == 0);
 
-            newBattlePathStage.Initialize(battlePathStartPosition + new Vector3(i * newBattlePathStage.size.x, 0, 0), 100f + i * 100f, null);
+            newBattlePathStage.Initialize(battlePath.position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.size.x, 0, 0), 100f + i * 100f, null);
 
-            battlePathStages.Add(newBattlePathStage);
+            battlePath.stages.Add(newBattlePathStage);
         }
     }
 
@@ -148,6 +180,24 @@ public class LevelGenerator : MonoBehaviour
         return newBlockPair;
     }
 
+    private void CheckForBattlePath()
+    {
+        if (humanballTransform.position.x > battlePath.position.x)
+        {
+            isCavePassed = true;
+
+            SwitchToBattleMode();
+        }
+    }
+
+    private void SwitchToBattleMode()
+    {
+        PlayerController.Instance.SwitchToBattleMode();
+
+        CameraController.Instance.Translate(battlePathSettings.viewLocalOffset, battlePathSettings.translationDuration, Space.Self);
+        CameraController.Instance.Rotate(battlePathSettings.viewEulerAngles, battlePathSettings.rotationDuration, Space.World);
+    }
+
     private void OnValidate()
     {
         if (wavePatternSettings.Count > 0)
@@ -174,9 +224,19 @@ public class LevelGenerator : MonoBehaviour
     [System.Serializable]
     public class BattlePathSettings
     {
-        public Transform battlePathContainer;
+        public Transform pathContainer;
+        public Transform stagesContainer;
+        [Space]
+        public Transform baseStageTransform;
+        [Space]
         public GameObject stagePrefab;
         public List<GameObject> guardPrefabs;
+        [Space]
+        public Vector3 viewLocalOffset;
+        public float translationDuration;
+        [Space]
+        public Vector3 viewEulerAngles;
+        public float rotationDuration;
     }
 
     [System.Serializable]

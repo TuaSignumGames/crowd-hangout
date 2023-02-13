@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 raycastDirection;
 
-    private bool isLevelStarted;
+    private bool isBattleMode;
 
     public HumanballProcessor Ball => ball;
 
@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isLevelStarted)
+        if (LevelManager.IsLevelStarted)
         {
             if (InputManager.touchPresent)
             {
@@ -76,8 +76,6 @@ public class PlayerController : MonoBehaviour
     {
         if (InputManager.touch)
         {
-            isLevelStarted = true;
-
             if (!rope.IsConnected)
             {
                 targetBlockTransform = RaycastBlock(raycastDirection);
@@ -85,6 +83,23 @@ public class PlayerController : MonoBehaviour
         }
 
         rope.Update();
+    }
+
+    public void SwitchToBattleMode()
+    {
+        DropHumansToBattle();
+
+        isBattleMode = true;
+    }
+
+    public void DropHumansToBattle()
+    {
+        foreach (HumanballCell cell in ball.Structure.GetFilledCells())
+        {
+            cell.Human.DropToBattle(ball.Velocity);
+        }
+
+        // TODO Follow crowd to aim Camera 
     }
 
     private Transform RaycastBlock(Vector2 direction)

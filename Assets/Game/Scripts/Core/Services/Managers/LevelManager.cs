@@ -10,23 +10,23 @@ public class LevelManager : Service<LevelManager>
 
     public CreativeModeLevelSettings creativeModeSettings;
 
-    private float _rewardAmount;
+    private static float _rewardAmount;
 
-    private bool _isLevelStarted;
-    private bool _isLevelFinished;
-    private bool _isLevelPassed;
+    private static bool _isLevelStarted;
+    private static bool _isLevelFinished;
+    private static bool _isLevelPassed;
 
-    private bool _isTutorialLevel;
+    private static bool _isTutorialLevel;
 
-    private bool _isTutorialLaunched;
+    private static bool _isTutorialLaunched;
 
-    public int LevelIndex { get { return PlayerPrefs.GetInt("LVL_ID"); } private set { PlayerPrefs.SetInt("LVL_ID", value); } }
-    public int LevelNumber { get { return PlayerPrefs.GetInt("LVL_NUM", 1); } private set { PlayerPrefs.SetInt("LVL_NUM", value); } }
+    public static int LevelIndex { get { return PlayerPrefs.GetInt("LVL_ID"); } private set { PlayerPrefs.SetInt("LVL_ID", value); } }
+    public static int LevelNumber { get { return PlayerPrefs.GetInt("LVL_NUM", 1); } private set { PlayerPrefs.SetInt("LVL_NUM", value); } }
 
-    public bool IsLevelStarted => _isLevelStarted;
-    public bool IsLevelFinished => _isLevelFinished;
+    public static bool IsLevelStarted => _isLevelStarted;
+    public static bool IsLevelFinished => _isLevelFinished;
 
-    public bool IsTutorialLevel => _isTutorialLevel;
+    public static bool IsTutorialLevel => _isTutorialLevel;
 
     public void InitializeLevel()
     {
@@ -82,7 +82,7 @@ public class LevelManager : Service<LevelManager>
 
             //UIRewardPanel.Instance.SetReward(_rewardAmount);
 
-            //UIManager.Instance.SetBackgroundTriggerEvent(UnityEngine.EventSystems.EventTriggerType.PointerDown, GameManager.Instance.ReloadGameScene);
+            UIManager.Instance.SetBackgroundTriggerEvent(UnityEngine.EventSystems.EventTriggerType.PointerDown, GameManager.Instance.ReloadGameScene);
 
             UIManager.Instance.ChangeState(success ? UIState.Success : UIState.Fail);
         }

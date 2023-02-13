@@ -36,7 +36,7 @@ public class HumanballCell
 
     public void EjectHuman()
     {
-        placedHuman.DropFromCell();
+        placedHuman.DropFromCell(Vector3.zero);
 
         placedHuman = null;
     }

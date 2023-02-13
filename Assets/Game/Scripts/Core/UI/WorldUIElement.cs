@@ -89,7 +89,7 @@ public class WorldUIElement : MonoBehaviour
     {
         if (_isInitialized && Enabled)
         {
-            _transformEvaluator.Iterate();
+            _transformEvaluator.Update();
 
             if (targetTransform)
             {

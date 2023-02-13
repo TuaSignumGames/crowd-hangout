@@ -36,7 +36,7 @@ public class MotionController : MonoBehaviour
     {
         if (evaluator.Evaluating)
         {
-            evaluator.Iterate();
+            evaluator.Update();
         }
     }
 

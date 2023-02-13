@@ -6,14 +6,14 @@ public class HumanballLayer
 {
     private GameObject container;
 
-    private List<HumanballCell> cells;
-
     private HumanballCell closestCell;
 
     private float cellSqrDistance;
     private float minCellSqrDistance;
 
     private int availableCellsCount;
+
+    public List<HumanballCell> cells;
 
     public int AvailableCellsCount => availableCellsCount;
 

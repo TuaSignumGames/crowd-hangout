@@ -21,6 +21,10 @@ public class HumanballProcessor
 
     public Transform Transform => ballData.rigidbody.transform;
 
+    public Humanball Structure => structure;
+
+    public Vector3 Velocity => swingVelocityDelta / Time.fixedDeltaTime;
+
     public HumanballProcessor(BallSettings settings)
     {
         ballData = settings;
@@ -51,6 +55,8 @@ public class HumanballProcessor
         structureLayers.Add(ballData.proceduralCells.GenerateLayer(baseLayerCells, "B"));
         structureLayers.AddRange(ballData.proceduralCells.GenerateProceduralLayers());
 
+        baseLayerCells[0].Human.Initialize(false);
+
         structure = new Humanball(structureLayers);
     }
 
@@ -76,6 +82,8 @@ public class HumanballProcessor
     public void StickHuman(HumanController humanController)
     {
         structure.AddHuman(humanController);
+
+        humanController.enabled = true;
     }
 
     public void UnstickHuman(HumanController humanController)
@@ -110,7 +118,7 @@ public class HumanballProcessor
     {
         ballData.rigidbody.isKinematic = false;
 
-        ballData.rigidbody.velocity = swingVelocityDelta / Time.fixedDeltaTime;
+        ballData.rigidbody.velocity = Velocity;
 
         angularSpeedDelta = 0;
     }

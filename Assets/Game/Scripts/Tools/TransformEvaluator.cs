@@ -94,7 +94,7 @@ public class TransformEvaluator
         _iteratorType = updateType;
     }
 
-    public void Iterate()
+    public void Update()
     {
         if (Time.timeSinceLevelLoad > _processingDelaySetupTime + _processingDelay)
         {

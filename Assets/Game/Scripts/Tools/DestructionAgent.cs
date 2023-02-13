@@ -66,7 +66,7 @@ public class DestructionAgent : DestructibleEntity
             {
                 if (fractureRigidbodies[i].gameObject.activeSelf)
                 {
-                    fractureEvaluators[i].Iterate();
+                    fractureEvaluators[i].Update();
                 }
             }
         }

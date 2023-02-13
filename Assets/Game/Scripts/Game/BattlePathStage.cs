@@ -16,6 +16,7 @@ public class BattlePathStage
 
     private float reward;
 
+    public Vector3 position => gameObject.transform.position;
     public Vector3 size => stageContent[0].localScale;
 
     public BattlePathStage(GameObject stageGameObject, bool isEven)

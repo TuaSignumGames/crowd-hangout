@@ -2,10 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO
-// Motion processor for human 
-// AI for BattlePath 
-
 public enum HumanAnimationType { Running, Flying, Attacking, Falling, Dying }
 
 public class HumanController : MonoBehaviour
@@ -18,9 +14,11 @@ public class HumanController : MonoBehaviour
 
     public HumanPose actualPose;
 
+    private MotionSimulator motionSimulator;
+
     private Weapon currentWeapon;
 
-    private float healthPoints;
+    private float healthPoints = 100f;
 
     public static HumanPose defaultPose;
 
@@ -34,9 +32,26 @@ public class HumanController : MonoBehaviour
 
     private bool isFree = true;
 
+    private bool inBattle;
+
+    public bool IsAlive => healthPoints > 0;
+
     public void Initialize(bool isFree)
     {
         this.isFree = isFree;
+    }
+
+    private void Start()
+    {
+        motionSimulator = new MotionSimulator(transform, LevelGenerator.Instance.BattlePath.position.y - animator.transform.localPosition.y, MonoUpdateType.FixedUpdate);
+    }
+
+    private void FixedUpdate()
+    {
+        if (isFree)
+        {
+            motionSimulator.Update();
+        }
     }
 
     public void PlaceInCell(HumanballCell cell)
@@ -60,15 +75,26 @@ public class HumanController : MonoBehaviour
         collider.enabled = true;
     }
 
-    public void DropFromCell()
+    public void DropFromCell(Vector3 impulse)
     {
         collider.enabled = false;
 
         transform.SetParent(null);
 
+        motionSimulator.velocity = impulse;
+
         PlayAnimation(HumanAnimationType.Falling);
 
         isFree = true;
+    }
+
+    public void DropToBattle(Vector3 velocity)
+    {
+        DropFromCell(velocity);
+
+        PlayAnimation(HumanAnimationType.Flying);
+
+        inBattle = true;
     }
 
     public HumanPose PeekPose()
