@@ -9,16 +9,29 @@ public class HumanController : MonoBehaviour
     public new BoxCollider collider;
     public Animator animator;
     [Space]
-    public HumanRig rigSettings;
+    public HumanMotionSettings motionSettings;
     public List<Weapon> weaponSettings;
+    [Space]
+    public HumanRig rigSettings;
 
+    public Crowd actualCrowd;
     public HumanPose actualPose;
+
+    private HumanAI ai;
 
     private MotionSimulator motionSimulator;
 
     private Weapon currentWeapon;
 
+    private Vector3 motionVector;
+
     private float healthPoints = 100f;
+
+    private float actualSpeed;
+
+    private float targetPointSqrRadius;
+
+    public HumanAI AI => ai;
 
     public static HumanPose defaultPose;
 
@@ -27,6 +40,7 @@ public class HumanController : MonoBehaviour
     public static int animatorGroundedHash;
     public static int animatorRunningHash;
     public static int animatorAttackingHash;
+    public static int animatorSpeedFactorHash;
     public static int animatorAttackIdHash;
     public static int animatorDefeatIdHash;
 
@@ -52,6 +66,51 @@ public class HumanController : MonoBehaviour
         {
             motionSimulator.Update();
         }
+    }
+
+    private void LateUpdate()
+    {
+        if (isFree)
+        {
+            if (inBattle)
+            {
+                ai.Update();
+
+                animator.SetBool(animatorGroundedHash, motionSimulator.IsGrounded);
+            }
+        }
+    }
+
+    public bool MoveTo(Vector3 position)
+    {
+        if (motionSimulator.IsGrounded)
+        {
+            motionVector = position - transform.position;
+
+            transform.forward = motionVector.GetPlanarDirection(Axis.Y);
+
+            actualSpeed = motionVector.GetPlanarSqrMagnitude(Axis.Y) > targetPointSqrRadius ? motionSettings.runSpeed : 0;
+
+            motionSimulator.velocity = transform.forward * actualSpeed;
+
+            animator.SetFloat(animatorSpeedFactorHash, Mathf.Clamp01(actualSpeed));
+
+            return actualSpeed == 0;
+        }
+
+        return false;
+    }
+
+    public bool Attack(HumanController human)
+    {
+        if (human.IsAlive)
+        {
+            transform.forward = (human.transform.position - transform.position).normalized;
+
+            return currentWeapon.Attack(human);
+        }
+
+        return false;
     }
 
     public void PlaceInCell(HumanballCell cell)
@@ -90,9 +149,15 @@ public class HumanController : MonoBehaviour
 
     public void DropToBattle(Vector3 velocity)
     {
+        ai = new HumanAI(this);
+
         DropFromCell(velocity);
 
         PlayAnimation(HumanAnimationType.Flying);
+
+        transform.forward = Vector3.right;
+
+        targetPointSqrRadius = motionSettings.targetPointRadius * motionSettings.targetPointRadius;
 
         inBattle = true;
     }
@@ -102,6 +167,16 @@ public class HumanController : MonoBehaviour
         actualPose = new HumanPose(transform, rigSettings.bones);
 
         return actualPose;
+    }
+
+    public void Damage(float value)
+    {
+        healthPoints -= value;
+
+        if (healthPoints <= 0)
+        {
+            Die();
+        }
     }
 
     private void ApplyPose(HumanPose pose)
@@ -116,9 +191,11 @@ public class HumanController : MonoBehaviour
         }
     }
 
-    public void Damage(float value)
+    private void Die()
     {
-        healthPoints -= value;
+        PlayAnimation(HumanAnimationType.Dying);
+
+        actualCrowd?.RemoveMember(this);
     }
 
     private void PlayAnimation(HumanAnimationType animationType)
@@ -167,7 +244,17 @@ public class HumanController : MonoBehaviour
         animatorGroundedHash = Animator.StringToHash("IsGrounded");
         animatorRunningHash = Animator.StringToHash("IsRunning");
         animatorAttackingHash = Animator.StringToHash("IsAttacking");
+        animatorSpeedFactorHash = Animator.StringToHash("SpeedFactor");
         animatorAttackIdHash = Animator.StringToHash("AttackAnimationID");
         animatorDefeatIdHash = Animator.StringToHash("DefeatAnimationID");
     }
+}
+
+[System.Serializable]
+public class HumanMotionSettings
+{
+    public float runSpeed;
+    public float turnSpeed;
+    [Space]
+    public float targetPointRadius;
 }

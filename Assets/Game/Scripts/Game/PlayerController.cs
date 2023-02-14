@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
     private HumanballProcessor ball;
     private RopeProcessor rope;
 
+    private Crowd humanballCrowd;
+
     private RaycastHit hitInfo;
 
     private Transform targetBlockTransform;
@@ -47,46 +49,62 @@ public class PlayerController : MonoBehaviour
     {
         if (LevelManager.IsLevelStarted)
         {
-            if (InputManager.touchPresent)
+            if (isBattleMode)
             {
-                if (targetBlockTransform)
-                {
-                    if (rope.Connect(targetBlockTransform.position))
-                    {
-                        ball.Swing(ballSettings.motionSpeed);
-                    }
-                }
+                ball.Transform.position = humanballCrowd.DefineMidpointXY();
             }
             else
             {
-                if (rope.IsConnected)
+                if (InputManager.touchPresent)
                 {
-                    targetBlockTransform = null;
-
-                    ball.Release();
-                    rope.Disconnect();
+                    if (targetBlockTransform)
+                    {
+                        if (rope.Connect(targetBlockTransform.position))
+                        {
+                            ball.Swing(ballSettings.motionSpeed);
+                        }
+                    }
                 }
+                else
+                {
+                    if (rope.IsConnected)
+                    {
+                        targetBlockTransform = null;
+
+                        ball.Release();
+                        rope.Disconnect();
+                    }
+                }
+
+                ball.Update();
             }
         }
-
-        ball.Update();
     }
 
     private void LateUpdate()
     {
-        if (InputManager.touch)
+        if (isBattleMode)
         {
-            if (!rope.IsConnected)
-            {
-                targetBlockTransform = RaycastBlock(raycastDirection);
-            }
-        }
 
-        rope.Update();
+        }
+        else
+        {
+            if (InputManager.touch)
+            {
+                if (!rope.IsConnected)
+                {
+                    targetBlockTransform = RaycastBlock(raycastDirection);
+                }
+            }
+
+            rope.Update();
+        }
     }
 
     public void SwitchToBattleMode()
     {
+        ball.Data.rigidbody.isKinematic = true;
+
         DropHumansToBattle();
 
         isBattleMode = true;
@@ -94,12 +112,16 @@ public class PlayerController : MonoBehaviour
 
     public void DropHumansToBattle()
     {
+        humanballCrowd = new Crowd();
+
         foreach (HumanballCell cell in ball.Structure.GetFilledCells())
         {
-            cell.Human.DropToBattle(ball.Velocity);
+            humanballCrowd.AddMember(cell.Human);
+
+            cell.Human.DropToBattle(ball.Velocity + Random.insideUnitSphere);
         }
 
-        // TODO Follow crowd to aim Camera 
+        humanballCrowd.MoveTo(LevelGenerator.Instance.BattlePath.stages[0].position);
     }
 
     private Transform RaycastBlock(Vector2 direction)

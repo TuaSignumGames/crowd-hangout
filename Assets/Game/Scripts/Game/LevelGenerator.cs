@@ -5,21 +5,21 @@ using UnityEngine;
 // TODO
 //
 // Level
-//  - Adaptive cave width [D2]
-//  - Add Collectible types (Building, Baloon, Humanball, Multiplier) [D3]
-//  - Cave correction for Collectibles [D4]
-//  - Collectibles generation pattern [D4]
+//  - Adaptive cave width [Feb 15]
+//  - Add Collectible types (Building, Baloon, Humanball, Multiplier) [Feb 16]
+//  - Cave correction for Collectibles [Feb 17]
+//  - Collectibles generation pattern [Feb 17]
 //
 // Character
-//  - AI for BattlePath [D2]
-//  - Camera scale-by-size adaptation [D2]
+//  - AI for BattlePath [Feb 15] 
+//  - Camera scale-by-size adaptation [Feb 15]
 //
-// Upgrades [D5]
+// Upgrades [Feb 18]
 //  - Health
 //  - Population
 //  - Weapon
 //
-// Polishing [D5] 
+// Polishing [Feb 18] 
 
 public class LevelGenerator : MonoBehaviour
 {

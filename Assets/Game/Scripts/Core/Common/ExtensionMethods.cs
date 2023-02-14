@@ -108,6 +108,22 @@ public static class ExtensionMethods
         }
     }
 
+    public static Vector3 GetPlanarDirection(this Vector3 sourceVector, Axis axis)
+    {
+        if (axis == Axis.X)
+        {
+            return new Vector3(0, sourceVector.y, sourceVector.z).normalized;
+        }
+        else if (axis == Axis.Y)
+        {
+            return new Vector3(sourceVector.x, 0, sourceVector.z).normalized;
+        }
+        else
+        {
+            return new Vector3(sourceVector.x, sourceVector.y, 0).normalized;
+        }
+    }
+
     public static Vector3 GetDirectionTo(this Vector3 sourcePosition, Vector3 point)
     {
         return (point - sourcePosition).normalized;

@@ -5373,9 +5373,9 @@ MonoBehaviour:
     baseStageTransform: {fileID: 792093430}
     stagePrefab: {fileID: 8808108877336622542, guid: 1ca9c93a07584487e9a1c6aa4ca807d9, type: 3}
     guardPrefabs: []
-    viewLocalOffset: {x: 2, y: 0, z: -30}
+    viewLocalOffset: {x: 2, y: 0, z: -40}
     translationDuration: 2
-    viewEulerAngles: {x: 20, y: 75, z: 0}
+    viewEulerAngles: {x: 25, y: 50, z: 0}
     rotationDuration: 1
   levelLength: 50
 --- !u!1 &1026330408

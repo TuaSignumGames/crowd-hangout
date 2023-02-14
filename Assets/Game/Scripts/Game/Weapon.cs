@@ -100,10 +100,8 @@ public class Weapon
                 return false;
             }
         }
-        else
-        {
-            return false;
-        }
+
+        return true;
     }
 
     private List<Projectile> GenerateProjectiles(int count)

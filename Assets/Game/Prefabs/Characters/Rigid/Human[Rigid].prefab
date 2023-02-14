@@ -61,6 +61,61 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collider: {fileID: 381102904024632304}
   animator: {fileID: 6062802480302889572}
+  motionSettings:
+    runSpeed: 6
+    turnSpeed: 90
+    targetPointRadius: 1
+  weaponSettings:
+  - title: Fist
+    weaponContainer: {fileID: 6196655106733567505}
+    ammoContainer: {fileID: 0}
+    damageRate: 1
+    reloadingTime: 0.5
+    attackDistance: 0.5
+    projectileSpeed: 0
+    directionAngularOffset: 0
+    attackAnimationID: 0
+    attackVFX: {fileID: 0}
+  - title: Bat
+    weaponContainer: {fileID: 5002936460844173615}
+    ammoContainer: {fileID: 0}
+    damageRate: 1
+    reloadingTime: 0.5
+    attackDistance: 0.5
+    projectileSpeed: 0
+    directionAngularOffset: 0
+    attackAnimationID: 1
+    attackVFX: {fileID: 0}
+  - title: Brick
+    weaponContainer: {fileID: 3429199240765688056}
+    ammoContainer: {fileID: 7463677023535137702}
+    damageRate: 1
+    reloadingTime: 0.5
+    attackDistance: 5
+    projectileSpeed: 0
+    directionAngularOffset: 0
+    attackAnimationID: 2
+    attackVFX: {fileID: 0}
+  - title: Bow
+    weaponContainer: {fileID: 5652893008443664743}
+    ammoContainer: {fileID: 2862717599313583601}
+    damageRate: 1
+    reloadingTime: 0.5
+    attackDistance: 8
+    projectileSpeed: 0
+    directionAngularOffset: 0
+    attackAnimationID: 3
+    attackVFX: {fileID: 0}
+  - title: Pistol
+    weaponContainer: {fileID: 6702893980190087776}
+    ammoContainer: {fileID: 2862717599313583601}
+    damageRate: 1
+    reloadingTime: 0.5
+    attackDistance: 8
+    projectileSpeed: 0
+    directionAngularOffset: 0
+    attackAnimationID: 4
+    attackVFX: {fileID: 3364544254698358871}
   rigSettings:
     bones:
     - title: Head
@@ -133,57 +188,6 @@ MonoBehaviour:
       bendRangeCeil: {x: 0, y: 0, z: 0}
     leftHandContainer: {fileID: 2823959169948718720}
     rightHandContainer: {fileID: 6083994725384915180}
-  weaponSettings:
-  - title: Fist
-    weaponContainer: {fileID: 6196655106733567505}
-    ammoContainer: {fileID: 0}
-    damageRate: 1
-    reloadingTime: 0.5
-    attackDistance: 0.5
-    projectileSpeed: 0
-    directionAngularOffset: 0
-    attackAnimationID: 0
-    attackVFX: {fileID: 0}
-  - title: Bat
-    weaponContainer: {fileID: 5002936460844173615}
-    ammoContainer: {fileID: 0}
-    damageRate: 1
-    reloadingTime: 0.5
-    attackDistance: 0.5
-    projectileSpeed: 0
-    directionAngularOffset: 0
-    attackAnimationID: 1
-    attackVFX: {fileID: 0}
-  - title: Brick
-    weaponContainer: {fileID: 3429199240765688056}
-    ammoContainer: {fileID: 7463677023535137702}
-    damageRate: 1
-    reloadingTime: 0.5
-    attackDistance: 5
-    projectileSpeed: 0
-    directionAngularOffset: 0
-    attackAnimationID: 2
-    attackVFX: {fileID: 0}
-  - title: Bow
-    weaponContainer: {fileID: 5652893008443664743}
-    ammoContainer: {fileID: 2862717599313583601}
-    damageRate: 1
-    reloadingTime: 0.5
-    attackDistance: 8
-    projectileSpeed: 0
-    directionAngularOffset: 0
-    attackAnimationID: 3
-    attackVFX: {fileID: 0}
-  - title: Pistol
-    weaponContainer: {fileID: 6702893980190087776}
-    ammoContainer: {fileID: 2862717599313583601}
-    damageRate: 1
-    reloadingTime: 0.5
-    attackDistance: 8
-    projectileSpeed: 0
-    directionAngularOffset: 0
-    attackAnimationID: 4
-    attackVFX: {fileID: 3364544254698358871}
 --- !u!1 &464206526872416149
 GameObject:
   m_ObjectHideFlags: 0
