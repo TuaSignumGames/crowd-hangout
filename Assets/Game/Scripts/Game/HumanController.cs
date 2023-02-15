@@ -2,20 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO Add guards into stages 
+
+public enum HumanTeam { Neutral, Yellow, Red }
 public enum HumanAnimationType { Running, Flying, Attacking, Falling, Dying }
 
 public class HumanController : MonoBehaviour
 {
-    public new BoxCollider collider;
-    public Animator animator;
+    public HumanControllerComponents components;
     [Space]
+    public HumanTeam team;
+    public List<HumanTeamInfo> teamSettings;
     public HumanMotionSettings motionSettings;
+    public HumanRig rigSettings;
     public List<Weapon> weaponSettings;
     [Space]
-    public HumanRig rigSettings;
+    public ProgressBar healthBar; 
 
     public Crowd actualCrowd;
     public HumanPose actualPose;
+
+    private HumanTeamInfo actualTeamData;
 
     private HumanAI ai;
 
@@ -25,7 +32,8 @@ public class HumanController : MonoBehaviour
 
     private Vector3 motionVector;
 
-    private float healthPoints = 100f;
+    private float healthPoints;
+    private float healthCapacity;
 
     private float actualSpeed;
 
@@ -44,20 +52,36 @@ public class HumanController : MonoBehaviour
     public static int animatorAttackIdHash;
     public static int animatorDefeatIdHash;
 
-    private bool isFree = true;
-
     private bool inBattle;
+
+    [HideInInspector] public bool isFree = true;
 
     public bool IsAlive => healthPoints > 0;
 
-    public void Initialize(bool isFree)
+    public void Initialize(HumanTeam team, int weaponIndex = 0)
     {
-        this.isFree = isFree;
+        Initialize(team, 100f, weaponIndex);
+    }
+
+    public void Initialize(HumanTeam team, float health, int weaponIndex = 0)
+    {
+        if (!(this.team == HumanTeam.Yellow && team == HumanTeam.Yellow))
+        {
+            SetTeam(this.team = team);
+        }
+
+        SetWeapon(weaponSettings[weaponIndex]);
+
+        healthCapacity = healthPoints = health;
+
+        healthBar.Initialize();
+
+        motionSimulator = new MotionSimulator(transform, LevelGenerator.Instance.BattlePath.position.y - components.animator.transform.localPosition.y, MonoUpdateType.FixedUpdate);
     }
 
     private void Start()
     {
-        motionSimulator = new MotionSimulator(transform, LevelGenerator.Instance.BattlePath.position.y - animator.transform.localPosition.y, MonoUpdateType.FixedUpdate);
+        Initialize(team);
     }
 
     private void FixedUpdate()
@@ -76,7 +100,7 @@ public class HumanController : MonoBehaviour
             {
                 ai.Update();
 
-                animator.SetBool(animatorGroundedHash, motionSimulator.IsGrounded);
+                components.animator.SetBool(animatorGroundedHash, motionSimulator.IsGrounded);
             }
         }
     }
@@ -93,7 +117,7 @@ public class HumanController : MonoBehaviour
 
             motionSimulator.velocity = transform.forward * actualSpeed;
 
-            animator.SetFloat(animatorSpeedFactorHash, Mathf.Clamp01(actualSpeed));
+            components.animator.SetFloat(animatorSpeedFactorHash, Mathf.Clamp01(actualSpeed));
 
             return actualSpeed == 0;
         }
@@ -124,19 +148,19 @@ public class HumanController : MonoBehaviour
 
         if (cell.Pose != null)
         {
-            ApplyPose(cell.Pose);
+            SetPose(cell.Pose);
         }
         else
         {
-            ApplyPose(defaultPose);
+            SetPose(defaultPose);
         }
 
-        collider.enabled = true;
+        GetComponent<Collider>().enabled = true;
     }
 
     public void DropFromCell(Vector3 impulse)
     {
-        collider.enabled = false;
+        GetComponent<Collider>().enabled = false;
 
         transform.SetParent(null);
 
@@ -173,13 +197,29 @@ public class HumanController : MonoBehaviour
     {
         healthPoints -= value;
 
+        actualTeamData.impactVFX?.Play();
+
+        healthBar.Update(healthPoints);
+
         if (healthPoints <= 0)
         {
             Die();
         }
     }
 
-    private void ApplyPose(HumanPose pose)
+    public void SetWeapon(Weapon weapon)
+    {
+        currentWeapon = weapon.Apply();
+    }
+
+    private void SetTeam(HumanTeam teamType)
+    {
+        actualTeamData = teamSettings.Find((t) => t.teamType == teamType);
+
+        components.skinRenderer.material = actualTeamData.skinMaterial;
+    }
+
+    private void SetPose(HumanPose pose)
     {
         actualPose = pose;
 
@@ -195,20 +235,22 @@ public class HumanController : MonoBehaviour
     {
         PlayAnimation(HumanAnimationType.Dying);
 
+        SetTeam(HumanTeam.Neutral);
+
         actualCrowd?.RemoveMember(this);
     }
 
     private void PlayAnimation(HumanAnimationType animationType)
     {
-        animator.enabled = true;
+        components.animator.enabled = true;
 
         switch (animationType)
         {
-            case HumanAnimationType.Running: animator.SetBool(animatorGroundedHash, true); animator.SetBool(animatorRunningHash, true); break;
-            case HumanAnimationType.Flying: animator.SetTrigger(animatorFlyHash); break;
-            case HumanAnimationType.Attacking: animator.SetInteger(animatorAttackIdHash, currentWeapon.attackAnimationID); animator.SetBool(animatorAttackingHash, true); break;
-            case HumanAnimationType.Falling: animator.SetBool(animatorGroundedHash, false); break;
-            case HumanAnimationType.Dying: animator.SetInteger(animatorAttackIdHash, Random.Range(0, 5)); animator.SetTrigger(animatorDefeatHash); break;
+            case HumanAnimationType.Running: components.animator.SetBool(animatorGroundedHash, true); components.animator.SetBool(animatorRunningHash, true); break;
+            case HumanAnimationType.Flying: components.animator.SetTrigger(animatorFlyHash); break;
+            case HumanAnimationType.Attacking: components.animator.SetInteger(animatorAttackIdHash, currentWeapon.attackAnimationID); components.animator.SetBool(animatorAttackingHash, true); break;
+            case HumanAnimationType.Falling: components.animator.SetBool(animatorGroundedHash, false); break;
+            case HumanAnimationType.Dying: components.animator.SetInteger(animatorAttackIdHash, Random.Range(0, 5)); components.animator.SetTrigger(animatorDefeatHash); break;
         }
     }
 
@@ -225,6 +267,16 @@ public class HumanController : MonoBehaviour
 
     private void OnValidate()
     {
+        if (teamSettings.Count > 0)
+        {
+            for (int i = 0; i < teamSettings.Count; i++)
+            {
+                teamSettings[i].title = teamSettings[i].teamType.ToString();
+            }
+
+            SetTeam(team);
+        }
+
         if (weaponSettings.Count > 0)
         {
             for (int i = 0; i < weaponSettings.Count; i++)
@@ -248,6 +300,26 @@ public class HumanController : MonoBehaviour
         animatorAttackIdHash = Animator.StringToHash("AttackAnimationID");
         animatorDefeatIdHash = Animator.StringToHash("DefeatAnimationID");
     }
+}
+
+[System.Serializable]
+public struct HumanControllerComponents
+{
+    public BoxCollider collider;
+    [Space]
+    public Animator animator;
+    public SkinnedMeshRenderer skinRenderer;
+}
+
+[System.Serializable]
+public class HumanTeamInfo
+{
+    [HideInInspector]
+    public string title;
+
+    public HumanTeam teamType;
+    public Material skinMaterial;
+    public ParticleSystem impactVFX;
 }
 
 [System.Serializable]

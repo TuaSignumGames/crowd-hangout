@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class Weapon
 {
     [HideInInspector]
@@ -39,7 +39,7 @@ public class Weapon
 
     private int ammoPoolSize;
 
-    public void Apply()
+    public Weapon Apply()
     {
         damage = damageRate * reloadingTime;
 
@@ -53,6 +53,8 @@ public class Weapon
         }
 
         weaponContainer.SetActive(true);
+
+        return this;
     }
 
     public void Update()

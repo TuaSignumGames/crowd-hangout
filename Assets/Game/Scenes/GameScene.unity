@@ -10046,6 +10046,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
+      propertyPath: team
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
       propertyPath: rigSettings.randomizePose
       value: 0
       objectReference: {fileID: 0}
@@ -10057,6 +10061,10 @@ PrefabInstance:
       propertyPath: m_LocalRotation.x
       value: -0.0032104417
       objectReference: {fileID: 0}
+    - target: {fileID: 1434480529548901031, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: dfd8c93f61be44fed93840e9344d7b4d, type: 2}
     - target: {fileID: 2216275477245278460, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.9991764
