@@ -36,6 +36,11 @@ public class ProgressBar
             }
         }
 
-        fillingTransform.localScale = new Vector3(fillingLength * value, fillingTransform.localScale.y, fillingTransform.localScale.z);
+        if (barContainer.activeSelf)
+        {
+            barContainer.transform.forward = CameraController.Instance.camera.transform.position - barContainer.transform.position;
+
+            fillingTransform.localScale = new Vector3(fillingLength * value, fillingTransform.localScale.y, fillingTransform.localScale.z);
+        }
     }
 }

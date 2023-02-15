@@ -15,26 +15,31 @@ public class Crowd
     private float currentMemberSqrDistance;
     private float closestMemberSqrDistance;
 
-    public int MemebersCount => members.Count;
+    public HumanController[] Members => members.ToArray();
 
     public Crowd()
     {
         members = new List<HumanController>();
     }
 
-    public void MoveTo(Vector3 position)
+    public Crowd(IList<HumanController> humans)
+    {
+        members = new List<HumanController>(humans);
+    }
+
+    public void Assault(Crowd otherCrowd)
     {
         for (int i = 0; i < members.Count; i++)
         {
-            members[i].AI.SetTarget(position);
+            
         }
     }
 
-    public void Attack(Crowd otherCrowd)
+    public void Defend(Vector3 position)
     {
         for (int i = 0; i < members.Count; i++)
         {
-            members[i].AI.SetTarget(otherCrowd.GetClosestMember(members[i].transform.position));
+            
         }
     }
 

@@ -4,22 +4,24 @@ using UnityEngine;
 
 // TODO
 //
+// -> HumanAI 
+//
 // Level
-//  - Adaptive cave width [Feb 15]
-//  - Add Collectible types (Building, Baloon, Humanball, Multiplier) [Feb 16]
-//  - Cave correction for Collectibles [Feb 17]
-//  - Collectibles generation pattern [Feb 17]
+//  - Adaptive cave width [Feb 17]
+//  - Add Collectible types (Building, Baloon, Humanball, Multiplier) [Feb 17]
+//  - Cave correction for Collectibles [Feb 19]
+//  - Collectibles generation pattern [Feb 19]
 //
 // Character
-//  - AI for BattlePath [Feb 15] 
-//  - Camera scale-by-size adaptation [Feb 15]
+//  - AI for BattlePath [Feb 16]
+//  - Camera scale-by-size adaptation [Feb 17]
 //
-// Upgrades [Feb 18]
+// Upgrades [Feb 19]
 //  - Health
 //  - Population
 //  - Weapon
 //
-// Polishing [Feb 18] 
+// Polishing [Feb 20] 
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -141,7 +143,7 @@ public class LevelGenerator : MonoBehaviour
         {
             newBattlePathStage = new BattlePathStage(Instantiate(battlePathSettings.stagePrefab, battlePathSettings.stagesContainer), i % 2 == 0);
 
-            newBattlePathStage.Initialize(battlePath.position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.size.x, 0, 0), 100f + i * 100f, null);
+            newBattlePathStage.Initialize(battlePath.position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.size.x, 0, 0), 100f + i * 100f, battlePathSettings.guardPrefabs[0]);
 
             battlePath.stages.Add(newBattlePathStage);
         }

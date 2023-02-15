@@ -2,11 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO Improve AI 
+
+public enum HumanBehaviourType { Assault, Defence }
+
 public class HumanAI
 {
-    private HumanController humanController;
-
+    private HumanController hostHuman;
     private HumanController targetHuman;
+
+    private List<HumanController> enemies;
+
+    private HumanBehaviourType behaviourMode;
 
     private Vector3 targetPosition;
 
@@ -14,33 +21,41 @@ public class HumanAI
 
     public HumanAI(HumanController humanController)
     {
-        this.humanController = humanController;
+        hostHuman = humanController;
     }
 
     public void Update()
     {
+
+
+        /*
         if (targetHuman)
         {
-            if (!humanController.Attack(targetHuman))
+            if (!hostHuman.Attack(targetHuman))
             {
-                humanController.MoveTo(humanController.transform.position);
+                hostHuman.MoveTo(targetHuman.transform.position);
             }
         }
         else if (isTargetPositionAvailable)
         {
-            humanController.MoveTo(targetPosition);
+            hostHuman.MoveTo(targetPosition);
         }
+        */
     }
 
-    public void SetTarget(Vector3 position)
+    public void Assault(HumanController human)
     {
+        behaviourMode = HumanBehaviourType.Assault;
+
+        targetHuman = human;
+    }
+
+    public void Defend(Vector3 position)
+    {
+        behaviourMode = HumanBehaviourType.Defence;
+
         targetPosition = position;
 
         isTargetPositionAvailable = true;
-    }
-
-    public void SetTarget(HumanController human)
-    {
-        targetHuman = human;
     }
 }

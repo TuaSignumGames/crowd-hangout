@@ -121,7 +121,7 @@ public class PlayerController : MonoBehaviour
             cell.Human.DropToBattle(ball.Velocity + Random.insideUnitSphere);
         }
 
-        humanballCrowd.MoveTo(LevelGenerator.Instance.BattlePath.stages[0].position);
+        humanballCrowd.Assault(LevelGenerator.Instance.BattlePath.stages[0].GuardCrew);
     }
 
     private Transform RaycastBlock(Vector2 direction)

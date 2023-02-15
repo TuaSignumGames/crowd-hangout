@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO Add guards into stages 
-
 public enum HumanTeam { Neutral, Yellow, Red }
 public enum HumanAnimationType { Running, Flying, Attacking, Falling, Dying }
 
@@ -58,11 +56,6 @@ public class HumanController : MonoBehaviour
 
     public bool IsAlive => healthPoints > 0;
 
-    public void Initialize(HumanTeam team, int weaponIndex = 0)
-    {
-        Initialize(team, 100f, weaponIndex);
-    }
-
     public void Initialize(HumanTeam team, float health, int weaponIndex = 0)
     {
         if (!(this.team == HumanTeam.Yellow && team == HumanTeam.Yellow))
@@ -77,6 +70,16 @@ public class HumanController : MonoBehaviour
         healthBar.Initialize();
 
         motionSimulator = new MotionSimulator(transform, LevelGenerator.Instance.BattlePath.position.y - components.animator.transform.localPosition.y, MonoUpdateType.FixedUpdate);
+    }
+
+    public void Initialize(float health, int weaponIndex = 0)
+    {
+        Initialize(team, health, weaponIndex);
+    }
+
+    public void Initialize(HumanTeam team, int weaponIndex = 0)
+    {
+        Initialize(team, 100f, weaponIndex);
     }
 
     private void Start()
@@ -209,7 +212,7 @@ public class HumanController : MonoBehaviour
 
     public void SetWeapon(Weapon weapon)
     {
-        currentWeapon = weapon.Apply();
+        currentWeapon = weapon.Apply(this);
     }
 
     private void SetTeam(HumanTeam teamType)

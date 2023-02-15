@@ -14,7 +14,11 @@ public class BattlePathStage
 
     private TextMeshPro rewardText;
 
+    private Crowd guardCrew;
+
     private float reward;
+
+    public Crowd GuardCrew => guardCrew;
 
     public Vector3 position => gameObject.transform.position;
     public Vector3 size => stageContent[0].localScale;
@@ -40,11 +44,18 @@ public class BattlePathStage
 
         reward = rewardValue;
 
-        rewardText.text = $"${reward.ToString("N0")}";
+        rewardText.text = $"${reward:N0}";
 
         if (guardPrefab)
         {
-            GameObject.Instantiate(guardPrefab, guardContainer);
+            guardCrew = new Crowd(GameObject.Instantiate(guardPrefab, guardContainer).GetComponentsInChildren<HumanController>());
+
+            foreach (HumanController member in guardCrew.Members)
+            {
+                member.Initialize(100f, 0);
+
+                member.DropToBattle(Vector3.zero);
+            }
         }
     }
 }

@@ -39,8 +39,10 @@ public class Weapon
 
     private int ammoPoolSize;
 
-    public Weapon Apply()
+    public Weapon Apply(HumanController ownerHuman)
     {
+        this.ownerHuman = ownerHuman;
+
         damage = damageRate * reloadingTime;
 
         sqrAttackDistance = attackDistance * attackDistance;
