@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO Improve AI 
-
 public enum HumanBehaviourType { Assault, Defence }
 
 public class HumanAI

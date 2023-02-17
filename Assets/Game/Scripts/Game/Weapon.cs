@@ -126,7 +126,7 @@ public class Weapon
 
         for (int i = 0; i < count; i++)
         {
-            projectiles.Add(new Projectile(i == 0 ? projectileGameObject : GameObject.Instantiate(projectileGameObject, projectileGameObject.transform.parent)));
+            projectiles.Add(new Projectile(i == 0 ? projectileGameObject : GameObject.Instantiate(projectileGameObject, projectileGameObject.transform.parent), ammoContainer.transform));
         }
 
         return projectiles;
@@ -137,6 +137,8 @@ public class Weapon
         private GameObject gameObject;
 
         private TrailRenderer trailRenderer;
+
+        private Transform originTransform;
 
         private Vector3 targetPoint;
         private Vector3 targetVector;
@@ -153,9 +155,10 @@ public class Weapon
 
         public bool IsLaunched => isLaunched;
 
-        public Projectile(GameObject gameObject)
+        public Projectile(GameObject gameObject, Transform originTransform)
         {
             this.gameObject = gameObject;
+            this.originTransform = originTransform; 
 
             trailRenderer = gameObject.GetComponent<TrailRenderer>();
         }
@@ -163,6 +166,8 @@ public class Weapon
         public void Update()
         {
             gameObject.transform.position += velocityDelta;
+
+            actualPathLength += displacementDelta;
 
             if (actualPathLength > targetPathLength)
             {
@@ -174,9 +179,12 @@ public class Weapon
 
         public Projectile Launch(Vector3 point, float speed, Action onPointReached)
         {
+            gameObject.transform.position = originTransform.position;
+
             targetVector = point - gameObject.transform.position;
 
-            targetPathLength = velocityDelta.magnitude;
+            targetPathLength = targetVector.magnitude;
+            actualPathLength = 0;
 
             velocityDelta = targetVector.normalized * speed * Time.fixedDeltaTime;
 
@@ -184,6 +192,13 @@ public class Weapon
 
             onPathComplete = onPointReached;
 
+            if (trailRenderer)
+            {
+                trailRenderer.Clear();
+                trailRenderer.enabled = true;
+            }
+
+            gameObject.transform.SetParent(null);
             gameObject.SetActive(true);
 
             isLaunched = true;
@@ -195,8 +210,6 @@ public class Weapon
         {
             if (trailRenderer)
             {
-                trailRenderer.Clear();
-
                 trailRenderer.enabled = false;
             }
 

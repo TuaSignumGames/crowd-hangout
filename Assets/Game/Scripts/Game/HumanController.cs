@@ -95,6 +95,8 @@ public class HumanController : MonoBehaviour
             if (inBattle)
             {
                 actualSpeed = Mathf.Lerp(actualSpeed, targetSpeed, motionSettings.speedLerpingFactor);
+
+                currentWeapon.Update();
             }
 
             motionSimulator.Update();

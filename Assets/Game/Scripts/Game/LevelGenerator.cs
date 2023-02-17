@@ -4,19 +4,18 @@ using UnityEngine;
 
 // TODO
 //
-// -> HumanAI 
+// -> Switching between BattlePath stages <-  
 //
 // Level
-//  - Adaptive cave width [Feb 17]
-//  - Add Collectible types (Building, Baloon, Humanball, Multiplier) [Feb 17]
-//  - Cave correction for Collectibles [Feb 19]
-//  - Collectibles generation pattern [Feb 19]
+//  - Adaptive cave width [Feb 19]
+//  - Add Collectible types (Building, Baloon, Humanball, Multiplier) [Feb 19]
+//  - Cave correction for Collectibles [Feb 20]
+//  - Collectibles generation pattern [Feb 20]
 //
 // Character
-//  - AI for BattlePath [Feb 17]
-//  - Camera scale-by-size adaptation [Feb 17]
+//  - Camera scale-by-size adaptation [Feb 19]
 //
-// Upgrades [Feb 19]
+// Upgrades [Feb 20]
 //  - Health
 //  - Population
 //  - Weapon
