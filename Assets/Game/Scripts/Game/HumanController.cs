@@ -20,7 +20,7 @@ public class HumanController : MonoBehaviour
     public Crowd actualCrowd;
     public HumanPose actualPose;
 
-    private HumanTeamInfo actualTeamData;
+    private HumanTeamInfo actualTeamInfo;
 
     private HumanAI ai;
 
@@ -33,11 +33,14 @@ public class HumanController : MonoBehaviour
     private float healthPoints;
     private float healthCapacity;
 
+    private float targetSpeed;
     private float actualSpeed;
 
     private float targetPointSqrRadius;
 
     public HumanAI AI => ai;
+
+    public Weapon Weapon => currentWeapon;
 
     public static HumanPose defaultPose;
 
@@ -89,21 +92,66 @@ public class HumanController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isFree)
+        //if (IsAlive)
         {
-            motionSimulator.Update();
+            if (isFree)
+            {
+                if (inBattle)
+                {
+                    actualSpeed = Mathf.Lerp(actualSpeed, targetSpeed, motionSettings.speedLerpingFactor);
+                }
+
+                motionSimulator.Update();
+            }
         }
     }
 
     private void LateUpdate()
     {
-        if (isFree)
+        //if (IsAlive)
         {
-            if (inBattle)
+            if (isFree)
             {
-                ai.Update();
+                if (inBattle)
+                {
+                    ai.Update();
 
-                components.animator.SetBool(animatorGroundedHash, motionSimulator.IsGrounded);
+                    healthBar.Update();
+
+                    components.animator.SetBool(animatorGroundedHash, motionSimulator.IsGrounded);
+                }
+            }
+        }
+    }
+
+    public void FocusOn(Vector3 point, bool inPlane = false)
+    {
+        if (inPlane)
+        {
+            transform.forward = (point - transform.position).GetPlanarDirection(Axis.Y);
+        }
+        else
+        {
+            transform.forward = (point - transform.position).normalized;
+        }
+    }
+
+    public void Attack(HumanController human)
+    {
+        if (motionSimulator.IsGrounded)
+        {
+            targetSpeed = 0;
+
+            UpdateMotion();
+
+            if (human.IsAlive)
+            {
+                FocusOn(human.transform.position, true);
+
+                if (currentWeapon.Attack(human))
+                {
+                    PlayAnimation(HumanAnimationType.Attacking);
+                }
             }
         }
     }
@@ -116,25 +164,13 @@ public class HumanController : MonoBehaviour
 
             transform.forward = motionVector.GetPlanarDirection(Axis.Y);
 
-            actualSpeed = motionVector.GetPlanarSqrMagnitude(Axis.Y) > targetPointSqrRadius ? motionSettings.runSpeed : 0;
+            targetSpeed = motionVector.GetPlanarSqrMagnitude(Axis.Y) > targetPointSqrRadius ? motionSettings.runSpeed : 0;
 
-            motionSimulator.velocity = transform.forward * actualSpeed;
+            components.animator.SetBool(animatorAttackingHash, false);
 
-            components.animator.SetFloat(animatorSpeedFactorHash, Mathf.Clamp01(actualSpeed));
+            UpdateMotion();
 
-            return actualSpeed == 0;
-        }
-
-        return false;
-    }
-
-    public bool Attack(HumanController human)
-    {
-        if (human.IsAlive)
-        {
-            transform.forward = (human.transform.position - transform.position).normalized;
-
-            return currentWeapon.Attack(human);
+            return targetSpeed == 0;
         }
 
         return false;
@@ -196,13 +232,21 @@ public class HumanController : MonoBehaviour
         return actualPose;
     }
 
-    public void Damage(float value)
+    public void Damage(float value, HumanController agressor = null)
     {
         healthPoints -= value;
 
-        actualTeamData.impactVFX?.Play();
+        if (actualTeamInfo != null)
+        {
+            actualTeamInfo.impactVFX?.Play();
+        }
 
-        healthBar.Update(healthPoints);
+        healthBar.SetValue(Mathf.Clamp01(healthPoints / healthCapacity));
+
+        if (agressor)
+        {
+            ai.SetEnemy(agressor);
+        }
 
         if (healthPoints <= 0)
         {
@@ -215,11 +259,29 @@ public class HumanController : MonoBehaviour
         currentWeapon = weapon.Apply(this);
     }
 
+    public void SetWeapon(int index)
+    {
+        currentWeapon = weaponSettings[index].Apply(this);
+    }
+
+    private void UpdateMotion()
+    {
+        motionSimulator.velocity = transform.forward * actualSpeed;
+
+        components.animator.SetFloat(animatorSpeedFactorHash, Mathf.Clamp01(actualSpeed));
+        components.animator.SetBool(animatorRunningHash, actualSpeed > 0);
+    }
+
     private void SetTeam(HumanTeam teamType)
     {
-        actualTeamData = teamSettings.Find((t) => t.teamType == teamType);
+        actualTeamInfo = teamSettings.Find((t) => t.teamType == teamType);
 
-        components.skinRenderer.material = actualTeamData.skinMaterial;
+        components.skinRenderer.material = actualTeamInfo.skinMaterial;
+
+        if (actualTeamInfo.impactVFX)
+        {
+            actualTeamInfo.impactVFX.gameObject.SetActive(true);
+        }
     }
 
     private void SetPose(HumanPose pose)
@@ -236,11 +298,15 @@ public class HumanController : MonoBehaviour
 
     private void Die()
     {
+        components.animator.SetBool(animatorAttackingHash, false);
+
         PlayAnimation(HumanAnimationType.Dying);
 
         SetTeam(HumanTeam.Neutral);
 
         actualCrowd?.RemoveMember(this);
+
+        enabled = false;
     }
 
     private void PlayAnimation(HumanAnimationType animationType)
@@ -330,6 +396,7 @@ public class HumanMotionSettings
 {
     public float runSpeed;
     public float turnSpeed;
+    public float speedLerpingFactor;
     [Space]
     public float targetPointRadius;
 }

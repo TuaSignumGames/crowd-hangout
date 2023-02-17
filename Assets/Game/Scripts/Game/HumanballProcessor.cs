@@ -58,6 +58,7 @@ public class HumanballProcessor
         structureLayers.AddRange(ballData.proceduralCells.GenerateProceduralLayers());
 
         baseLayerCells[0].Human.isFree = false;
+        //baseLayerCells[0].Human.SetWeapon(4);
 
         structure = new Humanball(structureLayers);
     }

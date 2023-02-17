@@ -51,7 +51,10 @@ public class PlayerController : MonoBehaviour
         {
             if (isBattleMode)
             {
-                ball.Transform.position = humanballCrowd.DefineMidpointXY();
+                if (humanballCrowd.MembersCount > 0)
+                {
+                    ball.Transform.position = humanballCrowd.DefineMidpointXY();
+                }
             }
             else
             {
@@ -122,6 +125,8 @@ public class PlayerController : MonoBehaviour
         }
 
         humanballCrowd.Assault(LevelGenerator.Instance.BattlePath.stages[0].GuardCrew);
+
+        LevelGenerator.Instance.BattlePath.stages[0].GuardCrew.Defend(humanballCrowd);
     }
 
     private Transform RaycastBlock(Vector2 direction)

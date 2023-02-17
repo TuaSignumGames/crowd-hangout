@@ -39,6 +39,8 @@ public class Weapon
 
     private int ammoPoolSize;
 
+    private bool isTargetReachable;
+
     public Weapon Apply(HumanController ownerHuman)
     {
         this.ownerHuman = ownerHuman;
@@ -77,17 +79,20 @@ public class Weapon
     {
         if (Time.timeSinceLevelLoad > availableAttackTime)
         {
-            sqrDistanceToTarget = (human.transform.position - ownerHuman.transform.position).GetPlanarSqrMagnitude(Axis.Y);
+            if (ownerHuman.team == HumanTeam.Yellow)
+            {
+                //Debug.Log($"");
+            }
 
-            if (sqrDistanceToTarget <= sqrAttackDistance)
+            if (isTargetReachable)
             {
                 if (projectilePool == null)
                 {
-                    human.Damage(damage);
+                    human.Damage(damage, ownerHuman);
                 }
                 else
                 {
-                    projectilePool.Eject().Launch(human.transform.position, projectileSpeed, () => human.Damage(damage));
+                    projectilePool.Eject().Launch(human.transform.position, projectileSpeed, () => human.Damage(damage, ownerHuman));
                 }
 
                 if (attackVFX)
@@ -99,13 +104,18 @@ public class Weapon
 
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
-        return true;
+        return false;
+    }
+
+    public bool IsTargetReachable(Vector3 position)
+    {
+        sqrDistanceToTarget = (position - ownerHuman.transform.position).GetPlanarSqrMagnitude(Axis.Y);
+
+        return isTargetReachable = sqrDistanceToTarget < sqrAttackDistance;
     }
 
     private List<Projectile> GenerateProjectiles(int count)
@@ -173,6 +183,8 @@ public class Weapon
             displacementDelta = velocityDelta.magnitude;
 
             onPathComplete = onPointReached;
+
+            gameObject.SetActive(true);
 
             isLaunched = true;
 

@@ -18,29 +18,32 @@ public class ProgressBar
         fillingLength = fillingTransform.localScale.x;
     }
 
-    public void Update(float value)
+    public void Update()
     {
-        if (hideOnMinValue)
-        {
-            if (value <= 0)
-            {
-                barContainer.SetActive(false);
-            }
-        }
-
-        if (hideOnMaxValue)
-        {
-            if (value >= 1f)
-            {
-                barContainer.SetActive(false);
-            }
-        }
-
         if (barContainer.activeSelf)
         {
             barContainer.transform.forward = CameraController.Instance.camera.transform.position - barContainer.transform.position;
+        }
+    }
 
-            fillingTransform.localScale = new Vector3(fillingLength * value, fillingTransform.localScale.y, fillingTransform.localScale.z);
+    public void SetValue(float value)
+    {
+        fillingTransform.localScale = new Vector3(fillingLength * value, fillingTransform.localScale.y, fillingTransform.localScale.z);
+
+        if (hideOnMinValue && hideOnMaxValue)
+        {
+            barContainer.SetActive(value > 0 && value < 1f);
+        }
+        else
+        {
+            if (hideOnMinValue)
+            {
+                barContainer.SetActive(value > 0);
+            }
+            else if (hideOnMaxValue)
+            {
+                barContainer.SetActive(value < 1f);
+            }
         }
     }
 }

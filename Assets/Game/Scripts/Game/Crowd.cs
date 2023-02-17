@@ -17,6 +17,8 @@ public class Crowd
 
     public HumanController[] Members => members.ToArray();
 
+    public int MembersCount => members.Count;
+
     public Crowd()
     {
         members = new List<HumanController>();
@@ -27,19 +29,34 @@ public class Crowd
         members = new List<HumanController>(humans);
     }
 
-    public void Assault(Crowd otherCrowd)
+    public void Assault(Crowd enemyCrowd)
     {
         for (int i = 0; i < members.Count; i++)
         {
-            
+            members[i].AI.AddRivals(enemyCrowd.Members);
+            members[i].AI.Assault();
         }
     }
 
-    public void Defend(Vector3 position)
+    public void Defend(Vector3 position, Crowd enemyCrowd = null)
     {
         for (int i = 0; i < members.Count; i++)
         {
-            
+            if (enemyCrowd != null)
+            {
+                members[i].AI.AddRivals(enemyCrowd.Members);
+            }
+
+            members[i].AI.Defend(position);
+        }
+    }
+
+    public void Defend(Crowd enemyCrowd)
+    {
+        for (int i = 0; i < members.Count; i++)
+        {
+            members[i].AI.AddRivals(enemyCrowd.Members);
+            members[i].AI.Defend(members[i].transform.position);
         }
     }
 

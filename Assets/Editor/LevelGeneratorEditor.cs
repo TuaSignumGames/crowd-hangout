@@ -26,6 +26,6 @@ public class LevelGeneratorEditor : Editor
 
     private void GenerateLevel()
     {
-        generator.Generate();
+        generator.GenerateFromEditor(false, false);
     }
 }

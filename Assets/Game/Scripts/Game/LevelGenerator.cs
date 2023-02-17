@@ -13,7 +13,7 @@ using UnityEngine;
 //  - Collectibles generation pattern [Feb 19]
 //
 // Character
-//  - AI for BattlePath [Feb 16]
+//  - AI for BattlePath [Feb 17]
 //  - Camera scale-by-size adaptation [Feb 17]
 //
 // Upgrades [Feb 19]
@@ -67,8 +67,6 @@ public class LevelGenerator : MonoBehaviour
         HumanController.defaultPose = collectibleSettings.humanPrefab.PeekPose();
 
         Generate();
-
-        PlaceCollectibles();
     }
 
     private void Start()
@@ -82,7 +80,24 @@ public class LevelGenerator : MonoBehaviour
     {
         GenerateBlocks();
 
+        PlaceCollectibles();
+
         GenerateBattlePath(10);
+    }
+
+    public void GenerateFromEditor(bool collectibles, bool battlePath)
+    {
+        GenerateBlocks();
+
+        if (collectibles)
+        {
+            PlaceCollectibles();
+        }
+
+        if (battlePath)
+        {
+            GenerateBattlePath(10);
+        }
     }
 
     private void LateUpdate()
@@ -93,7 +108,7 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private void GenerateBlocks()
+    public void GenerateBlocks()
     {
         if (blockSettings.blocksContainer.childCount > 0)
         {
@@ -130,6 +145,8 @@ public class LevelGenerator : MonoBehaviour
 
     private void GenerateBattlePath(int stagesCount)
     {
+        battlePathSettings.pathContainer.gameObject.SetActive(true);
+
         if (battlePathSettings.stagesContainer.childCount > 0)
         {
             battlePathSettings.stagesContainer.RemoveChildrenImmediate();

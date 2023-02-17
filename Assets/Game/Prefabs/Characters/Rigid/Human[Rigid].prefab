@@ -80,9 +80,10 @@ MonoBehaviour:
     skinMaterial: {fileID: 2100000, guid: a1557c96280594424ba225b39ab49919, type: 2}
     impactVFX: {fileID: 2288019555575076631}
   motionSettings:
-    runSpeed: 6
+    runSpeed: 4
     turnSpeed: 90
-    targetPointRadius: 1
+    speedLerpingFactor: 0.2
+    targetPointRadius: 0.2
   rigSettings:
     bones:
     - title: Head
@@ -159,9 +160,9 @@ MonoBehaviour:
   - title: Fist
     weaponContainer: {fileID: 6196655106733567505}
     ammoContainer: {fileID: 0}
-    damageRate: 1
-    reloadingTime: 0.5
-    attackDistance: 0.5
+    damageRate: 10
+    reloadingTime: 1
+    attackDistance: 1
     projectileSpeed: 0
     directionAngularOffset: 0
     attackAnimationID: 0
@@ -199,9 +200,9 @@ MonoBehaviour:
   - title: Pistol
     weaponContainer: {fileID: 6702893980190087776}
     ammoContainer: {fileID: 2862717599313583601}
-    damageRate: 1
+    damageRate: 10
     reloadingTime: 0.5
-    attackDistance: 8
+    attackDistance: 5
     projectileSpeed: 0
     directionAngularOffset: 0
     attackAnimationID: 4
@@ -554,9 +555,9 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
-  looping: 1
+  looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -5426,7 +5427,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6353504784541385326
 Transform:
   m_ObjectHideFlags: 0
@@ -5457,9 +5458,9 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
-  looping: 1
+  looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -11144,9 +11145,9 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
-  looping: 1
+  looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
