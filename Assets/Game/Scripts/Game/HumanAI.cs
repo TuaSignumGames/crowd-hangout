@@ -66,7 +66,7 @@ public class HumanAI
                 }
                 else
                 {
-                    // TODO Default state 
+                    hostHuman.Stop();
                 }
             }
 

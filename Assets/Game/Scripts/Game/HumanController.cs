@@ -70,8 +70,6 @@ public class HumanController : MonoBehaviour
 
         healthCapacity = healthPoints = health;
 
-        healthBar.Initialize();
-
         motionSimulator = new MotionSimulator(transform, LevelGenerator.Instance.BattlePath.position.y - components.animator.transform.localPosition.y, MonoUpdateType.FixedUpdate);
     }
 
@@ -92,47 +90,45 @@ public class HumanController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //if (IsAlive)
+        if (isFree)
         {
-            if (isFree)
+            if (inBattle)
             {
-                if (inBattle)
-                {
-                    actualSpeed = Mathf.Lerp(actualSpeed, targetSpeed, motionSettings.speedLerpingFactor);
-                }
-
-                motionSimulator.Update();
+                actualSpeed = Mathf.Lerp(actualSpeed, targetSpeed, motionSettings.speedLerpingFactor);
             }
+
+            motionSimulator.Update();
         }
     }
 
     private void LateUpdate()
     {
-        //if (IsAlive)
+        if (isFree)
         {
-            if (isFree)
+            if (inBattle)
             {
-                if (inBattle)
-                {
-                    ai.Update();
+                ai.Update();
 
-                    healthBar.Update();
+                healthBar.Update();
 
-                    components.animator.SetBool(animatorGroundedHash, motionSimulator.IsGrounded);
-                }
+                components.animator.SetBool(animatorGroundedHash, motionSimulator.IsGrounded);
             }
         }
     }
 
-    public void FocusOn(Vector3 point, bool inPlane = false)
+    public void FocusOn(Vector3 point, float angularOffset = 0, bool inPlane = false)
     {
         if (inPlane)
         {
             transform.forward = (point - transform.position).GetPlanarDirection(Axis.Y);
+
+            transform.eulerAngles += new Vector3(0, angularOffset, 0);
         }
         else
         {
             transform.forward = (point - transform.position).normalized;
+
+            transform.eulerAngles += transform.up * angularOffset;
         }
     }
 
@@ -146,7 +142,7 @@ public class HumanController : MonoBehaviour
 
             if (human.IsAlive)
             {
-                FocusOn(human.transform.position, true);
+                FocusOn(human.transform.position, currentWeapon.directionAngularOffset, true);
 
                 if (currentWeapon.Attack(human))
                 {
@@ -174,6 +170,15 @@ public class HumanController : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void Stop()
+    {
+        targetSpeed = 0;
+
+        UpdateMotion();
+
+        components.animator.SetBool(animatorAttackingHash, false);
     }
 
     public void PlaceInCell(HumanballCell cell)
@@ -241,7 +246,7 @@ public class HumanController : MonoBehaviour
             actualTeamInfo.impactVFX?.Play();
         }
 
-        healthBar.SetValue(Mathf.Clamp01(healthPoints / healthCapacity));
+        healthBar.SetValue(healthPoints / healthCapacity);
 
         if (agressor)
         {

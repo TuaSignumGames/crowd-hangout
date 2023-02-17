@@ -11,13 +11,6 @@ public class ProgressBar
     public bool hideOnMinValue;
     public bool hideOnMaxValue;
 
-    private float fillingLength;
-
-    public void Initialize()
-    {
-        fillingLength = fillingTransform.localScale.x;
-    }
-
     public void Update()
     {
         if (barContainer.activeSelf)
@@ -28,7 +21,7 @@ public class ProgressBar
 
     public void SetValue(float value)
     {
-        fillingTransform.localScale = new Vector3(fillingLength * value, fillingTransform.localScale.y, fillingTransform.localScale.z);
+        fillingTransform.localScale = new Vector3(Mathf.Clamp01(value), fillingTransform.localScale.y, fillingTransform.localScale.z);
 
         if (hideOnMinValue && hideOnMaxValue)
         {
