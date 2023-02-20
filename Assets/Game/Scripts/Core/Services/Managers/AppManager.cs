@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using GameAnalyticsSDK;
-using Facebook.Unity;
+//using GameAnalyticsSDK;
+//using Facebook.Unity;
 using MoreMountains.NiceVibrations;
 
-public class AppManager : Service<AppManager>, IGameAnalyticsATTListener
+public class AppManager : Service<AppManager>//, IGameAnalyticsATTListener
 {
     [SerializeField] private int _targetFramerate;
     [SerializeField] private int _gameEntrySceneIndex;
@@ -43,7 +43,7 @@ public class AppManager : Service<AppManager>, IGameAnalyticsATTListener
 
     private void Start()
     {
-        
+        /*
         if (Application.platform == RuntimePlatform.IPhonePlayer)
         {
             GameAnalytics.RequestTrackingAuthorization(this);
@@ -61,7 +61,7 @@ public class AppManager : Service<AppManager>, IGameAnalyticsATTListener
         {
             FB.Init(FbInitCallback, (isUnityShown) => { });
         }
-        
+        */
     }
 
     public void LoadGameScene()
@@ -94,7 +94,7 @@ public class AppManager : Service<AppManager>, IGameAnalyticsATTListener
 
         IsVibrationActive = _isVibrationActive;
     }
-    
+    /*
     public void GameAnalyticsATTListenerNotDetermined()
     {
         GameAnalytics.Initialize();
@@ -137,4 +137,5 @@ public class AppManager : Service<AppManager>, IGameAnalyticsATTListener
 
         #endif
     }
+    */
 }

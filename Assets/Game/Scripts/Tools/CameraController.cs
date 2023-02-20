@@ -11,6 +11,9 @@ public class CameraController : MonoBehaviour
     [Space]
     public Transform targetTransform;
     public float motionLerpingFactor;
+    [Space]
+    public float[] viewDistanceLevels;
+    public float viewTransitionTime;
 
     private Vector3 targetOffset;
 
@@ -22,6 +25,11 @@ public class CameraController : MonoBehaviour
         Instance = this;
 
         targetOffset = transform.position;
+    }
+
+    private void Start()
+    {
+        PlayerController.Instance.Ball.Structure.OnLayerIncremented += SetViewDistance;
     }
 
     private void FixedUpdate()
@@ -76,6 +84,11 @@ public class CameraController : MonoBehaviour
         {
             localEvaluator.RotateLocal(targetEulerAngles, duration, EvaluationType.Smooth);
         }
+    }
+
+    public void SetViewDistance(int distanceLevel)
+    {
+        Translate(new Vector3(camera.transform.localPosition.x, camera.transform.localPosition.y, -viewDistanceLevels[distanceLevel]), viewTransitionTime, Space.Self);
     }
 
     private void InitializeEvaluator(Space space)

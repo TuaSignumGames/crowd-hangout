@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-using GameAnalyticsSDK;
+//using GameAnalyticsSDK;
 
 public class LevelManager : Service<LevelManager>
 {
@@ -56,7 +56,7 @@ public class LevelManager : Service<LevelManager>
         {
             StartCoroutine(LevelStartingCoroutine());
 
-            GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, "level_" + LevelNumber.ToString("D3"));
+            //GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, "level_" + LevelNumber.ToString("D3"));
         }
     }
 
@@ -69,13 +69,13 @@ public class LevelManager : Service<LevelManager>
 
             if (_isLevelPassed)
             {
-                GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "level_" + LevelNumber.ToString("D3"));
+                //GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "level_" + LevelNumber.ToString("D3"));
 
                 AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.Success);
             }
             else
             {
-                GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "level_" + LevelNumber.ToString("D3"));
+                //GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "level_" + LevelNumber.ToString("D3"));
 
                 AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.Failure);
             }

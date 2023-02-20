@@ -19,6 +19,10 @@ public class Crowd
 
     public int MembersCount => members.Count;
 
+    public bool IsGrounded => IsAnybodyGrounded();
+
+    public bool IsCombatCapable => members.Count > 0;
+
     public Crowd()
     {
         members = new List<HumanController>();
@@ -26,19 +30,26 @@ public class Crowd
 
     public Crowd(IList<HumanController> humans)
     {
-        members = new List<HumanController>(humans);
+        members = new List<HumanController>();
+
+        for (int i = 0; i < humans.Count; i++)
+        {
+            AddMember(humans[i]);
+        }
     }
 
-    public void Assault(Crowd enemyCrowd)
+    public Crowd Assault(Crowd enemyCrowd)
     {
         for (int i = 0; i < members.Count; i++)
         {
             members[i].AI.AddRivals(enemyCrowd.Members);
             members[i].AI.Assault();
         }
+
+        return this;
     }
 
-    public void Defend(Vector3 position, Crowd enemyCrowd = null)
+    public Crowd Defend(Vector3 position, Crowd enemyCrowd = null)
     {
         for (int i = 0; i < members.Count; i++)
         {
@@ -49,15 +60,19 @@ public class Crowd
 
             members[i].AI.Defend(position);
         }
+
+        return this;
     }
 
-    public void Defend(Crowd enemyCrowd)
+    public Crowd Defend(Crowd enemyCrowd)
     {
         for (int i = 0; i < members.Count; i++)
         {
             members[i].AI.AddRivals(enemyCrowd.Members);
-            members[i].AI.Defend(members[i].transform.position);
+            members[i].AI.Defend();
         }
+
+        return this;
     }
 
     public void AddMember(HumanController human)
@@ -109,5 +124,18 @@ public class Crowd
         middlePoint /= membersToCalculate.Length;
 
         return middlePoint;
+    }
+
+    private bool IsAnybodyGrounded()
+    {
+        for (int i = 0; i < members.Count; i++)
+        {
+            if (members[i].MotionSimulator.IsGrounded)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

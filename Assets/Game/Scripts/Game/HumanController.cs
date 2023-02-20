@@ -39,7 +39,7 @@ public class HumanController : MonoBehaviour
     private float targetPointSqrRadius;
 
     public HumanAI AI => ai;
-
+    public MotionSimulator MotionSimulator => motionSimulator;
     public Weapon Weapon => currentWeapon;
 
     public static HumanPose defaultPose;
@@ -160,15 +160,22 @@ public class HumanController : MonoBehaviour
         {
             motionVector = position - transform.position;
 
-            transform.forward = motionVector.GetPlanarDirection(Axis.Y);
+            if (motionVector.sqrMagnitude > targetPointSqrRadius)
+            {
+                transform.forward = motionVector.GetPlanarDirection(Axis.Y);
 
-            targetSpeed = motionVector.GetPlanarSqrMagnitude(Axis.Y) > targetPointSqrRadius ? motionSettings.runSpeed : 0;
+                targetSpeed = motionVector.GetPlanarSqrMagnitude(Axis.Y) > targetPointSqrRadius ? motionSettings.runSpeed : 0;
 
-            components.animator.SetBool(animatorAttackingHash, false);
+                components.animator.SetBool(animatorAttackingHash, false);
 
-            UpdateMotion();
+                UpdateMotion();
 
-            return targetSpeed == 0;
+                return targetSpeed == 0;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         return false;
@@ -245,7 +252,10 @@ public class HumanController : MonoBehaviour
 
         if (actualTeamInfo != null)
         {
-            actualTeamInfo.impactVFX?.Play();
+            if (actualTeamInfo.impactVFX)
+            {
+                actualTeamInfo.impactVFX.Play();
+            }
         }
 
         healthBar.SetValue(healthPoints / healthCapacity);

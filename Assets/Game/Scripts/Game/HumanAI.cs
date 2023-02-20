@@ -92,6 +92,15 @@ public class HumanAI
         isTargetPositionAvailable = true;
     }
 
+    public void Defend()
+    {
+        behaviourMode = HumanBehaviourType.Defence;
+
+        targetPosition = hostHuman.transform.position;
+
+        isTargetPositionAvailable = true;
+    }
+
     public void SetEnemy(HumanController human)
     {
         rivals.Add(human);

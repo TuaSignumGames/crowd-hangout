@@ -4,23 +4,20 @@ using UnityEngine;
 
 // TODO
 //
-// -> Switching between BattlePath stages <-  
+// -> [Reminder] <-  
 //
 // Level
-//  - Adaptive cave width [Feb 19]
-//  - Add Collectible types (Building, Baloon, Humanball, Multiplier) [Feb 19]
-//  - Cave correction for Collectibles [Feb 20]
-//  - Collectibles generation pattern [Feb 20]
+//  - Adaptive cave width
+//  - Add Collectible types (Building, Baloon, Humanball, Multiplier)
+//  - Cave correction for Collectibles
+//  - Collectibles generation pattern
 //
-// Character
-//  - Camera scale-by-size adaptation [Feb 19]
-//
-// Upgrades [Feb 20]
+// Upgrades
 //  - Health
 //  - Population
 //  - Weapon
 //
-// Polishing [Feb 20] 
+// Polishing
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -72,6 +69,8 @@ public class LevelGenerator : MonoBehaviour
     {
         PlayerController.Instance.Initialize();
 
+        PlayerController.Instance.Ball.Structure.OnLayerIncremented += SetHeightIncrementLevel;
+
         humanballTransform = PlayerController.Instance.Ball.Transform;
     }
 
@@ -79,9 +78,9 @@ public class LevelGenerator : MonoBehaviour
     {
         GenerateBlocks();
 
-        PlaceCollectibles();
+        PlaceCollectibles(100);
 
-        GenerateBattlePath(10);
+        GenerateBattlePath(6);
     }
 
     public void GenerateFromEditor(bool collectibles, bool battlePath)
@@ -90,7 +89,7 @@ public class LevelGenerator : MonoBehaviour
 
         if (collectibles)
         {
-            PlaceCollectibles();
+            PlaceCollectibles(50);
         }
 
         if (battlePath)
@@ -104,6 +103,10 @@ public class LevelGenerator : MonoBehaviour
         if (!isCavePassed)
         {
             CheckForBattlePath();
+        }
+        else
+        {
+            battlePath.Update();
         }
     }
 
@@ -130,13 +133,15 @@ public class LevelGenerator : MonoBehaviour
             {
                 perlinValue = Mathf.PerlinNoise(perlinNoiseOrigin.x + (float)blockIndex / blockPairsCount * wavePatternSettings[patternIndex].waveFrequency, perlinNoiseOrigin.y);
 
-                offsetMap[blockIndex] += (perlinValue - 0.5f) * 2f * wavePatternSettings[patternIndex].waveHeight;
+                offsetMap[blockIndex] += 0;// (perlinValue - 0.5f) * 2f * wavePatternSettings[patternIndex].waveHeight;
             }
         }
 
         for (int i = 0; i < offsetMap.Count; i++)
         {
-            InstantiateBlockPair(new Vector3(i * blockSettings.blockLength, offsetMap[i]));
+            //offsetMap[i] = Mathf.Round(offsetMap[i] / blockSettings.thresholdValue) * blockSettings.thresholdValue;
+
+            InstantiateBlockPair(new Vector3(i * blockSettings.blockLength, offsetMap[i]), i);
         }
 
         blockSettings.blocksContainer.position = new Vector3(-blockSettings.blockLength * 3f, -offsetMap[3], 0);
@@ -165,13 +170,13 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private void PlaceCollectibles()
+    private void PlaceCollectibles(int probability)
     {
         for (int i = 0; i < blockPairs.Count; i++)
         {
             if (i > 5)
             {
-                if (Random.Range(0, 101) < 80)
+                if (Random.Range(0, 101) < Mathf.Clamp(probability, 0, 100))
                 {
                     newCollectible = Instantiate(collectibleSettings.humanCollectiblePrefabs[0], blockPairs[i].container.transform);
 
@@ -181,17 +186,21 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private BlockPair InstantiateBlockPair(Vector3 origin)
+    private BlockPair InstantiateBlockPair(Vector3 origin, int orderIndex)
     {
         newBlockPairContainer = new GameObject("BlockPair");
 
         newBlockPairContainer.transform.position = origin;
         newBlockPairContainer.transform.SetParent(blockSettings.blocksContainer);
 
-        newBlockPair = new BlockPair(Instantiate(blockSettings.ceilBlockPrefabs.GetRandom()), Instantiate(blockSettings.floorBlockPrefabs.GetRandom()), newBlockPairContainer);
+        newBlockPair = new BlockPair(Instantiate(blockSettings.ceilBlockPrefabs.GetRandom()), Instantiate(blockSettings.floorBlockPrefabs.GetRandom()), newBlockPairContainer, orderIndex);
 
-        newBlockPair.ceilBlock.transform.localPosition = new Vector3(0, blockSettings.caveHeightRange.x / 2f + Random.Range(-blockSettings.blockDisplacementLimit, blockSettings.blockDisplacementLimit), 0);
-        newBlockPair.floorBlock.transform.localPosition = new Vector3(0, -blockSettings.caveHeightRange.x / 2f + Random.Range(-blockSettings.blockDisplacementLimit, blockSettings.blockDisplacementLimit), 0);
+        //newBlockPair.SetHeight(Random.Range(blockSettings.caveHeightRange.x, blockSettings.caveHeightRange.y), blockSettings.thresholdValue);
+
+        newBlockPair.SetHeight(14f, 1f);
+
+        //newBlockPair.ceilBlock.transform.localPosition = new Vector3(0, blockSettings.caveHeightRange.x / 2f + Random.Range(-blockSettings.blockDisplacementLimit, blockSettings.blockDisplacementLimit), 0);
+        //newBlockPair.floorBlock.transform.localPosition = new Vector3(0, -blockSettings.caveHeightRange.x / 2f + Random.Range(-blockSettings.blockDisplacementLimit, blockSettings.blockDisplacementLimit), 0);
 
         blockPairs.Add(newBlockPair);
 
@@ -216,6 +225,39 @@ public class LevelGenerator : MonoBehaviour
         CameraController.Instance.Rotate(battlePathSettings.viewEulerAngles, battlePathSettings.rotationDuration, Space.World);
     }
 
+    public void SetHeightIncrementLevel(int incrementLevel)
+    {
+        HeightIncrementData incrementData = blockSettings.heightIncrementLevels[Mathf.Clamp(incrementLevel, 0, blockSettings.heightIncrementLevels.Length)];
+
+        SetBlocksHeightIncrement(GetBlockPair(humanballTransform.position).OrderIndex + incrementData.transitionShift, incrementData);
+    }
+
+    public void SetBlocksHeightIncrement(int startOrderIndex, HeightIncrementData incrementData)
+    {
+        if (startOrderIndex < blockPairs.Count - incrementData.transitionLength - 1)
+        {
+            float transitionLength = incrementData.transitionLength;
+
+            for (int i = startOrderIndex; i < blockPairs.Count; i++)
+            {
+                blockPairs[i].SetHeight(blockPairs[i].Height + incrementData.heightIncrement * Mathf.Clamp01((i - startOrderIndex) / transitionLength), blockSettings.thresholdValue);
+            }
+        }
+    }
+
+    public BlockPair GetBlockPair(Vector3 position)
+    {
+        for (int i = 0; i < blockPairs.Count; i++)
+        {
+            if (blockPairs[i].position.x > position.x)
+            {
+                return blockPairs[i].position.x - position.x < blockSettings.blockLength / 2f ? blockPairs[i] : blockPairs[Mathf.Clamp(i, 0, blockPairs.Count)];
+            }
+        }
+
+        return null;
+    }
+
     private void OnValidate()
     {
         if (wavePatternSettings.Count > 0)
@@ -236,7 +278,9 @@ public class LevelGenerator : MonoBehaviour
         public float blockLength;
         [Space]
         public Vector2 caveHeightRange;
-        public float blockDisplacementLimit;
+        public float thresholdValue;
+        [Space]
+        public HeightIncrementData[] heightIncrementLevels;
     }
 
     [System.Serializable]
@@ -283,5 +327,14 @@ public class LevelGenerator : MonoBehaviour
 
         public float waveHeight;
         public float waveFrequency;
+    }
+
+    [System.Serializable]
+    public struct HeightIncrementData
+    {
+        public float heightIncrement;
+        [Space]
+        public int transitionShift;
+        public int transitionLength;
     }
 }
