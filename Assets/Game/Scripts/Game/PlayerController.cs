@@ -92,8 +92,6 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            //ProcessCameraView();
-
             if (InputManager.touch)
             {
                 if (!rope.IsConnected)
@@ -128,17 +126,7 @@ public class PlayerController : MonoBehaviour
             cell.Human.DropToBattle(ball.Velocity + Random.insideUnitSphere);
         }
     }
-    /*
-    private void ProcessCameraView()
-    {
-        if (previousFilledLayersCountValue != ball.Structure.FilledLayersCount)
-        {
-            CameraController.Instance.SetViewDistance(previousFilledLayersCountValue + (ball.Structure.FilledLayersCount - previousFilledLayersCountValue));
 
-            previousFilledLayersCountValue = ball.Structure.FilledLayersCount;
-        }
-    }
-    */
     private Transform RaycastBlock(Vector2 direction)
     {
         if (Physics.Raycast(ball.Transform.position, direction, out hitInfo, 100f, 1 << 7))

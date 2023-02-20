@@ -4,11 +4,10 @@ using UnityEngine;
 
 // TODO
 //
-// -> [Reminder] <-  
+// -> [HumanballLayer --> AddHumanInRandomCell()] <- 
 //
 // Level
-//  - Adaptive cave width
-//  - Add Collectible types (Building, Baloon, Humanball, Multiplier)
+//  - Add Collectible types (Building, Baloon, Humanball, Multiplier) 
 //  - Cave correction for Collectibles
 //  - Collectibles generation pattern
 //
@@ -133,13 +132,13 @@ public class LevelGenerator : MonoBehaviour
             {
                 perlinValue = Mathf.PerlinNoise(perlinNoiseOrigin.x + (float)blockIndex / blockPairsCount * wavePatternSettings[patternIndex].waveFrequency, perlinNoiseOrigin.y);
 
-                offsetMap[blockIndex] += 0;// (perlinValue - 0.5f) * 2f * wavePatternSettings[patternIndex].waveHeight;
+                offsetMap[blockIndex] += (perlinValue - 0.5f) * 2f * wavePatternSettings[patternIndex].waveHeight;
             }
         }
 
         for (int i = 0; i < offsetMap.Count; i++)
         {
-            //offsetMap[i] = Mathf.Round(offsetMap[i] / blockSettings.thresholdValue) * blockSettings.thresholdValue;
+            offsetMap[i] = Mathf.Round(offsetMap[i] / blockSettings.thresholdValue) * blockSettings.thresholdValue;
 
             InstantiateBlockPair(new Vector3(i * blockSettings.blockLength, offsetMap[i]), i);
         }
@@ -195,12 +194,7 @@ public class LevelGenerator : MonoBehaviour
 
         newBlockPair = new BlockPair(Instantiate(blockSettings.ceilBlockPrefabs.GetRandom()), Instantiate(blockSettings.floorBlockPrefabs.GetRandom()), newBlockPairContainer, orderIndex);
 
-        //newBlockPair.SetHeight(Random.Range(blockSettings.caveHeightRange.x, blockSettings.caveHeightRange.y), blockSettings.thresholdValue);
-
-        newBlockPair.SetHeight(14f, 1f);
-
-        //newBlockPair.ceilBlock.transform.localPosition = new Vector3(0, blockSettings.caveHeightRange.x / 2f + Random.Range(-blockSettings.blockDisplacementLimit, blockSettings.blockDisplacementLimit), 0);
-        //newBlockPair.floorBlock.transform.localPosition = new Vector3(0, -blockSettings.caveHeightRange.x / 2f + Random.Range(-blockSettings.blockDisplacementLimit, blockSettings.blockDisplacementLimit), 0);
+        newBlockPair.SetHeight(Random.Range(blockSettings.caveHeightRange.x, blockSettings.caveHeightRange.y), blockSettings.thresholdValue);
 
         blockPairs.Add(newBlockPair);
 
