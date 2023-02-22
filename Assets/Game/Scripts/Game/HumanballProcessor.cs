@@ -15,7 +15,9 @@ public class HumanballProcessor
     private Vector3 swingVelocityDelta;
 
     private float ropeThrowingAngle;
-    private float angularSpeedDelta;
+
+    private float swingAngularSpeed;
+    private float swingAngularSpeedDelta;
 
     public BallSettings Data => ballData;
 
@@ -79,7 +81,12 @@ public class HumanballProcessor
         }
         else
         {
-            Transform.eulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Transform.eulerAngles.z, ropeThrowingAngle, 0.1f));
+            if (structure.FilledLayersCount < 2)
+            {
+                ballData.rigidbody.angularVelocity = new Vector3();
+
+                Transform.eulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Transform.eulerAngles.z, ropeThrowingAngle, 0.1f));
+            }
         }
     }
 
@@ -88,11 +95,18 @@ public class HumanballProcessor
         structure.AddHuman(humanController);
 
         humanController.enabled = true;
+
+        UpdateCenterOfMass();
     }
 
     public void UnstickHuman(HumanController humanController)
     {
         structure.RemoveHuman(humanController);
+
+        if (structure.FilledCellsCount > 0)
+        {
+            UpdateCenterOfMass();
+        }
     }
 
     public void Swing(float linearSpeed)
@@ -106,12 +120,13 @@ public class HumanballProcessor
             previousSwingPosition = Transform.position;
         }
 
-        if (angularSpeedDelta == 0)
+        if (swingAngularSpeedDelta == 0)
         {
-            angularSpeedDelta = linearSpeed / assignedRope.Length * 57.325f * Time.fixedDeltaTime;
+            swingAngularSpeed = linearSpeed / assignedRope.Length * 57.325f;
+            swingAngularSpeedDelta = swingAngularSpeed * Time.fixedDeltaTime;
         }
 
-        assignedRope.Data.swingContainer.localEulerAngles += new Vector3(0, 0, angularSpeedDelta);
+        assignedRope.Data.swingContainer.localEulerAngles += new Vector3(0, 0, swingAngularSpeedDelta);
 
         swingVelocityDelta = Transform.position - previousSwingPosition;
 
@@ -120,10 +135,34 @@ public class HumanballProcessor
 
     public void Release()
     {
+        Debug.Log(structure.FilledLayersCount);
+
         ballData.rigidbody.isKinematic = false;
 
         ballData.rigidbody.velocity = Velocity;
+        ballData.rigidbody.angularVelocity = new Vector3(0, 0, swingAngularSpeed / 30f);
 
-        angularSpeedDelta = 0;
+        swingAngularSpeedDelta = 0;
+    }
+
+    public void UpdateContainerOrientation(Vector3 connectionPoint)
+    {
+        ballData.suspensionContainer.SetParent(null);
+
+        ballData.suspensionContainer.position = structure.GetPlanarClosestCell(connectionPoint, Axis.Z).transform.position;
+        ballData.suspensionContainer.up = (connectionPoint - ballData.suspensionContainer.position).GetPlanarDirection(Axis.Z);
+
+        ballData.rigidbody.transform.up = ballData.suspensionContainer.up;
+
+        ballData.suspensionContainer.SetParent(ballData.rigidbody.transform);
+    }
+
+    private void UpdateCenterOfMass()
+    {
+        ballData.suspensionContainer.SetParent(null);
+
+        ballData.rigidbody.transform.position = structure.GetActiveCellsMidpoint();
+
+        ballData.suspensionContainer.SetParent(ballData.rigidbody.transform);
     }
 }

@@ -7,11 +7,22 @@ public class Humanball
 {
     private List<HumanballLayer> layers;
 
-    private List<HumanballCell> requestedCells;
+    private List<HumanballCell> filledCells;
+    private List<HumanballCell> emptyCells;
+
+    private Vector3 midpoint;
+
+    private HumanballCell[] layerClosestCells;
+
+    private HumanballCell closestCell;
+
+    private float cellSqrDistance;
+    private float minCellSqrDistance;
 
     private int cellsCount;
 
     private int previousLayerIndex;
+    private int filledLayersCount;
 
     private int counter;
 
@@ -24,7 +35,7 @@ public class Humanball
     public int AvailableLayersCount => GetAvailableLayersCount();
 
     public int FilledCellsCount => cellsCount - GetAvailableCellsCount();
-    public int FilledLayersCount => layers.Count - GetAvailableLayersCount();
+    public int FilledLayersCount => filledLayersCount;
 
     public Humanball()
     {
@@ -46,6 +57,8 @@ public class Humanball
             {
                 if (layers[i].AddHumanInNextCell(human))
                 {
+                    filledLayersCount = 1;
+
                     return;
                 }
             }
@@ -62,6 +75,8 @@ public class Humanball
                             OnLayerIncremented(i - 1);
                         }
                     }
+
+                    filledLayersCount = i + 1;
 
                     return;
                 }
@@ -82,7 +97,7 @@ public class Humanball
 
     public List<HumanballCell> GetFilledCells()
     {
-        requestedCells = new List<HumanballCell>();
+        filledCells = new List<HumanballCell>();
 
         for (int i = 0; i < layers.Count; i++)
         {
@@ -90,17 +105,17 @@ public class Humanball
             {
                 if (!layers[i].cells[j].IsAvailable)
                 {
-                    requestedCells.Add(layers[i].cells[j]);
+                    filledCells.Add(layers[i].cells[j]);
                 }
             }
         }
 
-        return requestedCells;
+        return filledCells;
     }
 
     public List<HumanballCell> GetEmptyCells()
     {
-        requestedCells = new List<HumanballCell>();
+        emptyCells = new List<HumanballCell>();
 
         for (int i = 0; i < layers.Count; i++)
         {
@@ -108,12 +123,58 @@ public class Humanball
             {
                 if (layers[i].cells[j].IsAvailable)
                 {
-                    requestedCells.Add(layers[i].cells[j]);
+                    emptyCells.Add(layers[i].cells[j]);
                 }
             }
         }
 
-        return requestedCells;
+        return emptyCells;
+    }
+
+    public HumanballCell GetPlanarClosestCell(Vector3 position, Axis planeAxis)
+    {
+        layerClosestCells = new HumanballCell[layers.Count];
+
+        for (int i = 0; i < layers.Count; i++)
+        {
+            if (!layers[i].IsEmpty)
+            {
+                layerClosestCells[i] = layers[i].GetPlanarClosestCell(position, planeAxis);
+            }
+        }
+
+        minCellSqrDistance = float.MaxValue;
+
+        for (int i = 0; i < layerClosestCells.Length; i++)
+        {
+            if (layerClosestCells[i] != null)
+            {
+                cellSqrDistance = (position - layerClosestCells[i].transform.position).GetPlanarSqrMagnitude(planeAxis);
+
+                if (cellSqrDistance < minCellSqrDistance)
+                {
+                    minCellSqrDistance = cellSqrDistance;
+
+                    closestCell = layerClosestCells[i];
+                }
+            }
+        }
+
+        return closestCell;
+    }
+
+    public Vector3 GetActiveCellsMidpoint()
+    {
+        midpoint = new Vector3();
+
+        GetFilledCells();
+
+        for (int i = 0; i < filledCells.Count; i++)
+        {
+            midpoint += filledCells[i].transform.position;
+        }
+
+        return new Vector3(midpoint.x / filledCells.Count, midpoint.y / filledCells.Count, 0);
     }
 
     private int GetAvailableCellsCount()

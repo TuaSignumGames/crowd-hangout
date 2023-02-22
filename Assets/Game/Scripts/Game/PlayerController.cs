@@ -148,6 +148,10 @@ public class PlayerController : MonoBehaviour
     public class BallSettings
     {
         public Rigidbody rigidbody;
+        [Space]
+        public Transform suspensionContainer;
+        public Transform structureContainer;
+        [Space]
         public float motionSpeed;
         [Space]
         public List<Transform> baseCells;
@@ -158,6 +162,8 @@ public class PlayerController : MonoBehaviour
     public class RopeSettings
     {
         public Transform lineTransform;
+        [Space]
+        public Transform originTransform;
         public Transform endTransform;
         [Space]
         public Transform swingContainer;

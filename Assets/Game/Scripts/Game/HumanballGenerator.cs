@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static HumanballGenerator;
 
 [System.Serializable]
 public class HumanballGenerator
@@ -16,7 +15,6 @@ public class HumanballGenerator
     private List<HumanballLayer> humanballLayers;
 
     private HumanballCell newHumanballCell;
-    private HumanballLayer newHumanballLayer;
 
     private GameObject newStageContainer;
     private GameObject newLayerContainer;
@@ -69,6 +67,8 @@ public class HumanballGenerator
         stagesCount = Mathf.RoundToInt(180f / cellAngularSize.y) + 1;
 
         verticalAngularStep = 180f / (stagesCount - 1);
+
+        cellPointer.pivotTransform.localPosition = new Vector3(0, -layerData.radius * 2f, 0);
 
         for (int i = 0; i < stagesCount; i++)
         {

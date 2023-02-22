@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [HumanballLayer --> AddHumanInRandomCell()] <- 
+// -> [HumanballProcessor --> UpdateContainerOrientation(p) issue: sliding along Z axis] <- 
 //
 // Level
 //  - Add Collectible types (Building, Baloon, Humanball, Multiplier) 

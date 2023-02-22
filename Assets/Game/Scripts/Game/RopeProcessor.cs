@@ -51,7 +51,7 @@ public class RopeProcessor
             ropeData.endTransform.localScale = new Vector3(1f, 1f, 1f);
         }
 
-        ropeData.lineTransform.position = assignedBall.Transform.position;
+        ropeData.lineTransform.position = ropeData.originTransform.position;
         ropeData.lineTransform.up = Direction;
 
         ropeData.lineTransform.localScale = new Vector3(1f, actualRopeLenght, 1f);
@@ -60,6 +60,16 @@ public class RopeProcessor
     public bool Connect(Vector3 point)
     {
         ropeData.swingContainer.position = point;
+
+        if (!isLaunched)
+        {
+            isLaunched = true;
+
+            if (assignedBall.Structure.FilledLayersCount > 1)
+            {
+                //assignedBall.UpdateContainerOrientation(point);
+            }
+        }
 
         if (!isConnected)
         {
@@ -86,7 +96,7 @@ public class RopeProcessor
 
         if (!isConnected)
         {
-            targetRopeLenght = (ConnectionPoint - assignedBall.Transform.position).GetPlanarMagnitude(Axis.Z);
+            targetRopeLenght = (ConnectionPoint - ropeData.originTransform.position).GetPlanarMagnitude(Axis.Z);
 
             actualRopeLenght = targetRopeLenght;
 
@@ -98,6 +108,7 @@ public class RopeProcessor
 
     public void Disconnect()
     {
+        isLaunched = false;
         isConnected = false;
 
         assignedBall.Transform.SetParent(null);

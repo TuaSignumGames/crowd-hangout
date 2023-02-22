@@ -17,6 +17,7 @@ public class HumanballLayer
 
     public int AvailableCellsCount => availableCellsCount;
 
+    public bool IsEmpty => availableCellsCount == cells.Count;
     public bool IsAvailable => availableCellsCount > 0;
 
     public HumanballLayer(GameObject container, IList<HumanballCell> cells)
@@ -67,6 +68,22 @@ public class HumanballLayer
         return false;
     }
 
+    public bool AddHumanInRandomCell(HumanController human)
+    {
+        if (availableCellsCount == 0)
+        {
+            return false;
+        }
+        else
+        {
+            cells.GetRandom().PutHuman(human);
+
+            availableCellsCount--;
+
+            return true;
+        }
+    }
+
     public bool TryRemoveHuman(HumanController human)
     {
         for (int i = 0; i < cells.Count; i++)
@@ -84,7 +101,7 @@ public class HumanballLayer
         return false;
     }
 
-    private HumanballCell GetClosestCell(Vector3 position)
+    public HumanballCell GetClosestCell(Vector3 position)
     {
         closestCell = null;
 
@@ -95,6 +112,30 @@ public class HumanballLayer
             if (cells[i].IsAvailable)
             {
                 cellSqrDistance = (cells[i].transform.position - position).sqrMagnitude;
+
+                if (cellSqrDistance < minCellSqrDistance)
+                {
+                    minCellSqrDistance = cellSqrDistance;
+
+                    closestCell = cells[i];
+                }
+            }
+        }
+
+        return closestCell;
+    }
+
+    public HumanballCell GetPlanarClosestCell(Vector3 position, Axis planeAxis)
+    {
+        closestCell = null;
+
+        minCellSqrDistance = float.MaxValue;
+
+        for (int i = 0; i < cells.Count; i++)
+        {
+            if (cells[i].IsAvailable)
+            {
+                cellSqrDistance = (cells[i].transform.position - position).GetPlanarSqrMagnitude(planeAxis);
 
                 if (cellSqrDistance < minCellSqrDistance)
                 {
