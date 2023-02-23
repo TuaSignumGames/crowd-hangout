@@ -12,14 +12,16 @@ public class HumanController : MonoBehaviour
     public HumanTeam team;
     public List<HumanTeamInfo> teamSettings;
     public HumanMotionSettings motionSettings;
-    public HumanRig rigSettings;
     public List<Weapon> weaponSettings;
+    [Space]
+    public HumanRig rigSettings;
+    public HumanPoseSettings poseSettings;
     [Space]
     public ProgressBar healthBar; 
 
     public Crowd actualCrowd;
-    public HumanPose actualPose;
 
+    private HumanPose actualPose;
     private HumanTeamInfo actualTeamInfo;
 
     private HumanAI ai;
@@ -39,6 +41,8 @@ public class HumanController : MonoBehaviour
     private float targetPointSqrRadius;
 
     public HumanAI AI => ai;
+    public HumanPose ActualPose => actualPose;
+
     public MotionSimulator MotionSimulator => motionSimulator;
     public Weapon Weapon => currentWeapon;
 
@@ -241,7 +245,7 @@ public class HumanController : MonoBehaviour
 
     public HumanPose PeekPose()
     {
-        actualPose = new HumanPose(transform, rigSettings.bones);
+        actualPose = new HumanPose(rigSettings.bones);
 
         return actualPose;
     }
@@ -268,6 +272,16 @@ public class HumanController : MonoBehaviour
         if (healthPoints <= 0)
         {
             Die();
+        }
+    }
+
+    public void SetPose(HumanPose pose)
+    {
+        actualPose = pose;
+
+        for (int i = 0; i < actualPose.boneTransformDatas.Length; i++)
+        {
+            rigSettings.bones[i].transform.ApplyData(actualPose.boneTransformDatas[i]);
         }
     }
 
@@ -298,18 +312,6 @@ public class HumanController : MonoBehaviour
         if (actualTeamInfo.impactVFX)
         {
             actualTeamInfo.impactVFX.gameObject.SetActive(true);
-        }
-    }
-
-    private void SetPose(HumanPose pose)
-    {
-        actualPose = pose;
-
-        transform.ApplyData(actualPose.bodyTransformData);
-
-        for (int i = 0; i < actualPose.boneTransformDatas.Length; i++)
-        {
-            rigSettings.bones[i].transform.ApplyData(actualPose.boneTransformDatas[i]);
         }
     }
 
