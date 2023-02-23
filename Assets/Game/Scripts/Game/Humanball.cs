@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Humanball
 {
@@ -131,7 +132,7 @@ public class Humanball
         return emptyCells;
     }
 
-    public HumanballCell GetPlanarClosestCell(Vector3 position, Axis planeAxis)
+    public HumanballCell GetPlanarClosestEmptyCell(Vector3 position, Axis planeAxis)
     {
         layerClosestCells = new HumanballCell[layers.Count];
 
@@ -139,7 +140,7 @@ public class Humanball
         {
             if (!layers[i].IsEmpty)
             {
-                layerClosestCells[i] = layers[i].GetPlanarClosestCell(position, planeAxis);
+                layerClosestCells[i] = layers[i].GetPlanarClosestEmptyCell(position, planeAxis);
             }
         }
 
@@ -149,14 +150,32 @@ public class Humanball
         {
             if (layerClosestCells[i] != null)
             {
-                cellSqrDistance = (position - layerClosestCells[i].transform.position).GetPlanarSqrMagnitude(planeAxis);
+                CheckForPlanarClosestCell(layerClosestCells[i], position, planeAxis);
+            }
+        }
 
-                if (cellSqrDistance < minCellSqrDistance)
-                {
-                    minCellSqrDistance = cellSqrDistance;
+        return closestCell;
+    }
 
-                    closestCell = layerClosestCells[i];
-                }
+    public HumanballCell GetPlanarClosestFilledCell(Vector3 position, Axis planeAxis)
+    {
+        layerClosestCells = new HumanballCell[layers.Count];
+
+        for (int i = 0; i < layers.Count; i++)
+        {
+            if (!layers[i].IsEmpty)
+            {
+                layerClosestCells[i] = layers[i].GetPlanarClosestFilledCell(position, planeAxis);
+            }
+        }
+
+        minCellSqrDistance = float.MaxValue;
+
+        for (int i = 0; i < layerClosestCells.Length; i++)
+        {
+            if (layerClosestCells[i] != null)
+            {
+                CheckForPlanarClosestCell(layerClosestCells[i], position, planeAxis);
             }
         }
 
@@ -175,6 +194,18 @@ public class Humanball
         }
 
         return new Vector3(midpoint.x / filledCells.Count, midpoint.y / filledCells.Count, 0);
+    }
+
+    private void CheckForPlanarClosestCell(HumanballCell cell, Vector3 point, Axis planeAxis)
+    {
+        cellSqrDistance = (point - cell.transform.position).GetPlanarSqrMagnitude(planeAxis);
+
+        if (cellSqrDistance < minCellSqrDistance)
+        {
+            minCellSqrDistance = cellSqrDistance;
+
+            closestCell = cell;
+        }
     }
 
     private int GetAvailableCellsCount()

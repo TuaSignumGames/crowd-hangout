@@ -21,7 +21,7 @@ public class RopeProcessor
 
     public Vector3 ConnectionPoint => ropeData.swingContainer.position;
 
-    public Vector3 Vector => ConnectionPoint - assignedBall.Transform.position;
+    public Vector3 Vector => ConnectionPoint - ropeData.originTransform.position;
     public Vector3 Direction => Vector.normalized;
 
     public float Length => actualRopeLenght;
@@ -67,7 +67,7 @@ public class RopeProcessor
 
             if (assignedBall.Structure.FilledLayersCount > 1)
             {
-                //assignedBall.UpdateContainerOrientation(point);
+                assignedBall.UpdateContainerOrientation(point);
             }
         }
 

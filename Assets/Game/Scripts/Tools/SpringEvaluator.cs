@@ -74,7 +74,16 @@ public class SpringEvaluator
             Damp();
         }
 
-        value = Mathf.Clamp(_value, _valueFloor, _valueCeil);
+        value = _value;
+
+        //value = Mathf.Clamp(_value, _valueFloor, _valueCeil);
+    }
+
+    public void SetValue(float value)
+    {
+        _valueIncrement = 0;
+
+        _value = value;
     }
 
     public void ApplyPivotValue(float value)

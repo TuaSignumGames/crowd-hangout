@@ -11,6 +11,10 @@ public class HumanballProcessor
 
     private Humanball structure;
 
+    private SpringEvaluator springEvaluator;
+
+    private HumanballCell ropeConnectionCell;
+
     private Vector3 previousSwingPosition;
     private Vector3 swingVelocityDelta;
 
@@ -18,6 +22,9 @@ public class HumanballProcessor
 
     private float swingAngularSpeed;
     private float swingAngularSpeedDelta;
+
+    private float springValue;
+    private float tensionValue;
 
     public BallSettings Data => ballData;
 
@@ -30,6 +37,8 @@ public class HumanballProcessor
     public HumanballProcessor(BallSettings settings)
     {
         ballData = settings;
+
+        springEvaluator = new SpringEvaluator(ballData.elasticitySettings);
 
         InitializeBallStructure();
     }
@@ -78,6 +87,10 @@ public class HumanballProcessor
         if (assignedRope.IsConnected)
         {
             Transform.up = Vector3.Lerp(Transform.up, assignedRope.Direction, 0.1f);
+
+            tensionValue = Mathf.Lerp(tensionValue, 1f, 0.1f);
+
+            springEvaluator.SetValue(tensionValue);
         }
         else
         {
@@ -87,7 +100,13 @@ public class HumanballProcessor
 
                 Transform.eulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Transform.eulerAngles.z, ropeThrowingAngle, 0.1f));
             }
+
+            tensionValue = 0;
         }
+
+        springEvaluator.Update(ref springValue);
+
+        ballData.suspensionContainer.localScale = new Vector3(1f, 1f + ballData.tensionLimit * springValue, 1f);
     }
 
     public void StickHuman(HumanController humanController)
@@ -131,12 +150,12 @@ public class HumanballProcessor
         swingVelocityDelta = Transform.position - previousSwingPosition;
 
         previousSwingPosition = Transform.position;
+
+        springValue = 0.5f;
     }
 
     public void Release()
     {
-        Debug.Log(structure.FilledLayersCount);
-
         ballData.rigidbody.isKinematic = false;
 
         ballData.rigidbody.velocity = Velocity;
@@ -147,14 +166,20 @@ public class HumanballProcessor
 
     public void UpdateContainerOrientation(Vector3 connectionPoint)
     {
+        ballData.structureContainer.SetParent(null);
         ballData.suspensionContainer.SetParent(null);
 
-        ballData.suspensionContainer.position = structure.GetPlanarClosestCell(connectionPoint, Axis.Z).transform.position;
-        ballData.suspensionContainer.up = (connectionPoint - ballData.suspensionContainer.position).GetPlanarDirection(Axis.Z);
+        ropeConnectionCell = structure.GetPlanarClosestFilledCell(connectionPoint, Axis.Z);
+
+        ballData.suspensionContainer.position = ropeConnectionCell.transform.position.ToVector2();
+        ballData.suspensionContainer.up = ropeConnectionCell.transform.forward; //ropeConnectionCell.transform.forward.ToVector2();
 
         ballData.rigidbody.transform.up = ballData.suspensionContainer.up;
 
+        ballData.structureContainer.SetParent(ballData.suspensionContainer);
         ballData.suspensionContainer.SetParent(ballData.rigidbody.transform);
+
+        previousSwingPosition = Transform.position;
     }
 
     private void UpdateCenterOfMass()
@@ -164,5 +189,7 @@ public class HumanballProcessor
         ballData.rigidbody.transform.position = structure.GetActiveCellsMidpoint();
 
         ballData.suspensionContainer.SetParent(ballData.rigidbody.transform);
+
+        previousSwingPosition = Transform.position;
     }
 }
