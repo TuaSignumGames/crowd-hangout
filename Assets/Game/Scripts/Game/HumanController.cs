@@ -46,8 +46,6 @@ public class HumanController : MonoBehaviour
     public MotionSimulator MotionSimulator => motionSimulator;
     public Weapon Weapon => currentWeapon;
 
-    public static HumanPose defaultPose;
-
     public static int animatorFlyHash;
     public static int animatorDefeatHash;
     public static int animatorGroundedHash;
@@ -200,8 +198,9 @@ public class HumanController : MonoBehaviour
 
         transform.SetParent(cell.transform);
 
-        transform.localPosition = Vector3.zero;
-        transform.forward = cell.transform.forward;
+        transform.localPosition = new Vector3();
+        //transform.forward = cell.transform.forward;
+        transform.localEulerAngles = new Vector3();
 
         if (cell.Pose != null)
         {
@@ -209,7 +208,7 @@ public class HumanController : MonoBehaviour
         }
         else
         {
-            SetPose(defaultPose);
+            SetPose(poseSettings.GetConfusedPose(cell.Layer.Radius, ConfusedPoseType.BackConfuse));
         }
 
         GetComponent<Collider>().enabled = true;

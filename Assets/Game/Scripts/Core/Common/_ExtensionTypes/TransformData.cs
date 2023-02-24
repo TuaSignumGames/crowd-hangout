@@ -38,6 +38,8 @@ public struct TransformData
 
             resultData.rotation = new Vector3(Mathf.LerpAngle(a.rotation.x, b.rotation.x, t), Mathf.LerpAngle(a.rotation.y, b.rotation.y, t), Mathf.LerpAngle(a.rotation.z, b.rotation.z, t));
 
+            resultData.space = a.space;
+
             return resultData;
         }
         else

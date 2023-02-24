@@ -17,9 +17,19 @@ public class HumanPose
         }
     }
 
+    public HumanPose(IList<TransformData> boneTransformDatas)
+    {
+        this.boneTransformDatas = new TransformData[boneTransformDatas.Count];
+
+        for (int i = 0; i < boneTransformDatas.Count; i++)
+        {
+            this.boneTransformDatas[i] = boneTransformDatas[i];
+        }
+    }
+
     public static HumanPose Lerp(HumanPose a, HumanPose b, float t)
     {
-        HumanPose resultPose = new HumanPose(new HumanBone[a.boneTransformDatas.Length]);
+        HumanPose resultPose = new HumanPose(new TransformData[a.boneTransformDatas.Length]);
 
         for (int i = 0; i < resultPose.boneTransformDatas.Length; i++)
         {

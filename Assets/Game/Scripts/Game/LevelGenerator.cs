@@ -59,8 +59,6 @@ public class LevelGenerator : MonoBehaviour
     {
         Instance = this;
 
-        HumanController.defaultPose = collectibleSettings.humanPrefab.PeekPose();
-
         Generate();
     }
 

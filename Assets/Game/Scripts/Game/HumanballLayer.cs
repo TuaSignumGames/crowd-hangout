@@ -9,6 +9,8 @@ public class HumanballLayer
 
     private HumanballCell closestCell;
 
+    private float layerRadius;
+
     private float cellSqrDistance;
     private float minCellSqrDistance;
 
@@ -18,16 +20,20 @@ public class HumanballLayer
 
     public int AvailableCellsCount => availableCellsCount;
 
+    public float Radius => layerRadius;
+
     public bool IsEmpty => availableCellsCount == cells.Count;
     public bool IsAvailable => availableCellsCount > 0;
 
-    public HumanballLayer(GameObject container, IList<HumanballCell> cells)
+    public HumanballLayer(GameObject container, IList<HumanballCell> cells, float radius)
     {
         this.container = container;
         this.cells = new List<HumanballCell>(cells);
 
         for (int i = 0; i < cells.Count; i++)
         {
+            cells[i].SetLayer(this);
+
             if (cells[i].IsAvailable)
             {
                 availableCellsCount++;
@@ -43,6 +49,8 @@ public class HumanballLayer
         }
         else
         {
+            //human.SetConfusedPose(layerRadius, ConfusedPoseType.BackConfuse);
+
             cells[cells.Count - availableCellsCount].PutHuman(human);
 
             availableCellsCount--;
@@ -59,6 +67,8 @@ public class HumanballLayer
         }
         else if (GetClosestEmptyCell(human.transform.position) != null)
         {
+            //human.SetConfusedPose(layerRadius, ConfusedPoseType.BackConfuse);
+
             closestCell.PutHuman(human);
 
             availableCellsCount--;
@@ -77,6 +87,8 @@ public class HumanballLayer
         }
         else
         {
+            //human.SetConfusedPose(layerRadius, ConfusedPoseType.BackConfuse);
+
             cells.GetRandom().PutHuman(human);
 
             availableCellsCount--;

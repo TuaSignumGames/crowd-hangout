@@ -63,10 +63,10 @@ public class HumanballProcessor
 
         List<HumanballLayer> structureLayers = new List<HumanballLayer>
         {
-            ballData.proceduralCells.GenerateLayer(baseLayerCells, "B")
+            ballData.proceduralCells.GenerateLayer(baseLayerCells, 0.2f, "B")
         };
 
-        structureLayers.AddRange(ballData.proceduralCells.GenerateProceduralLayers());
+        structureLayers.AddRange(ballData.proceduralCells.GenerateProceduralLayers(5));
 
         baseLayerCells[0].Human.isFree = false;
 

@@ -6,12 +6,13 @@ public class HumanballCell
 {
     private GameObject gameObject;
 
-    private HumanController placedHuman;
+    private HumanballLayer relatedLayer;
 
+    private HumanController placedHuman;
     private HumanPose placedHumanPose;
 
     public Transform transform => gameObject.transform;
-
+    public HumanballLayer Layer => relatedLayer;
     public HumanController Human => placedHuman;
     public HumanPose Pose => placedHumanPose;
 
@@ -59,5 +60,10 @@ public class HumanballCell
 
             placedHuman = null;
         }
+    }
+
+    public void SetLayer(HumanballLayer layer)
+    {
+        relatedLayer = layer;
     }
 }

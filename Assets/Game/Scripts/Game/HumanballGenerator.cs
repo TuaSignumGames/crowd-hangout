@@ -9,12 +9,14 @@ public class HumanballGenerator
     public Transform cellsContainer;
     [Space]
     public Vector2 cellSize;
-    public LayerData[] layers;
+    public float baseLayerRadius;
+    public float layerWidth;
 
     private List<HumanballCell> humanballCells;
     private List<HumanballLayer> humanballLayers;
 
     private HumanballCell newHumanballCell;
+    private HumanballLayer newHumanballLayer;
 
     private GameObject newStageContainer;
     private GameObject newLayerContainer;
@@ -28,15 +30,15 @@ public class HumanballGenerator
     private int stagesCount;
     private int stageSize;
 
-    public List<HumanballLayer> GenerateProceduralLayers()
+    public List<HumanballLayer> GenerateProceduralLayers(int count)
     {
         humanballLayers = new List<HumanballLayer>();
 
-        for (int i = 0; i < layers.Length; i++)
+        for (int i = 0; i < count; i++)
         {
             CreateLayerContainer(i.ToString());
 
-            humanballLayers.Add(GenerateProceduralLayer(layers[i]));
+            humanballLayers.Add(GenerateProceduralLayer(baseLayerRadius + layerWidth * i));
 
             Debug.Log($" - Layer[{i}]: {humanballLayers[i].AvailableCellsCount}");
         }
@@ -44,7 +46,7 @@ public class HumanballGenerator
         return humanballLayers;
     }
 
-    public HumanballLayer GenerateLayer(IList<HumanballCell> layerCells, string layerTag = "")
+    public HumanballLayer GenerateLayer(IList<HumanballCell> layerCells, float radius, string layerTag = "")
     {
         humanballCells = new List<HumanballCell>(layerCells);
 
@@ -55,26 +57,26 @@ public class HumanballGenerator
             humanballCells[i].transform.SetParent(newLayerContainer.transform);
         }
 
-        return new HumanballLayer(newLayerContainer, humanballCells);
+        return new HumanballLayer(newLayerContainer, humanballCells, radius);
     }
 
-    private HumanballLayer GenerateProceduralLayer(LayerData layerData)
+    private HumanballLayer GenerateProceduralLayer(float radius)
     {
         humanballCells = new List<HumanballCell>();
 
-        cellAngularSize = new Vector2(cellSize.x * 360f / (6.2832f * layerData.radius), cellSize.y * 180f / (6.2832f * layerData.radius));
+        cellAngularSize = new Vector2(cellSize.x * 360f / (6.2832f * radius), cellSize.y * 180f / (6.2832f * radius));
 
         stagesCount = Mathf.RoundToInt(180f / cellAngularSize.y) + 1;
 
         verticalAngularStep = 180f / (stagesCount - 1);
 
-        cellPointer.pivotTransform.localPosition = new Vector3(0, -layerData.radius * 2f, 0);
+        cellPointer.pivotTransform.localPosition = new Vector3(0, -radius * 2f, 0);
 
         for (int i = 0; i < stagesCount; i++)
         {
             pointerEulerAngles.x = (-90f + verticalAngularStep * i).ToSignedAngle();
 
-            stageSize = Mathf.FloorToInt(6.2832f * layerData.radius * Mathf.Abs(Mathf.Sin((90f + pointerEulerAngles.x) * Mathf.Deg2Rad)) / cellSize.x);
+            stageSize = Mathf.FloorToInt(6.2832f * radius * Mathf.Abs(Mathf.Sin((90f + pointerEulerAngles.x) * Mathf.Deg2Rad)) / cellSize.x);
 
             if (stageSize > 0)
             {
@@ -86,14 +88,14 @@ public class HumanballGenerator
                 {
                     pointerEulerAngles.y = (90f + horizontalAngularStep * j).ToSignedAngle();
 
-                    cellPointer.SetPlacement(pointerEulerAngles.y, pointerEulerAngles.x, layerData.radius);
+                    cellPointer.SetPlacement(pointerEulerAngles.y, pointerEulerAngles.x, radius);
 
                     humanballCells.Add(InstantiateHumanballCell());
                 }
             }
         }
 
-        return new HumanballLayer(newLayerContainer, humanballCells);
+        return new HumanballLayer(newLayerContainer, humanballCells, radius);
     }
 
     private HumanballCell InstantiateHumanballCell()
@@ -151,11 +153,5 @@ public class HumanballGenerator
             this.position = position;
             this.direction = direction;
         }
-    }
-
-    [System.Serializable]
-    public struct LayerData
-    {
-        public float radius;
     }
 }
