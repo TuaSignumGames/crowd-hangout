@@ -8294,10 +8294,6 @@ MonoBehaviour:
       elementReference: {fileID: 2123225799}
       useAnimation: 1
       transitionDelay: 0.2
-    - title: ProgressBar
-      elementReference: {fileID: 557363184}
-      useAnimation: 1
-      transitionDelay: 0.2
   - title: Success
     uIState: 3
     activeElements:

@@ -199,7 +199,6 @@ public class HumanController : MonoBehaviour
         transform.SetParent(cell.transform);
 
         transform.localPosition = new Vector3();
-        //transform.forward = cell.transform.forward;
         transform.localEulerAngles = new Vector3();
 
         if (cell.Pose != null)
@@ -208,7 +207,7 @@ public class HumanController : MonoBehaviour
         }
         else
         {
-            SetPose(poseSettings.GetConfusedPose(cell.Layer.Radius, ConfusedPoseType.BackConfuse));
+            SetPose(poseSettings.GetConfusedPose(cell.Layer.Radius + 0.6f, ConfusedPoseType.BackConfuse)); // TODO Tweak radius increment 
         }
 
         GetComponent<Collider>().enabled = true;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [Reminder] <- 
+// -> [Add multiple-human collectible] <- 
 //
 // Level
 //  - Add Collectible types (Building, Baloon, Humanball, Multiplier) 
@@ -32,6 +32,7 @@ public class LevelGenerator : MonoBehaviour
     public float levelLength;
 
     private List<BlockPair> blockPairs;
+    private List<Collectible> collectibles;
 
     private BattlePath battlePath;
 
@@ -66,7 +67,7 @@ public class LevelGenerator : MonoBehaviour
     {
         PlayerController.Instance.Initialize();
 
-        PlayerController.Instance.Ball.Structure.OnLayerIncremented += SetHeightIncrementLevel;
+        PlayerController.Instance.Ball.Structure.OnLayerIncremented += UpdateLevelConfiguration;
 
         humanballTransform = PlayerController.Instance.Ball.Transform;
     }
@@ -169,6 +170,8 @@ public class LevelGenerator : MonoBehaviour
 
     private void PlaceCollectibles(int probability)
     {
+        collectibles = new List<Collectible>();
+
         for (int i = 0; i < blockPairs.Count; i++)
         {
             if (i > 5)
@@ -178,6 +181,8 @@ public class LevelGenerator : MonoBehaviour
                     newCollectible = Instantiate(collectibleSettings.humanCollectiblePrefabs[0], blockPairs[i].container.transform);
 
                     newCollectible.Initialize(blockPairs[i]);
+
+                    collectibles.Add(newCollectible);
                 }
             }
         }
@@ -217,14 +222,7 @@ public class LevelGenerator : MonoBehaviour
         CameraController.Instance.Rotate(battlePathSettings.viewEulerAngles, battlePathSettings.rotationDuration, Space.World);
     }
 
-    public void SetHeightIncrementLevel(int incrementLevel)
-    {
-        HeightIncrementData incrementData = blockSettings.heightIncrementLevels[Mathf.Clamp(incrementLevel, 0, blockSettings.heightIncrementLevels.Length)];
-
-        SetBlocksHeightIncrement(GetBlockPair(humanballTransform.position).OrderIndex + incrementData.transitionShift, incrementData);
-    }
-
-    public void SetBlocksHeightIncrement(int startOrderIndex, HeightIncrementData incrementData)
+    private void SetBlocksHeightIncrement(int startOrderIndex, HeightIncrementData incrementData)
     {
         if (startOrderIndex < blockPairs.Count - incrementData.transitionLength - 1)
         {
@@ -233,6 +231,21 @@ public class LevelGenerator : MonoBehaviour
             for (int i = startOrderIndex; i < blockPairs.Count; i++)
             {
                 blockPairs[i].SetHeight(blockPairs[i].Height + incrementData.heightIncrement * Mathf.Clamp01((i - startOrderIndex) / transitionLength), blockSettings.thresholdValue);
+            }
+        }
+    }
+
+    public void UpdateLevelConfiguration(int humanballLayerIndex)
+    {
+        HeightIncrementData incrementData = blockSettings.heightIncrementLevels[Mathf.Clamp(humanballLayerIndex, 0, blockSettings.heightIncrementLevels.Length)];
+
+        SetBlocksHeightIncrement(GetBlockPair(humanballTransform.position).OrderIndex + incrementData.transitionShift, incrementData);
+
+        for (int i = 0; i < collectibles.Count; i++)
+        {
+            if (!collectibles[i].IsCollected)
+            {
+                collectibles[i].UpdatePlacement();
             }
         }
     }

@@ -127,6 +127,11 @@ public class LevelManager : Service<LevelManager>
         _rewardAmount += increment;
     }
 
+    private void SwitchLevelEntities()
+    {
+        CameraController.Instance.enabled = true;
+    }
+
     private IEnumerator LevelInitializationCoroutine()
     {
         while (false) { yield return null; }
@@ -150,6 +155,8 @@ public class LevelManager : Service<LevelManager>
         // TODO Pre-start code
 
         _isLevelStarted = true;
+
+        SwitchLevelEntities();
 
         if (GameManager.Instance.creativeMode) //&& !CreativeManager.Instance.creativeModeSettings.actionPhaseUI)
         {

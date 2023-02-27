@@ -70,7 +70,7 @@ public class HumanballGenerator
 
         verticalAngularStep = 180f / (stagesCount - 1);
 
-        cellPointer.pivotTransform.localPosition = new Vector3(0, -radius * 2f, 0);
+        cellPointer.pivotTransform.localPosition = new Vector3(0, -radius * 1.2f, 0);
 
         for (int i = 0; i < stagesCount; i++)
         {

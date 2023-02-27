@@ -20488,15 +20488,15 @@ MonoBehaviour:
     caveHeightRange: {x: 12, y: 16}
     thresholdValue: 0.5
     heightIncrementLevels:
-    - heightIncrement: 2
+    - heightIncrement: 1
       transitionShift: 3
       transitionLength: 3
-    - heightIncrement: 3
+    - heightIncrement: 1
       transitionShift: 3
-      transitionLength: 4
-    - heightIncrement: 3
-      transitionShift: 4
-      transitionLength: 5
+      transitionLength: 3
+    - heightIncrement: 1.5
+      transitionShift: 3
+      transitionLength: 3
   wavePatternSettings:
   - title: Major Pattern
     waveHeight: 10
@@ -24318,7 +24318,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1227643222}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26d9a09689be840a59e8dfe2199a0bbf, type: 3}
   m_Name: 
@@ -24327,9 +24327,9 @@ MonoBehaviour:
   targetTransform: {fileID: 1779204875}
   motionLerpingFactor: 0.3
   viewDistanceLevels:
+  - 26
+  - 27
   - 28
-  - 32
-  - 37
   viewTransitionTime: 2
 --- !u!1 &1233532377
 GameObject:
@@ -25184,7 +25184,8 @@ MonoBehaviour:
     elasticitySettings:
       springFactor: 300
       dampingFactor: 0.9
-    tensionLimit: 0.2
+    tensionRatio: {x: -0.12, y: 0.12}
+    tensionMultiplier: 1
     baseCells:
     - {fileID: 118950753}
     - {fileID: 688202562}

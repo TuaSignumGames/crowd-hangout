@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &815429765954042016
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5052025250514208635}
+  m_Layer: 9
+  m_Name: Origin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5052025250514208635
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 815429765954042016}
+  m_LocalRotation: {x: -0, y: -1, z: -0, w: 0}
+  m_LocalPosition: {x: -0.05, y: 1.15, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7353560770460508852}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7153101168275061623
 GameObject:
   m_ObjectHideFlags: 0
@@ -47,13 +78,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ab31f79d6b0a47ce8be4a252e621742, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ropeSettings:
+  collider: {fileID: 2584718004563188467}
+  rope:
     ropeContainer: {fileID: 7153101169647815925}
     lineTransform: {fileID: 7153101169337911465}
+    originTransform: {fileID: 5052025250514208635}
     endTransform: {fileID: 7153101169498617581}
     swingContainer: {fileID: 7153101168938727752}
-    swingAmplitude: 0
-    swingPeriod: 0
+    swingAmplitude: 1
+    swingPeriodRange: {x: 2, y: 4}
+    elasticitySettings:
+      springFactor: 300
+      dampingFactor: 0.8
   collectableHuman: {fileID: 7353560770460508853}
 --- !u!65 &2584718004563188467
 BoxCollider:

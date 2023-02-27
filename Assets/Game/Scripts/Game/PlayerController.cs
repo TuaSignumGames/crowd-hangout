@@ -79,11 +79,11 @@ public class PlayerController : MonoBehaviour
                     }
                 }
 
-                ball.Update();
+                //ball.Update();
             }
         }
 
-        //ball.Update();
+        ball.Update();
     }
 
     private void LateUpdate()
@@ -157,7 +157,8 @@ public class PlayerController : MonoBehaviour
         public Transform structureContainer;
         [Space]
         public SpringData elasticitySettings;
-        public float tensionLimit;
+        public Vector2 tensionRatio;
+        public float tensionMultiplier;
         [Space]
         public List<Transform> baseCells;
         public HumanballGenerator proceduralCells;
