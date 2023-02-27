@@ -2,11 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Collectible : MonoBehaviour
+public class Collectible : MonoBehaviour
 {
     public new Collider collider;
-
-    protected BlockPair blockPair;
 
     protected float placementFactor;
 
@@ -14,13 +12,7 @@ public abstract class Collectible : MonoBehaviour
 
     public bool IsCollected => isCollected;
 
-    public virtual void Initialize(BlockPair blockPair, float placementFactor = 0.5f)
-    {
-        this.blockPair = blockPair;
-        this.placementFactor = placementFactor;
-
-        UpdatePlacement();
-    }
+    public virtual void Initialize() { }
 
     public virtual void Collect()
     {
@@ -29,9 +21,16 @@ public abstract class Collectible : MonoBehaviour
         isCollected = true;
     }
 
-    public virtual void UpdatePlacement()
+    public virtual void SetPlacement(BlockPair blockPair, float placementFactor)
     {
+        this.placementFactor = placementFactor;
+
         transform.position = new Vector3(blockPair.floorBlock.transform.position.x, Mathf.Lerp(blockPair.floorBlock.transform.position.y, blockPair.ceilBlock.transform.position.y, placementFactor));
+    }
+
+    public virtual void UpdatePlacement(BlockPair blockPair)
+    {
+        SetPlacement(blockPair, placementFactor);
     }
 
     private void OnTriggerEnter(Collider other)

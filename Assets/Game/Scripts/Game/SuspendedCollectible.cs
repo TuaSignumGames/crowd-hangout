@@ -10,12 +10,8 @@ public class SuspendedCollectible : Collectible
     protected float swingPeriod;
     protected float swingPeriodOffset;
 
-    public override void Initialize(BlockPair blockPair, float placementFactor = 0.5f)
+    public override void Initialize()
     {
-        base.Initialize(blockPair, placementFactor);
-
-        UpdatePlacement();
-
         swingPeriod = Random.Range(rope.swingPeriodRange.x, rope.swingPeriodRange.y);
         swingPeriodOffset = Random.Range(0, swingPeriod);
     }
@@ -43,13 +39,18 @@ public class SuspendedCollectible : Collectible
         rope.Release();
     }
 
-    public override void UpdatePlacement()
+    public override void SetPlacement(BlockPair blockPair, float placementFactor)
     {
         transform.SetParent(null);
 
-        base.UpdatePlacement();
+        base.SetPlacement(blockPair, placementFactor);
 
         rope.Connect(transform, blockPair.ceilBlock.transform.position);
+    }
+
+    public override void UpdatePlacement(BlockPair blockPair)
+    {
+        SetPlacement(blockPair, placementFactor);
     }
 
     [System.Serializable]

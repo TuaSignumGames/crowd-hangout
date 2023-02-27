@@ -9,10 +9,14 @@ public class BlockPair
 
     public GameObject container;
 
+    private Collectible collectible;
+
     private float height;
     private float halfHeight;
 
     private int orderIndex;
+
+    public Collectible Collectible => collectible;
 
     public Vector3 position => container.transform.position;
 
@@ -44,5 +48,23 @@ public class BlockPair
 
         ceilBlock.transform.localPosition = new Vector3(0, halfHeight, 0);
         floorBlock.transform.localPosition = new Vector3(0, -halfHeight, 0);
+
+        if (collectible)
+        {
+            FitCollectible();
+        }
+    }
+
+    public void AddCollectible(Collectible collectible, float placementFactor = 0.5f)
+    {
+        this.collectible = collectible;
+
+        collectible.Initialize();
+        collectible.SetPlacement(this, placementFactor);
+    }
+
+    public void FitCollectible()
+    {
+        collectible.UpdatePlacement(this);
     }
 }

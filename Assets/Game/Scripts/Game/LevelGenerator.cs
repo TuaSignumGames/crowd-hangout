@@ -32,7 +32,6 @@ public class LevelGenerator : MonoBehaviour
     public float levelLength;
 
     private List<BlockPair> blockPairs;
-    private List<Collectible> collectibles;
 
     private BattlePath battlePath;
 
@@ -170,8 +169,6 @@ public class LevelGenerator : MonoBehaviour
 
     private void PlaceCollectibles(int probability)
     {
-        collectibles = new List<Collectible>();
-
         for (int i = 0; i < blockPairs.Count; i++)
         {
             if (i > 5)
@@ -180,9 +177,7 @@ public class LevelGenerator : MonoBehaviour
                 {
                     newCollectible = Instantiate(collectibleSettings.humanCollectiblePrefabs[0], blockPairs[i].container.transform);
 
-                    newCollectible.Initialize(blockPairs[i]);
-
-                    collectibles.Add(newCollectible);
+                    blockPairs[i].AddCollectible(newCollectible);
                 }
             }
         }
@@ -241,11 +236,14 @@ public class LevelGenerator : MonoBehaviour
 
         SetBlocksHeightIncrement(GetBlockPair(humanballTransform.position).OrderIndex + incrementData.transitionShift, incrementData);
 
-        for (int i = 0; i < collectibles.Count; i++)
+        for (int i = 0; i < blockPairs.Count; i++)
         {
-            if (!collectibles[i].IsCollected)
+            if (blockPairs[i].Collectible)
             {
-                collectibles[i].UpdatePlacement();
+                if (!blockPairs[i].Collectible.IsCollected)
+                {
+                    blockPairs[i].FitCollectible();
+                }
             }
         }
     }
