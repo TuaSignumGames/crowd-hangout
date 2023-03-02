@@ -18,10 +18,10 @@ public class BlockPair
 
     public Collectible Collectible => collectible;
 
-    public Vector3 position => container.transform.position;
+    public Vector3 Position => container.transform.position;
 
-    public Vector3 ceilBlockPosition => ceilBlock.transform.position;
-    public Vector3 floorBlockPosition => floorBlock.transform.position;
+    public Vector3 CeilBlockPosition => ceilBlock.transform.position;
+    public Vector3 FloorBlockPosition => floorBlock.transform.position;
 
     public float Height => height;
 

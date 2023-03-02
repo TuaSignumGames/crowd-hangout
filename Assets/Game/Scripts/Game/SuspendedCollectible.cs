@@ -4,21 +4,24 @@ using UnityEngine;
 
 public class SuspendedCollectible : Collectible
 {
-    [Space]
-    public ConnectedRope rope;
+    public SuspensionSettings suspensionSettings;
+
+    protected ConnectedRope rope;
 
     protected float swingPeriod;
     protected float swingPeriodOffset;
 
     public override void Initialize()
     {
+        rope = suspensionSettings.rope;
+
         swingPeriod = Random.Range(rope.swingPeriodRange.x, rope.swingPeriodRange.y);
         swingPeriodOffset = Random.Range(0, swingPeriod);
     }
 
     private void FixedUpdate()
     {
-        if (!rope.IsConnected)
+        if (!suspensionSettings.rope.IsConnected)
         {
             rope.UpdateBouncing();
         }
@@ -51,6 +54,12 @@ public class SuspendedCollectible : Collectible
     public override void UpdatePlacement(BlockPair blockPair)
     {
         SetPlacement(blockPair, placementFactor);
+    }
+
+    [System.Serializable]
+    public class SuspensionSettings
+    {
+        public ConnectedRope rope;
     }
 
     [System.Serializable]

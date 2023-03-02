@@ -78,18 +78,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ab31f79d6b0a47ce8be4a252e621742, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collider: {fileID: 2584718004563188467}
-  rope:
-    ropeContainer: {fileID: 7153101169647815925}
-    lineTransform: {fileID: 7153101169337911465}
-    originTransform: {fileID: 5052025250514208635}
-    endTransform: {fileID: 7153101169498617581}
-    swingContainer: {fileID: 7153101168938727752}
-    swingAmplitude: 1
-    swingPeriodRange: {x: 2, y: 4}
-    elasticitySettings:
-      springFactor: 300
-      dampingFactor: 0.8
+  collectibleSettings:
+    placement: 0
+    rangeNumber: 0
+    collider: {fileID: 2584718004563188467}
+  suspensionSettings:
+    rope:
+      ropeContainer: {fileID: 7153101169647815925}
+      lineTransform: {fileID: 7153101169337911465}
+      originTransform: {fileID: 5052025250514208635}
+      endTransform: {fileID: 7153101169498617581}
+      swingContainer: {fileID: 7153101168938727752}
+      swingAmplitude: 2
+      swingPeriodRange: {x: 3, y: 4}
+      elasticitySettings:
+        springFactor: 300
+        dampingFactor: 0.9
   collectableHuman: {fileID: 7353560770460508853}
 --- !u!65 &2584718004563188467
 BoxCollider:

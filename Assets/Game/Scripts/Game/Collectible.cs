@@ -2,13 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum CollectiblePlacementType { Any, Ground, Ceiling }
+
 public class Collectible : MonoBehaviour
 {
-    public new Collider collider;
+    public CollectibleSettings collectibleSettings;
 
     protected float placementFactor;
 
     protected bool isCollected;
+
+    public CollectiblePlacementType Placement => collectibleSettings.placement;
+
+    public int RangeNumber => collectibleSettings.rangeNumber;
 
     public bool IsCollected => isCollected;
 
@@ -16,16 +22,21 @@ public class Collectible : MonoBehaviour
 
     public virtual void Collect()
     {
-        collider.enabled = false;
+        collectibleSettings.collider.enabled = false;
 
         isCollected = true;
     }
 
     public virtual void SetPlacement(BlockPair blockPair, float placementFactor)
     {
-        this.placementFactor = placementFactor;
+        switch (collectibleSettings.placement)
+        {
+            case CollectiblePlacementType.Any: this.placementFactor = placementFactor; break;
+            case CollectiblePlacementType.Ground: this.placementFactor = 0; break;
+            case CollectiblePlacementType.Ceiling: this.placementFactor = 1f; break;
+        }
 
-        transform.position = new Vector3(blockPair.floorBlock.transform.position.x, Mathf.Lerp(blockPair.floorBlock.transform.position.y, blockPair.ceilBlock.transform.position.y, placementFactor));
+        transform.position = new Vector3(blockPair.floorBlock.transform.position.x, Mathf.Lerp(blockPair.floorBlock.transform.position.y, blockPair.ceilBlock.transform.position.y, this.placementFactor));
     }
 
     public virtual void UpdatePlacement(BlockPair blockPair)
@@ -39,5 +50,14 @@ public class Collectible : MonoBehaviour
         {
             Collect();
         }
+    }
+
+    [System.Serializable]
+    public class CollectibleSettings
+    {
+        public CollectiblePlacementType placement;
+        public int rangeNumber;
+        [Space]
+        public Collider collider;
     }
 }

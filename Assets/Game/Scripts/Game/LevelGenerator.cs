@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [Add multiple-human collectible] <- 
+// -> [Define collectible prefabs by 'populationValue'] <- 
 //
 // Level
 //  - Add Collectible types (Building, Baloon, Humanball, Multiplier) 
@@ -39,7 +39,9 @@ public class LevelGenerator : MonoBehaviour
 
     private BlockPair newBlockPair;
     private BattlePathStage newBattlePathStage;
-    private Collectible newCollectible;
+
+    private Collectible collectiblePrefab;
+    private Collectible collectibleInstance;
 
     private GameObject newBlockPairContainer;
 
@@ -75,7 +77,7 @@ public class LevelGenerator : MonoBehaviour
     {
         GenerateBlocks();
 
-        PlaceCollectibles(100);
+        PlaceCollectibles();
 
         GenerateBattlePath(6);
     }
@@ -86,7 +88,7 @@ public class LevelGenerator : MonoBehaviour
 
         if (collectibles)
         {
-            PlaceCollectibles(50);
+            PlaceCollectibles();
         }
 
         if (battlePath)
@@ -155,7 +157,7 @@ public class LevelGenerator : MonoBehaviour
 
         battlePath = new BattlePath(battlePathSettings.pathContainer.gameObject);
 
-        battlePath.transform.position = newBlockPair.floorBlockPosition + new Vector3(blockSettings.blockLength / 2f, 0, 0);
+        battlePath.transform.position = newBlockPair.FloorBlockPosition + new Vector3(blockSettings.blockLength / 2f, 0, 0);
 
         for (int i = 0; i < stagesCount; i++)
         {
@@ -167,17 +169,28 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private void PlaceCollectibles(int probability)
+    private void PlaceCollectibles()
     {
+        int nextAvailableBlockPairIndex = 0;
+
         for (int i = 0; i < blockPairs.Count; i++)
         {
             if (i > 5)
             {
-                if (Random.Range(0, 101) < Mathf.Clamp(probability, 0, 100))
+                if (i >= nextAvailableBlockPairIndex)
                 {
-                    newCollectible = Instantiate(collectibleSettings.humanCollectiblePrefabs[0], blockPairs[i].container.transform);
+                    //collectiblePrefab = collectibleSettings.humanCollectiblePrefabs[0];
 
-                    blockPairs[i].AddCollectible(newCollectible);
+                    collectibleInstance = Instantiate(collectiblePrefab, blockPairs[i + collectiblePrefab.RangeNumber].container.transform);
+
+                    blockPairs[i].AddCollectible(collectibleInstance);
+
+                    if (collectibleInstance.RangeNumber > 0)
+                    {
+                        AlignBlocksForCollectible(collectibleInstance, i);
+                    }
+
+                    nextAvailableBlockPairIndex = i + 1 + collectiblePrefab.RangeNumber * 2;
                 }
             }
         }
@@ -230,9 +243,30 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
+    private void AlignBlocks(BlockPair referenceBlockPair, int lineIndex, int fromIndex, int toIndex)
+    {
+        for (int i = Mathf.Clamp(fromIndex, 0, blockPairs.Count - 1); i <= Mathf.Clamp(toIndex, 0, blockPairs.Count - 1); i++)
+        {
+            if (lineIndex == 0 || lineIndex == 1)
+            {
+                blockPairs[i].ceilBlock.transform.SetCoordinate(TransformComponent.Position, Axis.Y, Space.World, referenceBlockPair.CeilBlockPosition.y);
+            }
+
+            if (lineIndex == 0 || lineIndex == -1)
+            {
+                blockPairs[i].floorBlock.transform.SetCoordinate(TransformComponent.Position, Axis.Y, Space.World, referenceBlockPair.FloorBlockPosition.y);
+            }
+        }
+    }
+
+    private void AlignBlocksForCollectible(Collectible collectible, int pivotBlockPairIndex)
+    {
+        AlignBlocks(blockPairs[pivotBlockPairIndex], collectible.Placement == CollectiblePlacementType.Any ? 0 : (collectible.Placement == CollectiblePlacementType.Ceiling ? 1 : -1), pivotBlockPairIndex - collectible.RangeNumber, pivotBlockPairIndex + collectible.RangeNumber);
+    }
+
     public void UpdateLevelConfiguration(int humanballLayerIndex)
     {
-        HeightIncrementData incrementData = blockSettings.heightIncrementLevels[Mathf.Clamp(humanballLayerIndex, 0, blockSettings.heightIncrementLevels.Length)];
+        HeightIncrementData incrementData = blockSettings.heightIncrementLevels[Mathf.Clamp(humanballLayerIndex, 0, blockSettings.heightIncrementLevels.Length - 1)];
 
         SetBlocksHeightIncrement(GetBlockPair(humanballTransform.position).OrderIndex + incrementData.transitionShift, incrementData);
 
@@ -252,9 +286,9 @@ public class LevelGenerator : MonoBehaviour
     {
         for (int i = 0; i < blockPairs.Count; i++)
         {
-            if (blockPairs[i].position.x > position.x)
+            if (blockPairs[i].Position.x > position.x)
             {
-                return blockPairs[i].position.x - position.x < blockSettings.blockLength / 2f ? blockPairs[i] : blockPairs[Mathf.Clamp(i, 0, blockPairs.Count)];
+                return blockPairs[i].Position.x - position.x < blockSettings.blockLength / 2f ? blockPairs[i] : blockPairs[Mathf.Clamp(i, 0, blockPairs.Count)];
             }
         }
 
@@ -307,19 +341,8 @@ public class LevelGenerator : MonoBehaviour
     [System.Serializable]
     public class CollectibleSettings
     {
-        // TODO 
-        //
-        // Human prefab to bake default pose
-        //
-        // Collectible prefabs
-        // HumanCollectible prefabs
-        // Crowd(?)Collectible prefabs
-        // AmmoCollectible prefabs
-        // Multiplier prefabs
-
-        public HumanController humanPrefab;
-        [Space]
-        public List<HumanCollectible> humanCollectiblePrefabs;
+        public List<CollectibleData> collectibles;
+        public AnimationCurve populationCurve;
     }
 
     [System.Serializable]
@@ -330,6 +353,13 @@ public class LevelGenerator : MonoBehaviour
 
         public float waveHeight;
         public float waveFrequency;
+    }
+
+    [System.Serializable]
+    public struct CollectibleData
+    {
+        public float populationValue;
+        public Collectible prefab;
     }
 
     [System.Serializable]
