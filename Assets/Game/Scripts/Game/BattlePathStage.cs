@@ -54,6 +54,8 @@ public class BattlePathStage
             {
                 member.Initialize(100f, 0);
 
+                member.MotionSimulator.SetGround(LevelGenerator.Instance.BattlePath.transform.position.y - member.components.animator.transform.localPosition.y);
+
                 member.DropToBattle(Vector3.zero);
             }
         }

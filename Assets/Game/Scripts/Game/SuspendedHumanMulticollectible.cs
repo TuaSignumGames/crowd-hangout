@@ -20,8 +20,6 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
     {
         base.GenerateElements(count);
 
-        humans = new List<HumanController>();
-
         GenerateHumanball(count);
     }
 
@@ -34,6 +32,8 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
 
     protected void GenerateHumanball(int count)
     {
+        humans = new List<HumanController>();
+
         List<HumanballCell> baseLayerCells = new List<HumanballCell>();
 
         for (int i = 0; i < humanballBaseCells.Count; i++)
@@ -57,25 +57,29 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
 
         for (int i = 0; i < count; i++)
         {
-            if (i < baseLayerCells.Count)
-            {
-                structure.AddHuman(Instantiate(humanPrefab));
-            }
-            else
-            {
-                structure.AddHuman(Instantiate(humanPrefab), false);
-            }
+            humanInstance = Instantiate(humanPrefab);
+
+            humanInstance.Initialize();
+
+            structure.AddHuman(humanInstance, i < baseLayerCells.Count);
+
+            //humanInstance.enabled = false;
+            humanInstance.components.collider.enabled = false;
+
+            humans.Add(humanInstance);
         }
+
+        humans[0].MotionSimulator.instanceID = 1;
     }
 
     protected IEnumerator CollectingCoroutine()
     {
         for (int i = 0; i < humans.Count; i++)
         {
-            humans[i].DropFromCell((humans[i].transform.position - PlayerController.Instance.Ball.Transform.position).normalized * PlayerController.Instance.Ball.Velocity.magnitude);
+            humans[i].DropFromCell((humans[i].transform.position - PlayerController.Instance.Ball.Transform.position).normalized * PlayerController.Instance.Ball.Velocity.magnitude, Random.insideUnitSphere.normalized * Random.Range(30f, 120f));
         }
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
 
         for (int i = 0; i < humans.Count; i++)
         {

@@ -19,6 +19,8 @@ public class MotionSimulator
     public Vector3 velocity;
     public Vector3 angularVelocity;
 
+    public int instanceID;
+
     public bool IsGrounded => isGrounded;
 
     public MotionSimulator(Transform transform, MonoUpdateType updateType)
@@ -65,5 +67,12 @@ public class MotionSimulator
 
             transform.position = new Vector3(transform.position.x, isGrounded ? groundPositionY : transform.position.y, transform.position.z);
         }
+    }
+
+    public void SetGround(float y)
+    {
+        groundPositionY = y;
+
+        useGround = true;
     }
 }

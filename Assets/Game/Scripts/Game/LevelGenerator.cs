@@ -4,6 +4,7 @@ using UnityEngine;
 
 // TODO
 //
+// -> [Set BattlePath ground Y for guardians] <- 
 // -> [Finalize multicollectibles] <- 
 // -> [Define collectible prefabs by 'populationValue'] <- 
 //
@@ -78,9 +79,9 @@ public class LevelGenerator : MonoBehaviour
     {
         GenerateBlocks();
 
-        PlaceCollectibles();
-
         GenerateBattlePath(6);
+
+        PlaceCollectibles();
     }
 
     public void GenerateFromEditor(bool collectibles, bool battlePath)
@@ -184,7 +185,7 @@ public class LevelGenerator : MonoBehaviour
 
                     collectibleInstance = Instantiate(collectiblePrefab, blockPairs[i + collectiblePrefab.RangeNumber].container.transform);
 
-                    blockPairs[i].AddCollectible(collectibleInstance, 1);
+                    blockPairs[i].AddCollectible(collectibleInstance, 20);
 
                     if (collectibleInstance.RangeNumber > 0)
                     {

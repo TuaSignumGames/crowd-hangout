@@ -40,7 +40,7 @@ public class HumanballGenerator
 
             humanballLayers.Add(GenerateProceduralLayer(baseLayerRadius + layerWidth * i));
 
-            Debug.Log($" - Layer[{i}]: {humanballLayers[i].AvailableCellsCount}");
+            //Debug.Log($" - Layer[{i}]: {humanballLayers[i].AvailableCellsCount}");
         }
 
         return humanballLayers;
@@ -50,14 +50,14 @@ public class HumanballGenerator
     {
         humanballLayers = new List<HumanballLayer>();
 
-        while (count < humanballCells.Count)
+        while (humanballCells.Count < count)
         {
             CreateLayerContainer(humanballLayers.Count.ToString());
 
             humanballLayers.Add(GenerateProceduralLayer(baseLayerRadius + layerWidth * humanballLayers.Count));
         }
 
-        Debug.Log($" - Cells generated: {humanballCells.Count}");
+        //Debug.Log($" - Cells generated: {humanballCells.Count}");
 
         return humanballLayers;
     }

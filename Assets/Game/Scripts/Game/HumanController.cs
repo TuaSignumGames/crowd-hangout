@@ -55,9 +55,13 @@ public class HumanController : MonoBehaviour
     public static int animatorAttackIdHash;
     public static int animatorDefeatIdHash;
 
+    private bool isInitialized;
+
     private bool inBattle;
 
     [HideInInspector] public bool isFree = true;
+
+    public bool IsInitialized => isInitialized;
 
     public bool IsAlive => healthPoints > 0;
 
@@ -72,7 +76,9 @@ public class HumanController : MonoBehaviour
 
         healthCapacity = healthPoints = health;
 
-        motionSimulator = new MotionSimulator(transform, LevelGenerator.Instance.BattlePath.position.y - components.animator.transform.localPosition.y, MonoUpdateType.FixedUpdate);
+        motionSimulator = new MotionSimulator(transform, -1000f, MonoUpdateType.FixedUpdate);
+
+        isInitialized = true;
     }
 
     public void Initialize(float health, int weaponIndex = 0)
@@ -85,9 +91,14 @@ public class HumanController : MonoBehaviour
         Initialize(team, 100f, weaponIndex);
     }
 
+    public void Initialize()
+    {
+        Initialize(team, 100f);
+    }
+
     private void Start()
     {
-        Initialize(team);
+        Initialize();
     }
 
     private void FixedUpdate()
@@ -103,6 +114,8 @@ public class HumanController : MonoBehaviour
 
             motionSimulator.Update();
         }
+
+        //motionSimulator.Update();
     }
 
     private void LateUpdate()
@@ -201,36 +214,35 @@ public class HumanController : MonoBehaviour
         transform.localPosition = new Vector3();
         transform.localEulerAngles = new Vector3();
 
-        if (cell.Pose != null)
-        {
-            SetPose(cell.Pose);
-        }
-        else
-        {
-            SetPose(poseSettings.GetConfusedPose(cell.Layer.Radius + 0.6f, ConfusedPoseType.BackConfuse)); // TODO Tweak radius increment 
-        }
-
-        GetComponent<Collider>().enabled = true;
+        components.collider.enabled = true;
     }
 
-    public void DropFromCell(Vector3 impulse)
+    public void EjectFromCell()
     {
-        GetComponent<Collider>().enabled = false;
+        components.collider.enabled = false;
 
         transform.SetParent(null);
 
+        isFree = true;
+    }
+
+    public void DropFromCell(Vector3 impulse, Vector3 angularMomentum)
+    {
+        EjectFromCell();
+
         motionSimulator.velocity = impulse;
+        motionSimulator.angularVelocity = angularMomentum;
 
         PlayAnimation(HumanAnimationType.Falling);
-
-        isFree = true;
     }
 
     public void DropToBattle(Vector3 velocity)
     {
         ai = new HumanAI(this);
 
-        DropFromCell(velocity);
+        motionSimulator.SetGround(LevelGenerator.Instance.BattlePath.position.y - components.animator.transform.localPosition.y);
+
+        DropFromCell(velocity, Vector3.zero);
 
         PlayAnimation(HumanAnimationType.Flying);
 

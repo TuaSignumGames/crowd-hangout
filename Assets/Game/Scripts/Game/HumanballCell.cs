@@ -37,12 +37,21 @@ public class HumanballCell
 
         placedHuman.PlaceInCell(this);
 
-        placedHuman.transform.ApplyData(placedHumanLocalTransformData);
+        if (placedHumanPose != null)
+        {
+            human.SetPose(placedHumanPose);
+
+            placedHuman.transform.ApplyData(placedHumanLocalTransformData);
+        }
+        else
+        {
+            human.SetPose(human.poseSettings.GetConfusedPose(relatedLayer.Radius + 0.6f, ConfusedPoseType.BackConfuse)); // TODO Tweak radius increment 
+        }
     }
 
     public void EjectHuman()
     {
-        placedHuman.DropFromCell(Vector3.zero);
+        placedHuman.DropFromCell(Vector3.zero, Vector3.zero);
 
         placedHuman = null;
     }
