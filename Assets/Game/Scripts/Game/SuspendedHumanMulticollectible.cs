@@ -5,7 +5,6 @@ using UnityEngine;
 public class SuspendedHumanMulticollectible : SuspendedMulticollectible
 {
     [Space]
-    public Transform humanContainer;
     public HumanController humanPrefab;
     [Space]
     public List<Transform> humanballBaseCells;
@@ -13,7 +12,9 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
 
     protected List<HumanController> humans;
 
-    protected Humanball humanball;
+    protected HumanController humanInstance;
+
+    protected Humanball structure;
 
     protected override void GenerateElements(int count)
     {
@@ -21,17 +22,17 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
 
         humans = new List<HumanController>();
 
-        GenerateBallCells(count);
+        GenerateHumanball(count);
     }
 
     public override void Collect()
     {
         base.Collect();
 
-        // TODO Drop and collect humans 
+        StartCoroutine(CollectingCoroutine());
     }
 
-    protected void GenerateBallCells(int count)
+    protected void GenerateHumanball(int count)
     {
         List<HumanballCell> baseLayerCells = new List<HumanballCell>();
 
@@ -39,14 +40,7 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
         {
             baseLayerCells.Add(new HumanballCell(humanballBaseCells[i].gameObject));
 
-            if (i == 0)
-            {
-                baseLayerCells[i].TrySavePose();
-            }
-            else
-            {
-                baseLayerCells[i].TryCropPose();
-            }
+            baseLayerCells[i].TryCropPose();
         }
 
         List<HumanballLayer> structureLayers = new List<HumanballLayer>
@@ -54,10 +48,38 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
             humanballGenerator.GenerateLayer(baseLayerCells, 0.2f, "B")
         };
 
-        structureLayers.AddRange(humanballGenerator.GenerateProceduralCells(count - baseLayerCells.Count));
+        if (count > baseLayerCells.Count)
+        {
+            structureLayers.AddRange(humanballGenerator.GenerateProceduralCells(count - baseLayerCells.Count));
+        }
 
-        baseLayerCells[0].Human.isFree = false;
+        structure = new Humanball(structureLayers);
 
-        // TODO Fill cells by humans 
+        for (int i = 0; i < count; i++)
+        {
+            if (i < baseLayerCells.Count)
+            {
+                structure.AddHuman(Instantiate(humanPrefab));
+            }
+            else
+            {
+                structure.AddHuman(Instantiate(humanPrefab), false);
+            }
+        }
+    }
+
+    protected IEnumerator CollectingCoroutine()
+    {
+        for (int i = 0; i < humans.Count; i++)
+        {
+            humans[i].DropFromCell((humans[i].transform.position - PlayerController.Instance.Ball.Transform.position).normalized * PlayerController.Instance.Ball.Velocity.magnitude);
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        for (int i = 0; i < humans.Count; i++)
+        {
+            PlayerController.Instance.Ball.StickHuman(humans[i]);
+        }
     }
 }

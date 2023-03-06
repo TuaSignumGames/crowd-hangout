@@ -50,7 +50,7 @@ public class Humanball
         cellsCount = GetAvailableCellsCount();
     }
 
-    public void AddHuman(HumanController human)
+    public void AddHuman(HumanController human, bool closestCell = true)
     {
         for (int i = 0; i < layers.Count; i++)
         {
@@ -65,7 +65,7 @@ public class Humanball
             }
             else
             {
-                if (layers[i].AddHumanInClosestCell(human))
+                if ((closestCell ? layers[i].AddHumanInClosestCell(human) : layers[i].AddHumanInRandomCell(human)))
                 {
                     if (i > previousLayerIndex)
                     {

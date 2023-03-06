@@ -17,6 +17,7 @@ public class HumanballLayer
     private int availableCellsCount;
 
     public List<HumanballCell> cells;
+    public List<HumanballCell> requiredCells;
 
     public int AvailableCellsCount => availableCellsCount;
 
@@ -49,8 +50,6 @@ public class HumanballLayer
         }
         else
         {
-            //human.SetConfusedPose(layerRadius, ConfusedPoseType.BackConfuse);
-
             cells[cells.Count - availableCellsCount].PutHuman(human);
 
             availableCellsCount--;
@@ -67,8 +66,6 @@ public class HumanballLayer
         }
         else if (GetClosestEmptyCell(human.transform.position) != null)
         {
-            //human.SetConfusedPose(layerRadius, ConfusedPoseType.BackConfuse);
-
             closestCell.PutHuman(human);
 
             availableCellsCount--;
@@ -87,9 +84,9 @@ public class HumanballLayer
         }
         else
         {
-            //human.SetConfusedPose(layerRadius, ConfusedPoseType.BackConfuse);
+            requiredCells = cells.FindAll((c) => c.IsAvailable);
 
-            cells.GetRandom().PutHuman(human);
+            requiredCells.GetRandom().PutHuman(human);
 
             availableCellsCount--;
 

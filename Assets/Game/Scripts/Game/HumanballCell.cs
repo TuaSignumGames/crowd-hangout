@@ -9,7 +9,10 @@ public class HumanballCell
     private HumanballLayer relatedLayer;
 
     private HumanController placedHuman;
+
     private HumanPose placedHumanPose;
+
+    private TransformData placedHumanLocalTransformData;
 
     public Transform transform => gameObject.transform;
     public HumanballLayer Layer => relatedLayer;
@@ -33,6 +36,8 @@ public class HumanballCell
         placedHuman = human;
 
         placedHuman.PlaceInCell(this);
+
+        placedHuman.transform.ApplyData(placedHumanLocalTransformData);
     }
 
     public void EjectHuman()
@@ -47,6 +52,8 @@ public class HumanballCell
         if (placedHuman)
         {
             placedHumanPose = placedHuman.PeekPose();
+
+            placedHumanLocalTransformData = new TransformData(placedHuman.transform, Space.Self);
         }
     }
 
@@ -54,7 +61,7 @@ public class HumanballCell
     {
         if (placedHuman)
         {
-            placedHumanPose = placedHuman.PeekPose();
+            TrySavePose();
 
             GameObject.Destroy(placedHuman.gameObject);
 

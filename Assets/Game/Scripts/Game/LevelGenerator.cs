@@ -4,6 +4,7 @@ using UnityEngine;
 
 // TODO
 //
+// -> [Finalize multicollectibles] <- 
 // -> [Define collectible prefabs by 'populationValue'] <- 
 //
 // Level
@@ -40,8 +41,8 @@ public class LevelGenerator : MonoBehaviour
     private BlockPair newBlockPair;
     private BattlePathStage newBattlePathStage;
 
-    private Collectible collectiblePrefab;
-    private Collectible collectibleInstance;
+    private Multicollectible collectiblePrefab;
+    private Multicollectible collectibleInstance;
 
     private GameObject newBlockPairContainer;
 
@@ -175,15 +176,15 @@ public class LevelGenerator : MonoBehaviour
 
         for (int i = 0; i < blockPairs.Count; i++)
         {
-            if (i > 5)
+            if (i == 10)//(i > 5)
             {
                 if (i >= nextAvailableBlockPairIndex)
                 {
-                    //collectiblePrefab = collectibleSettings.humanCollectiblePrefabs[0];
+                    collectiblePrefab = collectibleSettings.collectibles.GetRandom().prefab;
 
                     collectibleInstance = Instantiate(collectiblePrefab, blockPairs[i + collectiblePrefab.RangeNumber].container.transform);
 
-                    blockPairs[i].AddCollectible(collectibleInstance);
+                    blockPairs[i].AddCollectible(collectibleInstance, 1);
 
                     if (collectibleInstance.RangeNumber > 0)
                     {
@@ -191,6 +192,8 @@ public class LevelGenerator : MonoBehaviour
                     }
 
                     nextAvailableBlockPairIndex = i + 1 + collectiblePrefab.RangeNumber * 2;
+
+                    return;
                 }
             }
         }
@@ -359,7 +362,7 @@ public class LevelGenerator : MonoBehaviour
     public struct CollectibleData
     {
         public float populationValue;
-        public Collectible prefab;
+        public Multicollectible prefab;
     }
 
     [System.Serializable]

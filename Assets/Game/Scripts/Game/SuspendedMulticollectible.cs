@@ -51,6 +51,8 @@ public class SuspendedMulticollectible : Multicollectible
 
         base.SetPlacement(blockPair, placementFactor);
 
+        print($" - Rope: {rope} / Transform: {transform} / Block: {blockPair.ceilBlock}");
+
         rope.Connect(transform, blockPair.ceilBlock.transform.position);
     }
 
