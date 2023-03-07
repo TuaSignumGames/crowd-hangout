@@ -14,6 +14,8 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
 
     protected HumanController humanInstance;
 
+    protected HumanballCell targetCell;
+
     protected Humanball structure;
 
     protected override void GenerateElements(int count)
@@ -25,9 +27,26 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
 
     public override void Collect()
     {
-        base.Collect();
+        for (int i = 0; i < humans.Count; i++)
+        {
+            humans[i].DropFromCell((humans[i].transform.position - PlayerController.Humanball.Transform.position).normalized * PlayerController.Humanball.Velocity.magnitude, Random.insideUnitSphere.normalized * Random.Range(30f, 120f));
+        }
 
-        StartCoroutine(CollectingCoroutine());
+        base.Collect();
+    }
+
+    protected override void PullElements()
+    {
+        base.PullElements();
+
+        for (int i = 0; i < humans.Count; i++)
+        {
+            humanInstance = humans[i];
+
+            targetCell = PlayerController.Humanball.ReserveCell(humanInstance);
+
+            elements[i].Pull(targetCell.transform, 1f, () => targetCell.PutHuman(humanInstance), 1f);
+        }
     }
 
     protected void GenerateHumanball(int count)
@@ -69,21 +88,9 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
             humans.Add(humanInstance);
         }
 
-        humans[0].MotionSimulator.instanceID = 1;
-    }
-
-    protected IEnumerator CollectingCoroutine()
-    {
         for (int i = 0; i < humans.Count; i++)
         {
-            humans[i].DropFromCell((humans[i].transform.position - PlayerController.Instance.Ball.Transform.position).normalized * PlayerController.Instance.Ball.Velocity.magnitude, Random.insideUnitSphere.normalized * Random.Range(30f, 120f));
-        }
-
-        yield return new WaitForSeconds(2f);
-
-        for (int i = 0; i < humans.Count; i++)
-        {
-            PlayerController.Instance.Ball.StickHuman(humans[i]);
+            elements[i] = new MulticollectibleElement(humans[i].transform);
         }
     }
 }

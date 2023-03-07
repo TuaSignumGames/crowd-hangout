@@ -13,6 +13,7 @@ public class HumanballProcessor
 
     private SpringEvaluator springEvaluator;
 
+    private HumanballCell nextCell;
     private HumanballCell ropeConnectionCell;
 
     private Vector3 previousSwingPosition;
@@ -77,8 +78,6 @@ public class HumanballProcessor
 
         baseLayerCells[0].Human.isFree = false;
 
-        baseLayerCells[0].Human.SetWeapon(4);       // Weapons debugging 
-
         structure = new Humanball(structureLayers);
     }
 
@@ -123,13 +122,26 @@ public class HumanballProcessor
         ballData.suspensionContainer.localScale = new Vector3(1f + tensionDeformation.x * springValue, 1f + tensionDeformation.y * springValue, 1f);
     }
 
-    public void StickHuman(HumanController humanController)
+    public HumanballCell ReserveCell(HumanController humanController)
     {
-        structure.AddHuman(humanController);
+        nextCell = structure.ReserveCell(humanController);
 
         humanController.enabled = true;
 
         UpdateCenterOfMass();
+
+        return nextCell;
+    }
+
+    public HumanballCell StickHuman(HumanController humanController)
+    {
+        nextCell = structure.AddHuman(humanController);
+
+        humanController.enabled = true;
+
+        UpdateCenterOfMass();
+
+        return nextCell;
     }
 
     public void UnstickHuman(HumanController humanController)

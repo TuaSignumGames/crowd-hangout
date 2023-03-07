@@ -31,8 +31,15 @@ public class HumanballCell
         }
     }
 
+    public void Reserve(HumanController human)
+    {
+        placedHuman = human;
+    }
+
     public void PutHuman(HumanController human)
     {
+        Debug.Log($"PutHuman({human})");
+
         placedHuman = human;
 
         placedHuman.PlaceInCell(this);
@@ -45,7 +52,7 @@ public class HumanballCell
         }
         else
         {
-            human.SetPose(human.poseSettings.GetConfusedPose(relatedLayer.Radius + 0.6f, ConfusedPoseType.BackConfuse)); // TODO Tweak radius increment 
+            human.SetPose(human.poseSettings.GetConfusedPose(relatedLayer.Radius + 0.6f, ConfusedPoseType.BackConfuse));
         }
     }
 

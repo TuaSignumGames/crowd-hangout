@@ -29,7 +29,7 @@ public class CameraController : MonoBehaviour
 
     private void Start()
     {
-        PlayerController.Instance.Ball.Structure.OnLayerIncremented += SetViewDistance;
+        PlayerController.Humanball.Structure.OnLayerIncremented += SetViewDistance;
     }
 
     private void FixedUpdate()

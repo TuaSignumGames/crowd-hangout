@@ -129,9 +129,9 @@ MonoBehaviour:
     weaponContainer: {fileID: 6702893980190087776}
     ammoContainer: {fileID: 2074564833369408583}
     damageRate: 20
-    reloadingTime: 0.5
-    attackDistance: 5
-    projectileSpeed: 15
+    reloadingTime: 1
+    attackDistance: 8
+    projectileSpeed: 25
     directionAngularOffset: 0
     attackAnimationID: 4
     attackVFX: {fileID: 3364544254698358871}

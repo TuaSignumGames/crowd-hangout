@@ -22,8 +22,10 @@ public class SuspendedMulticollectible : Multicollectible
         swingPeriodOffset = Random.Range(0, swingPeriod);
     }
 
-    private void FixedUpdate()
+    public override void FixedUpdate()
     {
+        base.FixedUpdate();
+
         if (!suspensionSettings.rope.IsConnected)
         {
             rope.UpdateBouncing();

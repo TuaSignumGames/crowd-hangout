@@ -7,6 +7,10 @@ public class HumanPose
 {
     public TransformData[] boneTransformDatas;
 
+    private TransformData[] baseBoneTransformDatas;
+
+    private bool isTransformationComplete;
+
     public HumanPose(IList<HumanBone> bones)
     {
         boneTransformDatas = new TransformData[bones.Count];
@@ -15,6 +19,8 @@ public class HumanPose
         {
             boneTransformDatas[i] = new TransformData(bones[i].transform, Space.Self);
         }
+
+        baseBoneTransformDatas = boneTransformDatas;
     }
 
     public HumanPose(IList<TransformData> boneTransformDatas)
@@ -24,6 +30,23 @@ public class HumanPose
         for (int i = 0; i < boneTransformDatas.Count; i++)
         {
             this.boneTransformDatas[i] = boneTransformDatas[i];
+        }
+
+        baseBoneTransformDatas = this.boneTransformDatas;
+    }
+
+    public void Transformate(HumanPose targetPose, float t)
+    {
+        for (int i = 0; i < boneTransformDatas.Length; i++)
+        {
+            boneTransformDatas[i] = TransformData.Lerp(baseBoneTransformDatas[i], targetPose.boneTransformDatas[i], t);
+        }
+
+        isTransformationComplete = t >= 1f;
+
+        if (isTransformationComplete)
+        {
+            baseBoneTransformDatas = boneTransformDatas;
         }
     }
 

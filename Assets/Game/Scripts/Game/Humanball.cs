@@ -16,6 +16,7 @@ public class Humanball
     private HumanballCell[] layerClosestCells;
 
     private HumanballCell closestCell;
+    private HumanballCell availableCell;
 
     private float cellSqrDistance;
     private float minCellSqrDistance;
@@ -50,22 +51,26 @@ public class Humanball
         cellsCount = GetAvailableCellsCount();
     }
 
-    public void AddHuman(HumanController human, bool closestCell = true)
+    public HumanballCell ReserveCell(HumanController human, bool closestCell = true)
     {
         for (int i = 0; i < layers.Count; i++)
         {
             if (i == 0)
             {
-                if (layers[i].AddHumanInNextCell(human))
+                availableCell = layers[i].ReserveNextCell(human);
+
+                if (availableCell != null)
                 {
                     filledLayersCount = 1;
 
-                    return;
+                    return availableCell;
                 }
             }
             else
             {
-                if ((closestCell ? layers[i].AddHumanInClosestCell(human) : layers[i].AddHumanInRandomCell(human)))
+                availableCell = (closestCell ? layers[i].ReserveClosestCell(human) : layers[i].ReserveRandomCell(human));
+
+                if (availableCell != null)
                 {
                     if (i > previousLayerIndex)
                     {
@@ -79,10 +84,53 @@ public class Humanball
 
                     filledLayersCount = i + 1;
 
-                    return;
+                    return availableCell;
                 }
             }
         }
+
+        return null;
+    }
+
+    public HumanballCell AddHuman(HumanController human, bool closestCell = true)
+    {
+        for (int i = 0; i < layers.Count; i++)
+        {
+            if (i == 0)
+            {
+                availableCell = layers[i].AddHumanInNextCell(human);
+
+                if (availableCell != null)
+                {
+                    filledLayersCount = 1;
+
+                    return availableCell;
+                }
+            }
+            else
+            {
+                availableCell = (closestCell ? layers[i].AddHumanInClosestCell(human) : layers[i].AddHumanInRandomCell(human));
+
+                if (availableCell != null)
+                {
+                    if (i > previousLayerIndex)
+                    {
+                        previousLayerIndex = i;
+
+                        if (OnLayerIncremented != null)
+                        {
+                            OnLayerIncremented(i - 1);
+                        }
+                    }
+
+                    filledLayersCount = i + 1;
+
+                    return availableCell;
+                }
+            }
+        }
+
+        return null;
     }
 
     public void RemoveHuman(HumanController human)

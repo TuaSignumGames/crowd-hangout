@@ -7,7 +7,7 @@ public class HumanballLayer
 {
     private GameObject container;
 
-    private HumanballCell closestCell;
+    private HumanballCell requiredCell;
 
     private float layerRadius;
 
@@ -42,55 +42,107 @@ public class HumanballLayer
         }
     }
 
-    public bool AddHumanInNextCell(HumanController human)
+    public HumanballCell ReserveNextCell(HumanController human)
     {
         if (availableCellsCount == 0)
         {
-            return false;
+            return null;
         }
         else
         {
-            cells[cells.Count - availableCellsCount].PutHuman(human);
+            cells[cells.Count - availableCellsCount].Reserve(human);
 
-            availableCellsCount--;
-
-            return true;
+            return cells[cells.Count - availableCellsCount--];
         }
     }
 
-    public bool AddHumanInClosestCell(HumanController human)
+    public HumanballCell ReserveClosestCell(HumanController human)
     {
         if (availableCellsCount == 0)
         {
-            return false;
+            return null;
         }
         else if (GetClosestEmptyCell(human.transform.position) != null)
         {
-            closestCell.PutHuman(human);
+            requiredCell.Reserve(human);
 
             availableCellsCount--;
 
-            return true;
+            return requiredCell;
         }
 
-        return false;
+        return null;
     }
 
-    public bool AddHumanInRandomCell(HumanController human)
+    public HumanballCell ReserveRandomCell(HumanController human)
     {
         if (availableCellsCount == 0)
         {
-            return false;
+            return null;
         }
         else
         {
             requiredCells = cells.FindAll((c) => c.IsAvailable);
 
-            requiredCells.GetRandom().PutHuman(human);
+            requiredCell = requiredCells.GetRandom();
+
+            requiredCell.Reserve(human);
 
             availableCellsCount--;
 
-            return true;
+            return requiredCell;
+        }
+    }
+
+    public HumanballCell AddHumanInNextCell(HumanController human)
+    {
+        if (availableCellsCount == 0)
+        {
+            return null;
+        }
+        else
+        {
+            cells[cells.Count - availableCellsCount].PutHuman(human);
+
+            return cells[cells.Count - availableCellsCount--];
+        }
+    }
+
+    public HumanballCell AddHumanInClosestCell(HumanController human)
+    {
+        if (availableCellsCount == 0)
+        {
+            return null;
+        }
+        else if (GetClosestEmptyCell(human.transform.position) != null)
+        {
+            requiredCell.PutHuman(human);
+
+            availableCellsCount--;
+
+            return requiredCell;
+        }
+
+        return null;
+    }
+
+    public HumanballCell AddHumanInRandomCell(HumanController human)
+    {
+        if (availableCellsCount == 0)
+        {
+            return null;
+        }
+        else
+        {
+            requiredCells = cells.FindAll((c) => c.IsAvailable);
+
+            requiredCell = requiredCells.GetRandom();
+
+            requiredCell.PutHuman(human);
+
+            availableCellsCount--;
+
+            return requiredCell;
         }
     }
 
@@ -113,7 +165,7 @@ public class HumanballLayer
 
     public HumanballCell GetClosestCell(Vector3 position)
     {
-        closestCell = null;
+        requiredCell = null;
 
         minCellSqrDistance = float.MaxValue;
 
@@ -122,12 +174,12 @@ public class HumanballLayer
             CheckForClosestCell(cells[i], position);
         }
 
-        return closestCell;
+        return requiredCell;
     }
 
     public HumanballCell GetClosestEmptyCell(Vector3 position)
     {
-        closestCell = null;
+        requiredCell = null;
 
         minCellSqrDistance = float.MaxValue;
 
@@ -139,12 +191,12 @@ public class HumanballLayer
             }
         }
 
-        return closestCell;
+        return requiredCell;
     }
 
     public HumanballCell GetClosestFilledCell(Vector3 position)
     {
-        closestCell = null;
+        requiredCell = null;
 
         minCellSqrDistance = float.MaxValue;
 
@@ -156,12 +208,12 @@ public class HumanballLayer
             }
         }
 
-        return closestCell;
+        return requiredCell;
     }
 
     public HumanballCell GetPlanarClosestEmptyCell(Vector3 position, Axis planeAxis)
     {
-        closestCell = null;
+        requiredCell = null;
 
         minCellSqrDistance = float.MaxValue;
 
@@ -173,12 +225,12 @@ public class HumanballLayer
             }
         }
 
-        return closestCell;
+        return requiredCell;
     }
 
     public HumanballCell GetPlanarClosestFilledCell(Vector3 position, Axis planeAxis)
     {
-        closestCell = null;
+        requiredCell = null;
 
         minCellSqrDistance = float.MaxValue;
 
@@ -190,7 +242,7 @@ public class HumanballLayer
             }
         }
 
-        return closestCell;
+        return requiredCell;
     }
 
     private void CheckForClosestCell(HumanballCell cell, Vector3 point)
@@ -201,7 +253,7 @@ public class HumanballLayer
         {
             minCellSqrDistance = cellSqrDistance;
 
-            closestCell = cell;
+            requiredCell = cell;
         }
     }
 
@@ -213,7 +265,7 @@ public class HumanballLayer
         {
             minCellSqrDistance = cellSqrDistance;
 
-            closestCell = cell;
+            requiredCell = cell;
         }
     }
 }

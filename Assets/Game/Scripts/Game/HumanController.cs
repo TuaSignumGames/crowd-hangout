@@ -67,6 +67,8 @@ public class HumanController : MonoBehaviour
 
     public void Initialize(HumanTeam team, float health, int weaponIndex = 0)
     {
+        InitializeAnimatorHashes();
+
         if (!(this.team == HumanTeam.Yellow && team == HumanTeam.Yellow))
         {
             SetTeam(this.team = team);
@@ -98,7 +100,10 @@ public class HumanController : MonoBehaviour
 
     private void Start()
     {
-        Initialize();
+        if (!isInitialized)
+        {
+            Initialize();
+        }
     }
 
     private void FixedUpdate()
@@ -111,11 +116,13 @@ public class HumanController : MonoBehaviour
 
                 currentWeapon.Update();
             }
+            else
+            {
+
+            }
 
             motionSimulator.Update();
         }
-
-        //motionSimulator.Update();
     }
 
     private void LateUpdate()
@@ -215,6 +222,8 @@ public class HumanController : MonoBehaviour
         transform.localEulerAngles = new Vector3();
 
         components.collider.enabled = true;
+
+        Debug.Log($"PlaceInCell({cell})");
     }
 
     public void EjectFromCell()
@@ -358,7 +367,7 @@ public class HumanController : MonoBehaviour
         {
             if (other.gameObject.layer == 7)
             {
-                PlayerController.Instance.Ball.UnstickHuman(this);
+                PlayerController.Humanball.UnstickHuman(this);
             }
         }
     }

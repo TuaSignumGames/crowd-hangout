@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance;
+    public static HumanballProcessor Humanball;
 
     public BallSettings ballSettings;
     public RopeSettings ropeSettings;
@@ -23,8 +24,6 @@ public class PlayerController : MonoBehaviour
 
     private bool isBattleMode;
 
-    public HumanballProcessor Ball => ball;
-
     private void Awake()
     {
         Instance = this;
@@ -39,6 +38,8 @@ public class PlayerController : MonoBehaviour
 
         ball.AssignRope(rope);
         rope.AssignBall(ball);
+
+        Humanball = ball;
 
         HumanController.InitializeAnimatorHashes();
 

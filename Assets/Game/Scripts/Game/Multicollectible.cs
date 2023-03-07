@@ -6,6 +6,8 @@ public class Multicollectible : Collectible
 {
     public MulticollectibleSettings multicollectibleSettings;
 
+    protected MulticollectibleElement[] elements;
+
     protected MotionSimulator[] debrisMotionSimulators;
 
     public virtual void Initialize(int elementsCount = 1)
@@ -17,12 +19,20 @@ public class Multicollectible : Collectible
         debrisMotionSimulators = new MotionSimulator[multicollectibleSettings.debris.Length];
     }
 
-    protected virtual void GenerateElements(int count) { }
+    protected virtual void GenerateElements(int count)
+    {
+        elements = new MulticollectibleElement[count];
+    }
 
-    private void FixedUpdate()
+    public virtual void FixedUpdate()
     {
         if (isCollected)
         {
+            for (int i = 0; i < elements.Length; i++)
+            {
+                elements[i].Update();
+            }
+
             for (int i = 0; i < debrisMotionSimulators.Length; i++)
             {
                 debrisMotionSimulators[i].Update();
@@ -39,6 +49,11 @@ public class Multicollectible : Collectible
             multicollectibleSettings.capsule.SetActive(false);
         }
 
+        if (elements.Length > 0)
+        {
+            PullElements();
+        }
+
         if (multicollectibleSettings.debris.Length > 0)
         {
             DropDebris();
@@ -51,6 +66,8 @@ public class Multicollectible : Collectible
             multicollectibleSettings.destructionVFX.Play();
         }
     }
+
+    protected virtual void PullElements() { }
 
     protected virtual void DropDebris()
     {

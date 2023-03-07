@@ -4,8 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [Set BattlePath ground Y for guardians] <- 
-// -> [Finalize multicollectibles] <- 
+// -> [Pulling issue] <- 
 // -> [Define collectible prefabs by 'populationValue'] <- 
 //
 // Level
@@ -70,9 +69,9 @@ public class LevelGenerator : MonoBehaviour
     {
         PlayerController.Instance.Initialize();
 
-        PlayerController.Instance.Ball.Structure.OnLayerIncremented += UpdateLevelConfiguration;
+        PlayerController.Humanball.Structure.OnLayerIncremented += UpdateLevelConfiguration;
 
-        humanballTransform = PlayerController.Instance.Ball.Transform;
+        humanballTransform = PlayerController.Humanball.Transform;
     }
 
     public void Generate()
