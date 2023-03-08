@@ -133,9 +133,9 @@ public class HumanballProcessor
         return nextCell;
     }
 
-    public HumanballCell StickHuman(HumanController humanController)
+    public HumanballCell StickHuman(HumanController humanController, bool closestCell = true)
     {
-        nextCell = structure.AddHuman(humanController);
+        nextCell = structure.AddHuman(humanController, closestCell);
 
         humanController.enabled = true;
 

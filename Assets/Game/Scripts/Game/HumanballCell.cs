@@ -38,8 +38,6 @@ public class HumanballCell
 
     public void PutHuman(HumanController human)
     {
-        Debug.Log($"PutHuman({human})");
-
         placedHuman = human;
 
         placedHuman.PlaceInCell(this);

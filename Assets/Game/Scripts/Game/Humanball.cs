@@ -109,7 +109,7 @@ public class Humanball
             }
             else
             {
-                availableCell = (closestCell ? layers[i].AddHumanInClosestCell(human) : layers[i].AddHumanInRandomCell(human));
+                availableCell = closestCell ? layers[i].AddHumanInClosestCell(human) : layers[i].AddHumanInRandomCell(human);
 
                 if (availableCell != null)
                 {

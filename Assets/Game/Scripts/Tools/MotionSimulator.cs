@@ -21,6 +21,8 @@ public class MotionSimulator
 
     public int instanceID;
 
+    public Transform Transform => transform;
+
     public bool IsGrounded => isGrounded;
 
     public MotionSimulator(Transform transform, MonoUpdateType updateType)
@@ -66,6 +68,11 @@ public class MotionSimulator
             isGrounded = transform.position.y <= groundPositionY;
 
             transform.position = new Vector3(transform.position.x, isGrounded ? groundPositionY : transform.position.y, transform.position.z);
+        }
+
+        if (instanceID > 0)
+        {
+            Debug.Log($" - Motion simulator is updating [{instanceID}]");
         }
     }
 

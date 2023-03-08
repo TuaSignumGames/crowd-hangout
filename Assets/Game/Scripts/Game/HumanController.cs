@@ -216,14 +216,14 @@ public class HumanController : MonoBehaviour
     {
         isFree = false;
 
+        components.animator.enabled = false;
+
         transform.SetParent(cell.transform);
 
         transform.localPosition = new Vector3();
         transform.localEulerAngles = new Vector3();
 
         components.collider.enabled = true;
-
-        Debug.Log($"PlaceInCell({cell})");
     }
 
     public void EjectFromCell()

@@ -28,10 +28,7 @@ public class Multicollectible : Collectible
     {
         if (isCollected)
         {
-            for (int i = 0; i < elements.Length; i++)
-            {
-                elements[i].Update();
-            }
+            PullElements();
 
             for (int i = 0; i < debrisMotionSimulators.Length; i++)
             {
@@ -47,11 +44,6 @@ public class Multicollectible : Collectible
         if (multicollectibleSettings.capsule)
         {
             multicollectibleSettings.capsule.SetActive(false);
-        }
-
-        if (elements.Length > 0)
-        {
-            PullElements();
         }
 
         if (multicollectibleSettings.debris.Length > 0)
@@ -87,5 +79,9 @@ public class Multicollectible : Collectible
         public GameObject[] debris;
         public ParticleSystem destructionVFX;
         public float destructionPower;
+        [Space]
+        public float collectibleSpeed;
+        public float collectibleAcceleration;
+        public float collectiblePullingDelay;
     }
 }

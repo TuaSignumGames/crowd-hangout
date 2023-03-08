@@ -39,13 +39,15 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
     {
         base.PullElements();
 
-        for (int i = 0; i < humans.Count; i++)
+        for (int i = 0; i < elements.Length; i++)
         {
-            humanInstance = humans[i];
-
-            targetCell = PlayerController.Humanball.ReserveCell(humanInstance);
-
-            elements[i].Pull(targetCell.transform, 1f, () => targetCell.PutHuman(humanInstance), 1f);
+            if (!elements[i].IsCollected)
+            {
+                if (elements[i].Pull(PlayerController.Humanball.Transform))
+                {
+                    PlayerController.Humanball.StickHuman(humans[i], false);
+                }
+            }
         }
     }
 
@@ -90,7 +92,9 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
 
         for (int i = 0; i < humans.Count; i++)
         {
-            elements[i] = new MulticollectibleElement(humans[i].transform);
+            elements[i] = new MulticollectibleElement(humans[i].MotionSimulator, multicollectibleSettings.collectibleSpeed, multicollectibleSettings.collectibleAcceleration, multicollectibleSettings.collectiblePullingDelay, 1f);
         }
+
+        humans[count / 2].MotionSimulator.instanceID = 1;
     }
 }

@@ -4,59 +4,73 @@ using UnityEngine;
 
 public class MulticollectibleElement
 {
-    protected Transform transform;
+    protected MotionSimulator motionSimulator;
 
-    protected Transform targetPointTransform;
+    protected Vector3 targetVector;
 
+    protected Vector3 velocity;
+    protected Vector3 velocityIncrement;
+
+    protected float actualSpeed;
+    protected float speedLimit;
+    protected float speedIncrement;
+
+    protected float sqrDistanceToTarget;
+    protected float sqrTargetPointRadius;
+
+    protected float pullDelay;
     protected float pullAvailabilityTime;
 
-    protected float t;
-    protected float dt;
+    protected bool isCollected;
 
-    protected bool isPulling;
+    public bool IsCollected => isCollected;
 
-    protected System.Action callback;
-
-    public bool IsPulling => isPulling;
-
-    public MulticollectibleElement(Transform elementTransform)
+    public MulticollectibleElement(MotionSimulator motionSimulator, float speed, float acceleration, float delay, float targetPointRadius)
     {
-        transform = elementTransform;
+        this.motionSimulator = motionSimulator;
+
+        speedLimit = speed;
+        speedIncrement = acceleration * Time.fixedDeltaTime;
+
+        sqrTargetPointRadius = targetPointRadius * targetPointRadius;
+
+        pullDelay = delay;
     }
 
-    public virtual void Update()
+    public virtual bool Pull(Transform targetTransform)
     {
-        if (isPulling)
+        // TODO Define pull mechanics 
+
+        if (pullAvailabilityTime == 0)
         {
-            if (Time.timeSinceLevelLoad > pullAvailabilityTime)
+            pullAvailabilityTime = Time.timeSinceLevelLoad + pullDelay;
+        }
+
+        if (Time.timeSinceLevelLoad > pullAvailabilityTime)
+        {
+            targetVector = targetTransform.position - motionSimulator.Transform.position;
+
+            sqrDistanceToTarget = targetVector.sqrMagnitude;
+
+            if (sqrDistanceToTarget > 10f)
             {
-                t += dt;
+                velocity = Vector3.ClampMagnitude(velocity + targetVector.normalized * speedIncrement, speedLimit);
+            }
+            else
+            {
+                velocity = targetVector.normalized * actualSpeed;
 
-                transform.position = Vector3.Lerp(transform.position, targetPointTransform.position, t);
+                actualSpeed = actualSpeed < speedLimit ? actualSpeed + speedIncrement : speedLimit;
+            }
 
-                if (t >= 1f)
-                {
-                    isPulling = false;
+            motionSimulator.velocity = velocity;
 
-                    callback?.Invoke();
-                }
+            if (sqrDistanceToTarget < sqrTargetPointRadius)
+            {
+                return isCollected = true;
             }
         }
-    }
 
-    public virtual void Pull(Transform targetPointTransform, float duration, System.Action onPointReached, float delay = 0)
-    {
-        this.targetPointTransform = targetPointTransform;
-
-        dt = 1f / duration * Time.fixedDeltaTime;
-
-        callback = onPointReached;
-
-        if (delay > 0)
-        {
-            pullAvailabilityTime = Time.timeSinceLevelLoad + delay;
-        }
-
-        isPulling = true;
+        return false;
     }
 }

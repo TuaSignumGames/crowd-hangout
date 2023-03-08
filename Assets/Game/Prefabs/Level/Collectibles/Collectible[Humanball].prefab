@@ -459,6 +459,9 @@ MonoBehaviour:
     debris: []
     destructionVFX: {fileID: 0}
     destructionPower: 0
+    collectibleSpeed: 30
+    collectibleAcceleration: 20
+    collectiblePullingDelay: 0.5
   suspensionSettings:
     rope:
       ropeContainer: {fileID: 84780433692818945}
