@@ -235,7 +235,7 @@ public class HumanController : MonoBehaviour
         isFree = true;
     }
 
-    public void DropFromCell(Vector3 impulse, Vector3 angularMomentum)
+    public void Drop(Vector3 impulse, Vector3 angularMomentum)
     {
         EjectFromCell();
 
@@ -251,7 +251,7 @@ public class HumanController : MonoBehaviour
 
         motionSimulator.SetGround(LevelGenerator.Instance.BattlePath.position.y - components.animator.transform.localPosition.y);
 
-        DropFromCell(velocity, Vector3.zero);
+        Drop(velocity, Vector3.zero);
 
         PlayAnimation(HumanAnimationType.Flying);
 

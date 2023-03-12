@@ -455,9 +455,7 @@ MonoBehaviour:
     rangeNumber: 0
     collider: {fileID: 84780433877696194}
   multicollectibleSettings:
-    capsule: {fileID: 0}
-    debris: []
-    destructionVFX: {fileID: 0}
+    capsules: []
     destructionPower: 0
     collectibleSpeed: 30
     collectibleAcceleration: 20

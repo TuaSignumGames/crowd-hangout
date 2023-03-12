@@ -29,7 +29,7 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
     {
         for (int i = 0; i < humans.Count; i++)
         {
-            humans[i].DropFromCell((humans[i].transform.position - PlayerController.Humanball.Transform.position).normalized * PlayerController.Humanball.Velocity.magnitude, Random.insideUnitSphere.normalized * Random.Range(30f, 120f));
+            humans[i].Drop((humans[i].transform.position - PlayerController.Humanball.Transform.position).normalized * PlayerController.Humanball.Velocity.magnitude, Random.insideUnitSphere.normalized * Random.Range(30f, 120f));
         }
 
         base.Collect();
@@ -92,9 +92,9 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
 
         for (int i = 0; i < humans.Count; i++)
         {
-            elements[i] = new MulticollectibleElement(humans[i].MotionSimulator, multicollectibleSettings.collectibleSpeed, multicollectibleSettings.collectibleAcceleration, multicollectibleSettings.collectiblePullingDelay, 1f);
+            elements[i] = new MulticollectibleElement(humans[i].MotionSimulator, multicollectibleSettings.CollectibleSpeed, multicollectibleSettings.CollectibleAcceleration, multicollectibleSettings.CollectiblePullingDelay, 1f);
         }
 
-        humans[count / 2].MotionSimulator.instanceID = 1;
+        //humans[count / 2].MotionSimulator.instanceID = 1;
     }
 }

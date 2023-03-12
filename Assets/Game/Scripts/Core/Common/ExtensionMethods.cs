@@ -248,6 +248,20 @@ public static class ExtensionMethods
         return children;
     }
 
+    public static GameObject[] GetGameObjectsInChildren(this Transform transform)
+    {
+        List<GameObject> gameObjects = new List<GameObject>();
+
+        int childCount = transform.childCount;
+
+        for (int i = 0; i < childCount; i++)
+        {
+            gameObjects.Add(transform.GetChild(i).gameObject);
+        }
+
+        return gameObjects.ToArray();
+    }
+
     public static Transform FindChildWithName(this Transform transform, string childName)
     {
         foreach (Transform child in transform)

@@ -8,15 +8,11 @@ public class Multicollectible : Collectible
 
     protected MulticollectibleElement[] elements;
 
-    protected MotionSimulator[] debrisMotionSimulators;
-
     public virtual void Initialize(int elementsCount = 1)
     {
         base.Initialize();
 
         GenerateElements(elementsCount);
-
-        debrisMotionSimulators = new MotionSimulator[multicollectibleSettings.debris.Length];
     }
 
     protected virtual void GenerateElements(int count)
@@ -30,9 +26,12 @@ public class Multicollectible : Collectible
         {
             PullElements();
 
-            for (int i = 0; i < debrisMotionSimulators.Length; i++)
+            for (int i = 0; i < multicollectibleSettings.capsules.Length; i++)
             {
-                debrisMotionSimulators[i].Update();
+                if (multicollectibleSettings.capsules[i].IsBroken)
+                {
+                    multicollectibleSettings.capsules[i].Update();
+                }
             }
         }
     }
@@ -41,47 +40,35 @@ public class Multicollectible : Collectible
     {
         base.Collect();
 
-        if (multicollectibleSettings.capsule)
-        {
-            multicollectibleSettings.capsule.SetActive(false);
-        }
-
-        if (multicollectibleSettings.debris.Length > 0)
-        {
-            DropDebris();
-        }
-
-        if (multicollectibleSettings.destructionVFX)
-        {
-            multicollectibleSettings.destructionVFX.gameObject.SetActive(true);
-
-            multicollectibleSettings.destructionVFX.Play();
-        }
+        StartCoroutine(CollectingCoroutine());
     }
+
+    protected virtual void BreakCapsules() { }
 
     protected virtual void PullElements() { }
 
-    protected virtual void DropDebris()
+    protected virtual IEnumerator CollectingCoroutine()
     {
-        for (int i = 0; i < multicollectibleSettings.debris.Length; i++)
+        if (multicollectibleSettings.capsules.Length > 0)
         {
-            multicollectibleSettings.debris[i].SetActive(true);
-
-            debrisMotionSimulators[i].velocity = (multicollectibleSettings.debris[i].transform.position - multicollectibleSettings.capsule.transform.position).normalized * Random.Range(1f, 3f) * multicollectibleSettings.destructionPower;
-            debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere * multicollectibleSettings.destructionPower;
+            BreakCapsules();
         }
+
+        yield return null;
     }
 
     [System.Serializable]
     public class MulticollectibleSettings
     {
-        public GameObject capsule;
-        public GameObject[] debris;
-        public ParticleSystem destructionVFX;
+        public MulticollectibleCapsule[] capsules;
         public float destructionPower;
         [Space]
-        public float collectibleSpeed;
-        public float collectibleAcceleration;
-        public float collectiblePullingDelay;
+        public Vector2 collectibleSpeedRange;
+        public Vector2 collectibleAccelerationRange;
+        public Vector2 collectiblePullingDelayRange;
+
+        public float CollectibleSpeed => Random.Range(collectibleSpeedRange.x, collectibleSpeedRange.y);
+        public float CollectibleAcceleration => Random.Range(collectibleAccelerationRange.x, collectibleAccelerationRange.y);
+        public float CollectiblePullingDelay => Random.Range(collectiblePullingDelayRange.x, collectiblePullingDelayRange.y);
     }
 }

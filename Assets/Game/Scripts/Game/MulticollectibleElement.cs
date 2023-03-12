@@ -11,6 +11,11 @@ public class MulticollectibleElement
     protected Vector3 velocity;
     protected Vector3 velocityIncrement;
 
+    protected Vector3 pullingStartPosition;
+
+    protected float t;
+    protected float dt;
+
     protected float actualSpeed;
     protected float speedLimit;
     protected float speedIncrement;
@@ -29,6 +34,8 @@ public class MulticollectibleElement
     {
         this.motionSimulator = motionSimulator;
 
+        dt = 1f / delay * Time.fixedDeltaTime;
+
         speedLimit = speed;
         speedIncrement = acceleration * Time.fixedDeltaTime;
 
@@ -39,8 +46,34 @@ public class MulticollectibleElement
 
     public virtual bool Pull(Transform targetTransform)
     {
-        // TODO Define pull mechanics 
+        if (pullAvailabilityTime == 0)
+        {
+            pullAvailabilityTime = Time.timeSinceLevelLoad + pullDelay;
+        }
 
+        if (Time.timeSinceLevelLoad > pullAvailabilityTime)
+        {
+            if (t == 0)
+            {
+                pullingStartPosition = motionSimulator.Transform.position;
+            }    
+
+            t += dt;
+
+            motionSimulator.Transform.position = Vector3.Lerp(pullingStartPosition, targetTransform.position, t);
+
+            if (t >= 1f)
+            {
+                return isCollected = true;
+            }
+        }
+
+        return false;
+    }
+
+    /*
+    public virtual bool Pull(Transform targetTransform)
+    {
         if (pullAvailabilityTime == 0)
         {
             pullAvailabilityTime = Time.timeSinceLevelLoad + pullDelay;
@@ -52,16 +85,7 @@ public class MulticollectibleElement
 
             sqrDistanceToTarget = targetVector.sqrMagnitude;
 
-            if (sqrDistanceToTarget > 10f)
-            {
-                velocity = Vector3.ClampMagnitude(velocity + targetVector.normalized * speedIncrement, speedLimit);
-            }
-            else
-            {
-                velocity = targetVector.normalized * actualSpeed;
-
-                actualSpeed = actualSpeed < speedLimit ? actualSpeed + speedIncrement : speedLimit;
-            }
+            velocity = Vector3.ClampMagnitude(velocity + targetVector.normalized * speedIncrement, speedLimit);
 
             motionSimulator.velocity = velocity;
 
@@ -73,4 +97,5 @@ public class MulticollectibleElement
 
         return false;
     }
+    */
 }

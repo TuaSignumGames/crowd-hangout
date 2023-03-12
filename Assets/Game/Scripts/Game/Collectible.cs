@@ -8,6 +8,8 @@ public class Collectible : MonoBehaviour
 {
     public CollectibleSettings collectibleSettings;
 
+    protected Vector3 contactPoint;
+
     protected float placementFactor;
 
     protected bool isCollected;
@@ -48,6 +50,8 @@ public class Collectible : MonoBehaviour
     {
         if (other.gameObject.layer == 8)
         {
+            contactPoint = collectibleSettings.collider.ClosestPoint(other.transform.position);
+
             Collect();
         }
     }
