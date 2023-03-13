@@ -456,10 +456,10 @@ MonoBehaviour:
     collider: {fileID: 84780433877696194}
   multicollectibleSettings:
     capsules: []
-    destructionPower: 0
-    collectibleSpeed: 30
-    collectibleAcceleration: 20
+    collectiblePullingSpeed: 0
     collectiblePullingDelay: 0.5
+  humanContainer: {fileID: 0}
+  humanPrefab: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
   suspensionSettings:
     rope:
       ropeContainer: {fileID: 84780433692818945}
@@ -472,7 +472,6 @@ MonoBehaviour:
       elasticitySettings:
         springFactor: 300
         dampingFactor: 0.9
-  humanPrefab: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
   humanballBaseCells:
   - {fileID: 84780433305143675}
   - {fileID: 84780433102974071}

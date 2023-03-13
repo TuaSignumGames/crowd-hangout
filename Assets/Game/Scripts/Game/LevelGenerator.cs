@@ -184,7 +184,7 @@ public class LevelGenerator : MonoBehaviour
 
                     collectibleInstance = Instantiate(collectiblePrefab, blockPairs[i + collectiblePrefab.RangeNumber].container.transform);
 
-                    blockPairs[i].AddCollectible(collectibleInstance, 12);
+                    blockPairs[i].AddCollectible(collectibleInstance, 15);
 
                     if (collectibleInstance.RangeNumber > 0)
                     {

@@ -21,27 +21,11 @@ public class BuildingMulticollectible : HumanMulticollectible
 
     protected int contactStageIndex;
 
-    protected override void GenerateElements(int count)
+    public override void Initialize(int elementsCount = 1)
     {
-        base.GenerateElements(count);
+        base.Initialize(elementsCount);
 
-        GenerateBuilding(count);
-    }
-
-    protected override void PullElements()
-    {
-        base.PullElements();
-
-        for (int i = 0; i < elements.Length; i++)
-        {
-            if (!elements[i].IsCollected)
-            {
-                if (elements[i].Pull(PlayerController.Humanball.Transform))
-                {
-                    PlayerController.Humanball.StickHuman(humans[i], false);
-                }
-            }
-        }
+        GenerateBuilding(elementsCount);
     }
 
     protected void GenerateBuilding(int humansCount)
@@ -58,7 +42,7 @@ public class BuildingMulticollectible : HumanMulticollectible
 
             if (i < stages.Length - 1)
             {
-                humans.AddRange(stages[i].GenerateHumans(humanPrefab, humanContainer, i < stages.Length - 2 ? buildingSettings.stageCapacity : remainingHumansCount));
+                stages[i].AddHumanCollectibles(humanCollectiblesPool.EjectRange(i < stages.Length - 2 ? buildingSettings.stageCapacity : remainingHumansCount));
 
                 remainingHumansCount -= buildingSettings.stageCapacity;
             }
@@ -69,11 +53,6 @@ public class BuildingMulticollectible : HumanMulticollectible
         for (int i = 0; i < stages.Length; i++)
         {
             multicollectibleSettings.capsules[i] = new MulticollectibleCapsule(stages[i].exterior, stages[i].fractures, stages[i].destructionVFX);
-        }
-
-        for (int i = 0; i < humans.Count; i++)
-        {
-            elements[i] = new MulticollectibleElement(humans[i].MotionSimulator, multicollectibleSettings.CollectibleSpeed, multicollectibleSettings.CollectibleAcceleration, multicollectibleSettings.CollectiblePullingDelay, 1f);
         }
 
         buildingHeight = buildingSettings.stageHeight * (stages.Length - 1);
@@ -98,7 +77,7 @@ public class BuildingMulticollectible : HumanMulticollectible
 
         if (contactStageIndex > 0)
         {
-            multicollectibleSettings.capsules[contactStageIndex - 1].BreakPartially(1.5f);
+            //multicollectibleSettings.capsules[contactStageIndex - 1].BreakPartially(PlayerController.Humanball.Velocity * 0.3f, new FloatRange(5f, 15f), stages[contactStageIndex].transform.position, 1.5f);
         }
 
         for (int i = contactStageIndex; i < stages.Length; i++)
@@ -107,7 +86,7 @@ public class BuildingMulticollectible : HumanMulticollectible
 
             if (i < stages.Length - 1)
             {
-                stages[i].DropHumans();
+                stages[i].DropHumanCollectibles();
             }
 
             yield return new WaitForSeconds(buildingSettings.stageDestructionDelay);
@@ -138,7 +117,7 @@ public class BuildingMulticollectible : HumanMulticollectible
 
         public ParticleSystem destructionVFX;
 
-        private HumanController[] humans;
+        private MulticollectibleEntity<HumanController>[] humanCollectibles;
 
         private List<Transform> children;
 
@@ -161,31 +140,24 @@ public class BuildingMulticollectible : HumanMulticollectible
             Debug.Log($" - Fractures added: {fractures.Length}");
         }
 
-        public HumanController[] GenerateHumans(HumanController humanPrefab, Transform container, int count)
+        public void AddHumanCollectibles(MulticollectibleEntity<HumanController>[] humanCollectibles)
         {
-            humans = new HumanController[count];
+            this.humanCollectibles = humanCollectibles;
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < humanCollectibles.Length; i++)
             {
-                humans[i] = GameObject.Instantiate(humanPrefab, transform.position + Random.insideUnitSphere, Quaternion.identity, container);
-
-                humans[i].Initialize();
-
-                humans[i].components.collider.enabled = false;
-
-                humans[i].gameObject.SetActive(false);
+                humanCollectibles[i].Entity.gameObject.SetActive(false);
+                humanCollectibles[i].Entity.transform.position = transform.position + new Vector3(Random.Range(-1.5f, 1.5f), 0.1f, 0);
             }
-
-            return humans;
         }
 
-        public void DropHumans()
+        public void DropHumanCollectibles()
         {
-            for (int i = 0; i < humans.Length; i++)
+            for (int i = 0; i < humanCollectibles.Length; i++)
             {
-                humans[i].gameObject.SetActive(true);
+                humanCollectibles[i].Collect();
 
-                humans[i].Drop((humans[i].transform.position - PlayerController.Humanball.Transform.position).normalized * PlayerController.Humanball.Velocity.magnitude, Random.insideUnitSphere.normalized * Random.Range(30f, 120f));
+                humanCollectibles[i].Entity.Drop((humanCollectibles[i].Entity.transform.position - PlayerController.Humanball.Transform.position).normalized * PlayerController.Humanball.Velocity.magnitude, Random.insideUnitSphere.normalized * Random.Range(90f, 720f));
             }
         }
     }

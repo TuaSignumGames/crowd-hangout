@@ -22,11 +22,13 @@ public class Collectible : MonoBehaviour
 
     public virtual void Initialize() { }
 
-    public virtual void Collect()
+    public void Collect()
     {
         collectibleSettings.collider.enabled = false;
 
         isCollected = true;
+
+        StartCoroutine(CollectingCoroutine());
     }
 
     public virtual void SetPlacement(BlockPair blockPair, float placementFactor)
@@ -44,6 +46,11 @@ public class Collectible : MonoBehaviour
     public virtual void UpdatePlacement(BlockPair blockPair)
     {
         SetPlacement(blockPair, placementFactor);
+    }
+
+    protected virtual IEnumerator CollectingCoroutine()
+    {
+        return null;
     }
 
     private void OnTriggerEnter(Collider other)

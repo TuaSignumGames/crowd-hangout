@@ -11,7 +11,11 @@ public class Pool<T>
 
     protected T pooledElement;
 
-    public Pool(IList<T> elements, bool shuffle = false)
+    protected T[] pooledRange;
+
+    protected bool consumable;
+
+    public Pool(IList<T> elements, bool consumable = false, bool shuffle = false)
     {
         if (shuffle)
         {
@@ -28,6 +32,18 @@ public class Pool<T>
         {
             elementsQueue = new Queue<T>(elements);
         }
+
+        this.consumable = consumable;
+    }
+
+    public virtual T Peek()
+    {
+        if (elementsQueue.Count > 0)
+        {
+            return elementsQueue.Peek();
+        }
+
+        throw new Exception("Requested pool is empty.");
     }
 
     public virtual T Eject()
@@ -36,11 +52,26 @@ public class Pool<T>
         {
             pooledElement = elementsQueue.Dequeue();
 
-            elementsQueue.Enqueue(pooledElement);
+            if (!consumable)
+            {
+                elementsQueue.Enqueue(pooledElement);
+            }
 
             return pooledElement;
         }
 
         throw new Exception("Requested pool is empty.");
+    }
+
+    public virtual T[] EjectRange(int count)
+    {
+        pooledRange = new T[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            pooledRange[i] = Eject();
+        }
+
+        return pooledRange;
     }
 }

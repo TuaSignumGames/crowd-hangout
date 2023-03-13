@@ -8,21 +8,57 @@ public class HumanMulticollectible : Multicollectible
     public Transform humanContainer;
     public HumanController humanPrefab;
 
-    protected List<HumanController> humans;
+    private HumanController humanInstance;
 
-    protected override void GenerateElements(int count)
+    protected List<MulticollectibleEntity<HumanController>> humanCollectibles;
+
+    protected Pool<MulticollectibleEntity<HumanController>> humanCollectiblesPool;
+
+    public override void Initialize(int elementsCount = 1)
     {
-        base.GenerateElements(count);
+        base.Initialize(elementsCount);
 
-        humans = new List<HumanController>();
+        humanCollectibles = new List<MulticollectibleEntity<HumanController>>();
 
-        // TODO Generate humans 
+        for (int i = 0; i < elementsCount; i++)
+        {
+            humanInstance = Instantiate(humanPrefab, humanContainer);
+
+            elements[i] = new MulticollectibleElement(humanInstance.transform, multicollectibleSettings.collectiblePullingSpeed, multicollectibleSettings.collectiblePullingDelay);
+
+            humanCollectibles.Add(new MulticollectibleEntity<HumanController>(humanInstance, elements[i]));
+
+            humanInstance.Initialize();
+
+            humanInstance.components.collider.enabled = false;
+        }
+
+        humanCollectiblesPool = new Pool<MulticollectibleEntity<HumanController>>(humanCollectibles);
     }
 
-    public override void Collect()
+    protected override void ProcessCollecting()
     {
-        base.Collect();
+        for (int i = 0; i < humanCollectibles.Count; i++)
+        {
+            if (humanCollectibles[i].IsCollecting)
+            {
+                if (humanCollectibles[i].Element.Pull(PlayerController.Humanball.Transform))
+                {
+                    PlayerController.Humanball.StickHuman(humanCollectibles[i].Entity);
+                }
+            }
+        }
+    }
 
-        // TODO Drop and collect humans 
+    protected override IEnumerator CollectingCoroutine()
+    {
+        for (int i = 0; i < humanCollectibles.Count; i++)
+        {
+            humanCollectibles[i].Collect();
+
+            humanCollectibles[i].Entity.Drop((humanCollectibles[i].Entity.transform.position - PlayerController.Humanball.Transform.position).normalized * PlayerController.Humanball.Velocity.magnitude, Random.insideUnitSphere.normalized * Random.Range(90f, 720f));
+        }
+
+        return base.CollectingCoroutine();
     }
 }

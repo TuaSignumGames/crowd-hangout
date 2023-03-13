@@ -40,13 +40,6 @@ public class SuspendedMulticollectible : Multicollectible
         }
     }
 
-    public override void Collect()
-    {
-        base.Collect();
-
-        rope.Release();
-    }
-
     public override void SetPlacement(BlockPair blockPair, float placementFactor)
     {
         transform.SetParent(null);
@@ -59,5 +52,12 @@ public class SuspendedMulticollectible : Multicollectible
     public override void UpdatePlacement(BlockPair blockPair)
     {
         SetPlacement(blockPair, placementFactor);
+    }
+
+    protected override IEnumerator CollectingCoroutine()
+    {
+        rope.Release();
+
+        return base.CollectingCoroutine();
     }
 }

@@ -76,8 +76,35 @@ public class MulticollectibleCapsule
         isBroken = true;
     }
 
-    public void BreakPartially(float radius)
+    public void BreakPartially(Vector3 commonImpulse, FloatRange selfImpulseRange, Vector3 destructionOrigin, float destructionRadius)
     {
-        // TODO Drop fracture with distance-based probability 
+        capsule.SetActive(false);
+
+        float sqrDestructionRadius = destructionRadius * destructionRadius;
+        float sqrDistanceToFracture = 0;
+
+        for (int i = 0; i < debris.Length; i++)
+        {
+            debris[i].SetActive(true);
+
+            sqrDistanceToFracture = (debris[i].transform.position - destructionOrigin).sqrMagnitude;
+
+            if (sqrDistanceToFracture < sqrDestructionRadius && Random.Range(0, 1f) < (1f - (sqrDistanceToFracture / sqrDestructionRadius)))
+            {
+                debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate));
+
+                Debug.Log($" - Simulator {i} / {debris.Length} :: Fracture {i} / {debris.Length}");
+
+                debrisMotionSimulators[i].velocity = commonImpulse + (debris[i].transform.position - capsule.transform.position).normalized * selfImpulseRange.Value;
+                debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * Random.Range(120f, 720f);
+            }
+        }
+
+        if (destructionVFX)
+        {
+            destructionVFX.Play(true);
+        }
+
+        isBroken = true;
     }
 }

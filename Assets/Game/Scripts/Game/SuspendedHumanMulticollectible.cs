@@ -1,60 +1,71 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static SuspendedCollectible;
 
-public class SuspendedHumanMulticollectible : SuspendedMulticollectible
+public class SuspendedHumanMulticollectible : HumanMulticollectible
 {
     [Space]
-    public HumanController humanPrefab;
+    public SuspensionSettings suspensionSettings;
     [Space]
     public List<Transform> humanballBaseCells;
     public HumanballGenerator humanballGenerator;
-
-    protected List<HumanController> humans;
-
-    protected HumanController humanInstance;
 
     protected HumanballCell targetCell;
 
     protected Humanball structure;
 
-    protected override void GenerateElements(int count)
-    {
-        base.GenerateElements(count);
+    protected ConnectedRope rope;
 
-        GenerateHumanball(count);
+    protected float swingPeriod;
+    protected float swingPeriodOffset;
+
+    public override void Initialize(int elementsCount = 1)
+    {
+        base.Initialize(elementsCount);
+
+        rope = suspensionSettings.rope;
+
+        swingPeriod = Random.Range(rope.swingPeriodRange.x, rope.swingPeriodRange.y);
+        swingPeriodOffset = Random.Range(0, swingPeriod);
+
+        GenerateHumanball(elementsCount);
     }
 
-    public override void Collect()
+    public override void FixedUpdate()
     {
-        for (int i = 0; i < humans.Count; i++)
-        {
-            humans[i].Drop((humans[i].transform.position - PlayerController.Humanball.Transform.position).normalized * PlayerController.Humanball.Velocity.magnitude, Random.insideUnitSphere.normalized * Random.Range(30f, 120f));
-        }
+        base.FixedUpdate();
 
-        base.Collect();
+        if (!suspensionSettings.rope.IsConnected)
+        {
+            rope.UpdateBouncing();
+        }
     }
 
-    protected override void PullElements()
+    private void LateUpdate()
     {
-        base.PullElements();
-
-        for (int i = 0; i < elements.Length; i++)
+        if (rope.IsConnected)
         {
-            if (!elements[i].IsCollected)
-            {
-                if (elements[i].Pull(PlayerController.Humanball.Transform))
-                {
-                    PlayerController.Humanball.StickHuman(humans[i], false);
-                }
-            }
+            rope.swingContainer.localEulerAngles = new Vector3(0, 0, Mathf.Sin(6.28f * (swingPeriodOffset + Time.timeSinceLevelLoad) / swingPeriod) * rope.swingAmplitude);
         }
+    }
+
+    public override void SetPlacement(BlockPair blockPair, float placementFactor)
+    {
+        transform.SetParent(null);
+
+        base.SetPlacement(blockPair, placementFactor);
+
+        rope.Connect(transform, blockPair.ceilBlock.transform.position);
+    }
+
+    public override void UpdatePlacement(BlockPair blockPair)
+    {
+        SetPlacement(blockPair, placementFactor);
     }
 
     protected void GenerateHumanball(int count)
     {
-        humans = new List<HumanController>();
-
         List<HumanballCell> baseLayerCells = new List<HumanballCell>();
 
         for (int i = 0; i < humanballBaseCells.Count; i++)
@@ -76,25 +87,20 @@ public class SuspendedHumanMulticollectible : SuspendedMulticollectible
 
         structure = new Humanball(structureLayers);
 
+
+
         for (int i = 0; i < count; i++)
         {
-            humanInstance = Instantiate(humanPrefab);
-
-            humanInstance.Initialize();
-
-            structure.AddHuman(humanInstance, i < baseLayerCells.Count);
-
-            //humanInstance.enabled = false;
-            humanInstance.components.collider.enabled = false;
-
-            humans.Add(humanInstance);
-        }
-
-        for (int i = 0; i < humans.Count; i++)
-        {
-            elements[i] = new MulticollectibleElement(humans[i].MotionSimulator, multicollectibleSettings.CollectibleSpeed, multicollectibleSettings.CollectibleAcceleration, multicollectibleSettings.CollectiblePullingDelay, 1f);
+            structure.AddHuman(humanCollectiblesPool.Eject().Entity, i < baseLayerCells.Count);
         }
 
         //humans[count / 2].MotionSimulator.instanceID = 1;
+    }
+
+    protected override IEnumerator CollectingCoroutine()
+    {
+        rope.Release();
+
+        return base.CollectingCoroutine();
     }
 }

@@ -3975,10 +3975,8 @@ MonoBehaviour:
     collider: {fileID: 2771079093471186133}
   multicollectibleSettings:
     capsules: []
-    destructionPower: 0
-    collectibleSpeedRange: {x: 20, y: 40}
-    collectibleAccelerationRange: {x: 80, y: 120}
-    collectiblePullingDelayRange: {x: 0.3, y: 0.6}
+    collectiblePullingSpeed: 25
+    collectiblePullingDelay: 1
   humanContainer: {fileID: 3762160643071450838}
   humanPrefab: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
   buildingSettings:
