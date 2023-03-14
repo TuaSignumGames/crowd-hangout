@@ -4,12 +4,10 @@ using UnityEngine;
 
 // TODO
 //
-// -> [Poilish Multicollectibles and record video] <- 
-// -> [Define collectible prefabs by 'populationValue'] <- 
+// -> [Reminder] <- 
 //
 // Level
-//  - Add Collectible types (Building, Baloon, Humanball, Multiplier) 
-//  - Cave correction for Collectibles
+//  - Add Collectible types (Multiplier, WeaponBox) 
 //  - Collectibles generation pattern
 //
 // Upgrades
@@ -53,10 +51,13 @@ public class LevelGenerator : MonoBehaviour
     private float perlinValue;
 
     private int blockPairsCount;
+    private int totalHumansCount;
 
     private bool isCavePassed;
 
     public BattlePath BattlePath => battlePath;
+
+    public int TotalHumansCount => totalHumansCount;
 
     private void Awake()
     {
@@ -172,19 +173,26 @@ public class LevelGenerator : MonoBehaviour
 
     private void PlaceCollectibles()
     {
+        int generatedHumansCount = 0;
         int nextAvailableBlockPairIndex = 0;
+
+        float progressFactor = 0;
 
         for (int i = 0; i < blockPairs.Count; i++)
         {
-            if (i == 10)//(i > 5)
+            if (i > 5 && i < blockPairs.Count - 3 && i % 4 == 0)//(i == 10)//(i > 5)
             {
                 if (i >= nextAvailableBlockPairIndex)
                 {
+                    progressFactor = i / (float)blockPairs.Count;
+
                     collectiblePrefab = collectibleSettings.collectibles.GetRandom().prefab;
 
                     collectibleInstance = Instantiate(collectiblePrefab, blockPairs[i + collectiblePrefab.RangeNumber].container.transform);
 
-                    blockPairs[i].AddCollectible(collectibleInstance, 10);//Random.Range(1, 21));
+                    generatedHumansCount = Random.Range((int)Mathf.Lerp(1, 16, progressFactor), (int)Mathf.Lerp(5, 26, progressFactor));
+
+                    blockPairs[i].AddCollectible(collectibleInstance, generatedHumansCount);
 
                     if (collectibleInstance.RangeNumber > 0)
                     {
@@ -193,7 +201,9 @@ public class LevelGenerator : MonoBehaviour
 
                     nextAvailableBlockPairIndex = i + 1 + collectiblePrefab.RangeNumber * 2;
 
-                    return;
+                    totalHumansCount += generatedHumansCount;
+
+                    //return;
                 }
             }
         }
@@ -269,9 +279,7 @@ public class LevelGenerator : MonoBehaviour
 
     public void UpdateLevelConfiguration(int humanballLayerIndex)
     {
-        HeightIncrementData incrementData = blockSettings.heightIncrementLevels[Mathf.Clamp(humanballLayerIndex, 0, blockSettings.heightIncrementLevels.Length - 1)];
-
-        SetBlocksHeightIncrement(GetBlockPair(humanballTransform.position).OrderIndex + incrementData.transitionShift, incrementData);
+        SetBlocksHeightIncrement(GetBlockPair(humanballTransform.position).OrderIndex + blockSettings.heightIncrementSettings.transitionShift, blockSettings.heightIncrementSettings);
 
         for (int i = 0; i < blockPairs.Count; i++)
         {
@@ -320,7 +328,7 @@ public class LevelGenerator : MonoBehaviour
         public Vector2 caveHeightRange;
         public float thresholdValue;
         [Space]
-        public HeightIncrementData[] heightIncrementLevels;
+        public HeightIncrementData heightIncrementSettings;
     }
 
     [System.Serializable]

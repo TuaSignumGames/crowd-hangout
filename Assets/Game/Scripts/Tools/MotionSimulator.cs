@@ -77,7 +77,8 @@ public class MotionSimulator
             velocity += useFixedUpdate ? gravityFixedDelta : gravity * Time.deltaTime;
 
             position = transform.position + velocity * Time.fixedDeltaTime;
-            eulerAngles = transform.eulerAngles + angularVelocity * Time.fixedDeltaTime;
+
+            eulerAngles += angularVelocity * Time.fixedDeltaTime;
 
             transform.position = position;
             transform.eulerAngles = eulerAngles;

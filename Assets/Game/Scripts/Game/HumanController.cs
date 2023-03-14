@@ -59,7 +59,7 @@ public class HumanController : MonoBehaviour
 
     private bool inBattle;
 
-    [HideInInspector] public bool isFree = true;
+    [HideInInspector] public bool isFree = false;
 
     public bool IsInitialized => isInitialized;
 
@@ -223,6 +223,8 @@ public class HumanController : MonoBehaviour
         transform.localPosition = new Vector3();
         transform.localEulerAngles = new Vector3();
 
+        motionSimulator.enabled = false;
+
         components.collider.enabled = true;
     }
 
@@ -241,6 +243,8 @@ public class HumanController : MonoBehaviour
 
         motionSimulator.velocity = impulse;
         motionSimulator.angularVelocity = angularMomentum;
+
+        motionSimulator.enabled = true;
 
         PlayAnimation(HumanAnimationType.Falling);
     }

@@ -82,8 +82,6 @@ public class SuspendedHumanMulticollectible : HumanMulticollectible
 
         if (count > baseLayerCells.Count)
         {
-            Debug.Log($" - Generating procedural cells: {count - baseLayerCells.Count}");
-
             structureLayers.AddRange(humanballGenerator.GenerateProceduralCells(count));
         }
 

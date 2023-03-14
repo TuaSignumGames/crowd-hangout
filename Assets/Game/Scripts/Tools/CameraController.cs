@@ -12,7 +12,7 @@ public class CameraController : MonoBehaviour
     public Transform targetTransform;
     public float motionLerpingFactor;
     [Space]
-    public float[] viewDistanceLevels;
+    public float viewDistanceIncrement;
     public float viewTransitionTime;
 
     private Vector3 targetOffset;
@@ -20,16 +20,20 @@ public class CameraController : MonoBehaviour
     private TransformEvaluator worldEvaluator;
     private TransformEvaluator localEvaluator;
 
+    private float actualViewDistance;
+
     private void Awake()
     {
         Instance = this;
 
         targetOffset = transform.position;
+
+        actualViewDistance = -camera.transform.localPosition.z;
     }
 
     private void Start()
     {
-        PlayerController.Humanball.Structure.OnLayerIncremented += SetViewDistance;
+        PlayerController.Humanball.Structure.OnLayerIncremented += IncreaseViewDistance;
     }
 
     private void FixedUpdate()
@@ -86,9 +90,11 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    public void SetViewDistance(int distanceLevel)
+    public void IncreaseViewDistance(int distanceLevel)
     {
-        Translate(new Vector3(camera.transform.localPosition.x, camera.transform.localPosition.y, -viewDistanceLevels[distanceLevel]), viewTransitionTime, Space.Self);
+        actualViewDistance += viewDistanceIncrement;
+
+        Translate(new Vector3(camera.transform.localPosition.x, camera.transform.localPosition.y, -actualViewDistance), viewTransitionTime, Space.Self);
     }
 
     private void InitializeEvaluator(Space space)

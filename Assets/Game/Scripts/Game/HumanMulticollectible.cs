@@ -56,7 +56,7 @@ public class HumanMulticollectible : Multicollectible
         {
             humanCollectibles[i].Collect();
 
-            humanCollectibles[i].Entity.Drop((humanCollectibles[i].Entity.transform.position - PlayerController.Humanball.Transform.position).normalized * PlayerController.Humanball.Velocity.magnitude, Random.insideUnitSphere.normalized * Random.Range(90f, 720f));
+            humanCollectibles[i].Entity.Drop((humanCollectibles[i].Entity.transform.position - humanCollectibles[0].Entity.transform.position).normalized * PlayerController.Humanball.Velocity.magnitude * multicollectibleSettings.externalImpulseFactor, Random.insideUnitSphere.normalized * Random.Range(multicollectibleSettings.angularMomentumRange.x, multicollectibleSettings.angularMomentumRange.y));
         }
 
         yield return base.CollectingCoroutine();

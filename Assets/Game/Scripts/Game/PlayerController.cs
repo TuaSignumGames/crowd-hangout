@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour
     {
         raycastDirection = new Vector2(Mathf.Cos(ropeSettings.throwingAngle * Mathf.Deg2Rad), Mathf.Sin(ropeSettings.throwingAngle * Mathf.Deg2Rad));
 
-        ball = new HumanballProcessor(ballSettings);
+        ball = new HumanballProcessor(ballSettings, LevelGenerator.Instance.TotalHumansCount);
         rope = new RopeProcessor(ropeSettings);
 
         ball.AssignRope(rope);

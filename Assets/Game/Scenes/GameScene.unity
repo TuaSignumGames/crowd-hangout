@@ -14571,14 +14571,8 @@ MonoBehaviour:
     blockLength: 4
     caveHeightRange: {x: 12, y: 16}
     thresholdValue: 0.5
-    heightIncrementLevels:
-    - heightIncrement: 1
-      transitionShift: 3
-      transitionLength: 3
-    - heightIncrement: 1
-      transitionShift: 3
-      transitionLength: 3
-    - heightIncrement: 1.5
+    heightIncrementSettings:
+      heightIncrement: 0.75
       transitionShift: 3
       transitionLength: 3
   wavePatternSettings:
@@ -14592,6 +14586,8 @@ MonoBehaviour:
     collectibles:
     - populationValue: 0
       prefab: {fileID: 84780433877696196, guid: 111df833fdab14e3bb2174076155915c, type: 3}
+    - populationValue: 0
+      prefab: {fileID: 7820228730557124958, guid: d892654380983430dbbb3767f2fdc365, type: 3}
     populationCurve:
       serializedVersion: 2
       m_Curve: []
@@ -17906,15 +17902,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1227643222}
-  m_LocalRotation: {x: 0.12854317, y: 0.17216258, z: -0.022665627, w: 0.9763827}
-  m_LocalPosition: {x: 2, y: -2, z: 0}
+  m_LocalRotation: {x: 0.12059043, y: 0.37940946, z: -0.04995019, w: 0.9159756}
+  m_LocalPosition: {x: 3, y: -2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1860493009}
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 15, y: 20, z: 0}
+  m_LocalEulerAnglesHint: {x: 15, y: 45, z: 0}
 --- !u!114 &1227643224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17930,10 +17926,7 @@ MonoBehaviour:
   camera: {fileID: 1860493008}
   targetTransform: {fileID: 1779204875}
   motionLerpingFactor: 0.3
-  viewDistanceLevels:
-  - 26
-  - 27
-  - 28
+  viewDistanceIncrement: 2
   viewTransitionTime: 2
 --- !u!1 &1233532377
 GameObject:

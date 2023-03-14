@@ -39,7 +39,7 @@ public class HumanballProcessor
 
     public Vector3 Velocity => swingVelocityDelta / Time.fixedDeltaTime;
 
-    public HumanballProcessor(BallSettings settings)
+    public HumanballProcessor(BallSettings settings, int cellsCount)
     {
         ballData = settings;
 
@@ -47,11 +47,12 @@ public class HumanballProcessor
 
         tensionDeformation = ballData.tensionRatio * ballData.tensionMultiplier;
 
-        InitializeBallStructure();
+        InitializeBallStructure(cellsCount);
+
         //UpdateCenterOfMass();
     }
 
-    private void InitializeBallStructure()
+    private void InitializeBallStructure(int cellsCount)
     {
         List<HumanballCell> baseLayerCells = new List<HumanballCell>();
 
@@ -74,7 +75,7 @@ public class HumanballProcessor
             ballData.proceduralCells.GenerateLayer(baseLayerCells, 0.2f, "B")
         };
 
-        structureLayers.AddRange(ballData.proceduralCells.GenerateProceduralLayers(5));
+        structureLayers.AddRange(ballData.proceduralCells.GenerateProceduralCells(cellsCount));//GenerateProceduralLayers(5));
 
         baseLayerCells[0].Human.isFree = false;
 
