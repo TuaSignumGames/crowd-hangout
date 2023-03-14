@@ -2,16 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public struct IntRange
 {
-    public int minValue;
-    public int maxValue;
+    public int min;
+    public int max;
 
-    public int Value => Random.Range(minValue, maxValue);
+    public int Value => Random.Range(min, max);
 
-    public IntRange(int minValue, int maxValue)
+    public IntRange(int min, int max)
     {
-        this.minValue = minValue;
-        this.maxValue = maxValue;
+        this.min = min;
+        this.max = max;
     }
 }

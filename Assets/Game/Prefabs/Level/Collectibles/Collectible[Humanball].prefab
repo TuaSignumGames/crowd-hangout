@@ -456,7 +456,10 @@ MonoBehaviour:
     collider: {fileID: 84780433877696194}
   multicollectibleSettings:
     capsules: []
-    collectiblePullingSpeed: 0
+    destructionImpulseRatio: {x: 0, y: 0, z: 0}
+    angularMomentumRange: {x: 0, y: 0}
+    externalImpulseFactor: 0
+    collectiblePullingSpeed: 25
     collectiblePullingDelay: 0.5
   humanContainer: {fileID: 0}
   humanPrefab: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}

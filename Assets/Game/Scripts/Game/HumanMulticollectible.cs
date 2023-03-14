@@ -24,13 +24,13 @@ public class HumanMulticollectible : Multicollectible
         {
             humanInstance = Instantiate(humanPrefab, humanContainer);
 
-            elements[i] = new MulticollectibleElement(humanInstance.transform, multicollectibleSettings.collectiblePullingSpeed, multicollectibleSettings.collectiblePullingDelay);
-
-            humanCollectibles.Add(new MulticollectibleEntity<HumanController>(humanInstance, elements[i]));
-
             humanInstance.Initialize();
 
             humanInstance.components.collider.enabled = false;
+
+            elements[i] = new MulticollectibleElement(humanInstance.MotionSimulator, multicollectibleSettings.collectiblePullingSpeed, multicollectibleSettings.collectiblePullingDelay);
+
+            humanCollectibles.Add(new MulticollectibleEntity<HumanController>(humanInstance, elements[i]));
         }
 
         humanCollectiblesPool = new Pool<MulticollectibleEntity<HumanController>>(humanCollectibles);
@@ -59,6 +59,6 @@ public class HumanMulticollectible : Multicollectible
             humanCollectibles[i].Entity.Drop((humanCollectibles[i].Entity.transform.position - PlayerController.Humanball.Transform.position).normalized * PlayerController.Humanball.Velocity.magnitude, Random.insideUnitSphere.normalized * Random.Range(90f, 720f));
         }
 
-        return base.CollectingCoroutine();
+        yield return base.CollectingCoroutine();
     }
 }

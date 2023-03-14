@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [Poilish Building collectible and record video] <- 
+// -> [Poilish Multicollectibles and record video] <- 
 // -> [Define collectible prefabs by 'populationValue'] <- 
 //
 // Level
@@ -184,7 +184,7 @@ public class LevelGenerator : MonoBehaviour
 
                     collectibleInstance = Instantiate(collectiblePrefab, blockPairs[i + collectiblePrefab.RangeNumber].container.transform);
 
-                    blockPairs[i].AddCollectible(collectibleInstance, 15);
+                    blockPairs[i].AddCollectible(collectibleInstance, 10);//Random.Range(1, 21));
 
                     if (collectibleInstance.RangeNumber > 0)
                     {

@@ -82,25 +82,23 @@ public class SuspendedHumanMulticollectible : HumanMulticollectible
 
         if (count > baseLayerCells.Count)
         {
-            structureLayers.AddRange(humanballGenerator.GenerateProceduralCells(count - baseLayerCells.Count));
+            Debug.Log($" - Generating procedural cells: {count - baseLayerCells.Count}");
+
+            structureLayers.AddRange(humanballGenerator.GenerateProceduralCells(count));
         }
 
         structure = new Humanball(structureLayers);
 
-
-
         for (int i = 0; i < count; i++)
         {
-            structure.AddHuman(humanCollectiblesPool.Eject().Entity, i < baseLayerCells.Count);
+            structure.AddHuman(humanCollectibles[i].Entity, i < baseLayerCells.Count);
         }
-
-        //humans[count / 2].MotionSimulator.instanceID = 1;
     }
 
     protected override IEnumerator CollectingCoroutine()
     {
         rope.Release();
 
-        return base.CollectingCoroutine();
+        yield return base.CollectingCoroutine();
     }
 }

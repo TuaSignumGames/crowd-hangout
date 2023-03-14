@@ -2,16 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public struct FloatRange
 {
-    public float minValue;
-    public float maxValue;
+    public float min;
+    public float max;
 
-    public float Value => Random.Range(minValue, maxValue);
+    public float Value => Random.Range(min, max);
 
-    public FloatRange(float minValue, float maxValue)
+    public FloatRange(float min, float max)
     {
-        this.minValue = minValue;
-        this.maxValue = maxValue;
+        this.min = min;
+        this.max = max;
     }
 }

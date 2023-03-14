@@ -77,12 +77,12 @@ public class BuildingMulticollectible : HumanMulticollectible
 
         if (contactStageIndex > 0)
         {
-            //multicollectibleSettings.capsules[contactStageIndex - 1].BreakPartially(PlayerController.Humanball.Velocity * 0.3f, new FloatRange(5f, 15f), stages[contactStageIndex].transform.position, 1.5f);
+            multicollectibleSettings.capsules[contactStageIndex - 1].BreakPartially(multicollectibleSettings.destructionImpulseRatio, multicollectibleSettings.angularMomentumRange, PlayerController.Humanball.Velocity * multicollectibleSettings.externalImpulseFactor, stages[contactStageIndex].transform.position, 1.5f);
         }
 
         for (int i = contactStageIndex; i < stages.Length; i++)
         {
-            multicollectibleSettings.capsules[i].Break(PlayerController.Humanball.Velocity * 0.3f, new FloatRange(5f, 15f));
+            multicollectibleSettings.capsules[i].Break(multicollectibleSettings.destructionImpulseRatio, multicollectibleSettings.angularMomentumRange, PlayerController.Humanball.Velocity * multicollectibleSettings.externalImpulseFactor);
 
             if (i < stages.Length - 1)
             {
@@ -121,6 +121,8 @@ public class BuildingMulticollectible : HumanMulticollectible
 
         private List<Transform> children;
 
+        private Vector3 collectibleDropImpulse;
+
         public Transform transform => gameObject.transform;
 
         public BuildingStage(GameObject gameObject)
@@ -157,7 +159,10 @@ public class BuildingMulticollectible : HumanMulticollectible
             {
                 humanCollectibles[i].Collect();
 
-                humanCollectibles[i].Entity.Drop((humanCollectibles[i].Entity.transform.position - PlayerController.Humanball.Transform.position).normalized * PlayerController.Humanball.Velocity.magnitude, Random.insideUnitSphere.normalized * Random.Range(90f, 720f));
+                collectibleDropImpulse = Random.insideUnitSphere * 20f;
+                collectibleDropImpulse = new Vector3(collectibleDropImpulse.x, Mathf.Abs(collectibleDropImpulse.y), collectibleDropImpulse.z);
+
+                humanCollectibles[i].Entity.Drop(collectibleDropImpulse, Random.insideUnitSphere.normalized * Random.Range(90f, 720f));
             }
         }
     }

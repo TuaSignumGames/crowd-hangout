@@ -11,6 +11,8 @@ public class MulticollectibleCapsule
 
     private List<MotionSimulator> debrisMotionSimulators;
 
+    private Vector3 fractureVector;
+
     private bool isBroken;
 
     public bool IsBroken => isBroken;
@@ -32,7 +34,7 @@ public class MulticollectibleCapsule
         }
     }
 
-    public void Break(FloatRange impulseRange)
+    public void Break(Vector3 impulseRatio, Vector2 momentumRange)
     {
         capsule.SetActive(false);
 
@@ -42,8 +44,10 @@ public class MulticollectibleCapsule
 
             debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate));
 
-            debrisMotionSimulators[i].velocity = (debris[i].transform.position - capsule.transform.position).normalized * impulseRange.Value;
-            debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * Random.Range(120f, 720f);
+            fractureVector = debrisMotionSimulators[i].Transform.position - capsule.transform.position;
+
+            debrisMotionSimulators[i].velocity = new Vector3(fractureVector.x * impulseRatio.x, fractureVector.y * impulseRatio.y, fractureVector.z * impulseRatio.z);
+            debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * Random.Range(momentumRange.x, momentumRange.y);
         }
 
         if (destructionVFX)
@@ -54,7 +58,7 @@ public class MulticollectibleCapsule
         isBroken = true;
     }
 
-    public void Break(Vector3 commonImpulse, FloatRange selfImpulseRange)
+    public void Break(Vector3 impulseRatio, Vector2 momentumRange, Vector3 externalImpulse)
     {
         capsule.SetActive(false);
 
@@ -64,8 +68,10 @@ public class MulticollectibleCapsule
 
             debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate));
 
-            debrisMotionSimulators[i].velocity = commonImpulse + (debris[i].transform.position - capsule.transform.position).normalized * selfImpulseRange.Value;
-            debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * Random.Range(120f, 720f);
+            fractureVector = debrisMotionSimulators[i].Transform.position - capsule.transform.position;
+
+            debrisMotionSimulators[i].velocity = externalImpulse + new Vector3(fractureVector.x * impulseRatio.x, fractureVector.y * impulseRatio.y, fractureVector.z * impulseRatio.z);
+            debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * Random.Range(momentumRange.x, momentumRange.y);
         }
 
         if (destructionVFX)
@@ -76,7 +82,7 @@ public class MulticollectibleCapsule
         isBroken = true;
     }
 
-    public void BreakPartially(Vector3 commonImpulse, FloatRange selfImpulseRange, Vector3 destructionOrigin, float destructionRadius)
+    public void BreakPartially(Vector3 impulseRatio, Vector2 momentumRange, Vector3 externalImpulse, Vector3 destructionOrigin, float destructionRadius)
     {
         capsule.SetActive(false);
 
@@ -93,10 +99,10 @@ public class MulticollectibleCapsule
             {
                 debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate));
 
-                Debug.Log($" - Simulator {i} / {debris.Length} :: Fracture {i} / {debris.Length}");
+                fractureVector = debrisMotionSimulators.GetLast().Transform.position - capsule.transform.position;
 
-                debrisMotionSimulators[i].velocity = commonImpulse + (debris[i].transform.position - capsule.transform.position).normalized * selfImpulseRange.Value;
-                debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * Random.Range(120f, 720f);
+                debrisMotionSimulators.GetLast().velocity = externalImpulse + new Vector3(fractureVector.x * impulseRatio.x, fractureVector.y * impulseRatio.y, fractureVector.z * impulseRatio.z);
+                debrisMotionSimulators.GetLast().angularVelocity = Random.insideUnitSphere.normalized * Random.Range(momentumRange.x, momentumRange.y);
             }
         }
 

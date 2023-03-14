@@ -6,6 +6,8 @@ public class MulticollectibleElement
 {
     protected Transform transform;
 
+    protected MotionSimulator motionSimulator;
+
     protected Vector3 targetVector;
 
     protected Vector3 pullingStartPosition;
@@ -32,6 +34,16 @@ public class MulticollectibleElement
         pullDelay = delay;
     }
 
+    public MulticollectibleElement(MotionSimulator elementMotionSimulator, float speed, float delay)
+    {
+        motionSimulator = elementMotionSimulator;
+
+        transform = motionSimulator.Transform;
+
+        pullSpeed = speed;
+        pullDelay = delay;
+    }
+
     public virtual void Collect()
     {
         isActive = true;
@@ -53,6 +65,11 @@ public class MulticollectibleElement
                     pullingStartPosition = transform.position;
 
                     dt = pullSpeed / (targetTransform.position - pullingStartPosition).magnitude * Time.fixedDeltaTime;
+
+                    if (motionSimulator != null)
+                    {
+                        motionSimulator.enabled = false;
+                    }
                 }
 
                 t += dt;

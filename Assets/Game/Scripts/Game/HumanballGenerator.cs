@@ -57,8 +57,6 @@ public class HumanballGenerator
             humanballLayers.Add(GenerateProceduralLayer(baseLayerRadius + layerWidth * humanballLayers.Count));
         }
 
-        //Debug.Log($" - Cells generated: {humanballCells.Count}");
-
         return humanballLayers;
     }
 
@@ -138,6 +136,8 @@ public class HumanballGenerator
         newLayerContainer = new GameObject($"Layer[{layerTag}]");
 
         newLayerContainer.transform.SetParent(cellsContainer);
+
+        //Debug.Log($" - Humanball[x:{Mathf.RoundToInt(cellsContainer.position.x)}] layer created: {layerTag}");
     }
 
     [System.Serializable]
