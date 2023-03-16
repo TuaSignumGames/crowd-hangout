@@ -108,6 +108,31 @@ public static class ExtensionMethods
         }
     }
 
+    public static Vector2 Multiplied(this Vector2 vector, Vector2 multiplicationVector)
+    {
+        return new Vector3(vector.x * multiplicationVector.x, vector.y * multiplicationVector.y);
+    }
+
+    public static Vector2 Divided(this Vector2 vector, Vector2 divisionVector)
+    {
+        return new Vector3(vector.x / divisionVector.x, vector.y / divisionVector.y);
+    }
+
+    public static Vector2 ToVector2(this Vector3 vector)
+    {
+        return new Vector2(vector.x, vector.y);
+    }
+
+    public static Vector3 Multiplied(this Vector3 vector, Vector3 multiplicationVector)
+    {
+        return new Vector3(vector.x * multiplicationVector.x, vector.y * multiplicationVector.y, vector.z * multiplicationVector.z);
+    }
+
+    public static Vector3 Divided(this Vector3 vector, Vector3 divisionVector)
+    {
+        return new Vector3(vector.x / divisionVector.x, vector.y / divisionVector.y, vector.z / divisionVector.z);
+    }
+
     public static Vector3 GetPlanarDirection(this Vector3 sourceVector, Axis axis)
     {
         if (axis == Axis.X)
@@ -127,6 +152,30 @@ public static class ExtensionMethods
     public static Vector3 GetDirectionTo(this Vector3 sourcePosition, Vector3 point)
     {
         return (point - sourcePosition).normalized;
+    }
+
+    public static Vector3 GetMidpoint(this IList<Vector3> positions)
+    {
+        Vector3 resultVector = new Vector3();
+
+        for (int i = 0; i < positions.Count; i++)
+        {
+            resultVector += positions[i];
+        }
+
+        return resultVector / positions.Count;
+    }
+
+    public static Vector3 GetMidpoint(this IList<Transform> transforms)
+    {
+        Vector3 resultVector = new Vector3();
+
+        for (int i = 0; i < transforms.Count; i++)
+        {
+            resultVector += transforms[i].position;
+        }
+
+        return resultVector / transforms.Count;
     }
 
     public static float ToSignedAngle(this float angle)
@@ -634,7 +683,7 @@ public static class ExtensionMethods
         return names;
     }
 
-    public static Transform ApplyData(this Transform transform, TransformData transformData)
+    public static Transform SetData(this Transform transform, TransformData transformData)
     {
         if (transformData.space == Space.World)
         {
@@ -716,10 +765,5 @@ public static class ExtensionMethods
         }
 
         return closestTransform;
-    }
-
-    public static Vector2 ToVector2(this Vector3 vector)
-    {
-        return new Vector2(vector.x, vector.y);
     }
 }

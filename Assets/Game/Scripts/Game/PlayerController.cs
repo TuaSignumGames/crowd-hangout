@@ -158,6 +158,7 @@ public class PlayerController : MonoBehaviour
         public Transform structureContainer;
         [Space]
         public SpringData elasticitySettings;
+        public PulseData pulsingSettings;
         public Vector2 tensionRatio;
         public float tensionMultiplier;
         [Space]

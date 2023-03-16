@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [Reminder] <- 
+// -> [Fix collectible dropping impulses / Implement humanball collisions] <- 
 //
 // Level
 //  - Add Collectible types (Multiplier, WeaponBox) 

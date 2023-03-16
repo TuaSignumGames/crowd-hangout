@@ -9,6 +9,8 @@ public class MulticollectibleCapsule
     public GameObject[] debris;
     public ParticleSystem destructionVFX;
 
+    private ScatterData scatterData;
+
     private List<MotionSimulator> debrisMotionSimulators;
 
     private Vector3 fractureVector;
@@ -17,11 +19,12 @@ public class MulticollectibleCapsule
 
     public bool IsBroken => isBroken;
 
-    public MulticollectibleCapsule(GameObject capsule, GameObject[] debris, ParticleSystem destructionVFX)
+    public MulticollectibleCapsule(GameObject capsule, GameObject[] debris, ParticleSystem destructionVFX, ScatterData scatterData)
     {
         this.capsule = capsule;
         this.debris = debris;
         this.destructionVFX = destructionVFX;
+        this.scatterData = scatterData;
 
         debrisMotionSimulators = new List<MotionSimulator>();
     }
@@ -34,7 +37,7 @@ public class MulticollectibleCapsule
         }
     }
 
-    public void Break(Vector3 impulseRatio, Vector2 momentumRange)
+    public void Break()
     {
         capsule.SetActive(false);
 
@@ -46,8 +49,8 @@ public class MulticollectibleCapsule
 
             fractureVector = debrisMotionSimulators[i].Transform.position - capsule.transform.position;
 
-            debrisMotionSimulators[i].velocity = new Vector3(fractureVector.x * impulseRatio.x, fractureVector.y * impulseRatio.y, fractureVector.z * impulseRatio.z);
-            debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * Random.Range(momentumRange.x, momentumRange.y);
+            debrisMotionSimulators[i].velocity = fractureVector.normalized.Multiplied(scatterData.impulseRatio);
+            debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * scatterData.angularMomentumRange.Value;
         }
 
         if (destructionVFX)
@@ -58,7 +61,7 @@ public class MulticollectibleCapsule
         isBroken = true;
     }
 
-    public void Break(Vector3 impulseRatio, Vector2 momentumRange, Vector3 externalImpulse)
+    public void Break(Vector3 externalImpulse)
     {
         capsule.SetActive(false);
 
@@ -70,8 +73,8 @@ public class MulticollectibleCapsule
 
             fractureVector = debrisMotionSimulators[i].Transform.position - capsule.transform.position;
 
-            debrisMotionSimulators[i].velocity = externalImpulse + new Vector3(fractureVector.x * impulseRatio.x, fractureVector.y * impulseRatio.y, fractureVector.z * impulseRatio.z);
-            debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * Random.Range(momentumRange.x, momentumRange.y);
+            debrisMotionSimulators[i].velocity = externalImpulse * scatterData.externalImpulseFactor + fractureVector.normalized.Multiplied(scatterData.impulseRatio);
+            debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * scatterData.angularMomentumRange.Value;
         }
 
         if (destructionVFX)
@@ -82,7 +85,7 @@ public class MulticollectibleCapsule
         isBroken = true;
     }
 
-    public void BreakPartially(Vector3 impulseRatio, Vector2 momentumRange, Vector3 externalImpulse, Vector3 destructionOrigin, float destructionRadius)
+    public void BreakPartially(Vector3 externalImpulse, Vector3 destructionOrigin, float destructionRadius)
     {
         capsule.SetActive(false);
 
@@ -101,8 +104,8 @@ public class MulticollectibleCapsule
 
                 fractureVector = debrisMotionSimulators.GetLast().Transform.position - capsule.transform.position;
 
-                debrisMotionSimulators.GetLast().velocity = externalImpulse + new Vector3(fractureVector.x * impulseRatio.x, fractureVector.y * impulseRatio.y, fractureVector.z * impulseRatio.z);
-                debrisMotionSimulators.GetLast().angularVelocity = Random.insideUnitSphere.normalized * Random.Range(momentumRange.x, momentumRange.y);
+                debrisMotionSimulators.GetLast().velocity = externalImpulse * scatterData.externalImpulseFactor + fractureVector.normalized.Multiplied(scatterData.impulseRatio);
+                debrisMotionSimulators.GetLast().angularVelocity = Random.insideUnitSphere.normalized * scatterData.angularMomentumRange.Value;
             }
         }
 

@@ -12,6 +12,8 @@ public class MulticollectibleEntity<T> where T : MonoBehaviour
 
     public MulticollectibleElement Element => element;
 
+    public Transform Transform => Entity.transform;
+
     public bool IsCollecting => element.IsActive && !element.IsCollected;
 
     public MulticollectibleEntity(T entity, MulticollectibleElement element)

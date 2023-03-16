@@ -52,7 +52,7 @@ public class BuildingMulticollectible : HumanMulticollectible
 
         for (int i = 0; i < stages.Length; i++)
         {
-            multicollectibleSettings.capsules[i] = new MulticollectibleCapsule(stages[i].exterior, stages[i].fractures, stages[i].destructionVFX);
+            multicollectibleSettings.capsules[i] = new MulticollectibleCapsule(stages[i].exterior, stages[i].fractures, stages[i].destructionVFX, multicollectibleSettings.capsuleScatteringSettings);
         }
 
         buildingHeight = buildingSettings.stageHeight * (stages.Length - 1);
@@ -77,16 +77,16 @@ public class BuildingMulticollectible : HumanMulticollectible
 
         if (contactStageIndex > 0)
         {
-            multicollectibleSettings.capsules[contactStageIndex - 1].BreakPartially(multicollectibleSettings.destructionImpulseRatio, multicollectibleSettings.angularMomentumRange, PlayerController.Humanball.Velocity * multicollectibleSettings.externalImpulseFactor, stages[contactStageIndex].transform.position, 1.5f);
+            multicollectibleSettings.capsules[contactStageIndex - 1].BreakPartially(PlayerController.Humanball.Velocity, stages[contactStageIndex].transform.position, 2.5f);
         }
 
         for (int i = contactStageIndex; i < stages.Length; i++)
         {
-            multicollectibleSettings.capsules[i].Break(multicollectibleSettings.destructionImpulseRatio, multicollectibleSettings.angularMomentumRange, PlayerController.Humanball.Velocity * multicollectibleSettings.externalImpulseFactor);
+            multicollectibleSettings.capsules[i].Break(PlayerController.Humanball.Velocity);
 
             if (i < stages.Length - 1)
             {
-                stages[i].DropHumanCollectibles();
+                stages[i].DropHumanCollectibles(multicollectibleSettings.collectibleScatteringSettings);
             }
 
             yield return new WaitForSeconds(buildingSettings.stageDestructionDelay);
@@ -149,20 +149,20 @@ public class BuildingMulticollectible : HumanMulticollectible
             for (int i = 0; i < humanCollectibles.Length; i++)
             {
                 humanCollectibles[i].Entity.gameObject.SetActive(false);
-                humanCollectibles[i].Entity.transform.position = transform.position + new Vector3(Random.Range(-1.5f, 1.5f), 0.1f, 0);
+                humanCollectibles[i].Entity.transform.position = transform.position + new Vector3(Random.Range(-1.5f, 1.5f), 0.2f, 0);
             }
         }
 
-        public void DropHumanCollectibles()
+        public void DropHumanCollectibles(ScatterData scatterData)
         {
             for (int i = 0; i < humanCollectibles.Length; i++)
             {
                 humanCollectibles[i].Collect();
 
-                collectibleDropImpulse = Random.insideUnitSphere * 20f;
+                collectibleDropImpulse = (humanCollectibles[i].Transform.position - transform.position).normalized.Multiplied(scatterData.impulseRatio) + PlayerController.Humanball.Velocity * scatterData.externalImpulseFactor;
                 collectibleDropImpulse = new Vector3(collectibleDropImpulse.x, Mathf.Abs(collectibleDropImpulse.y), collectibleDropImpulse.z);
 
-                humanCollectibles[i].Entity.Drop(collectibleDropImpulse, Random.insideUnitSphere.normalized * Random.Range(90f, 720f));
+                humanCollectibles[i].Entity.Drop(collectibleDropImpulse, Random.insideUnitSphere * scatterData.angularMomentumRange.Value);
             }
         }
     }

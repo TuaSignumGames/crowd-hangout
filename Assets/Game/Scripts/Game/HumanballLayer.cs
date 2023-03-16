@@ -16,6 +16,8 @@ public class HumanballLayer
 
     private int availableCellsCount;
 
+    private bool isBaked;
+
     public List<HumanballCell> cells;
     public List<HumanballCell> requiredCells;
 
@@ -23,13 +25,18 @@ public class HumanballLayer
 
     public float Radius => layerRadius;
 
+    public bool IsBaked => isBaked;
+
     public bool IsEmpty => availableCellsCount == cells.Count;
     public bool IsAvailable => availableCellsCount > 0;
 
-    public HumanballLayer(GameObject container, IList<HumanballCell> cells, float radius)
+    public HumanballLayer(GameObject container, IList<HumanballCell> cells, float radius, bool isBaked)
     {
         this.container = container;
+
         this.cells = new List<HumanballCell>(cells);
+
+        this.isBaked = isBaked;
 
         for (int i = 0; i < cells.Count; i++)
         {

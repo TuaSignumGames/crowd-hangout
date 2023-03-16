@@ -12,6 +12,7 @@ public class HumanballProcessor
     private Humanball structure;
 
     private SpringEvaluator springEvaluator;
+    private PulseEvaluator pulseEvaluator;
 
     private HumanballCell nextCell;
     private HumanballCell ropeConnectionCell;
@@ -35,6 +36,8 @@ public class HumanballProcessor
 
     public Transform Transform => ballData.rigidbody.transform;
 
+    public Rigidbody Rigidbody => ballData.rigidbody;
+
     public Humanball Structure => structure;
 
     public Vector3 Velocity => swingVelocityDelta / Time.fixedDeltaTime;
@@ -44,6 +47,7 @@ public class HumanballProcessor
         ballData = settings;
 
         springEvaluator = new SpringEvaluator(ballData.elasticitySettings);
+        pulseEvaluator = new PulseEvaluator(Transform, ballData.pulsingSettings.retrievalFactor);
 
         tensionDeformation = ballData.tensionRatio * ballData.tensionMultiplier;
 
@@ -118,7 +122,10 @@ public class HumanballProcessor
             tensionValue = 0;
         }
 
+        Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, ballData.motionSpeed);
+
         springEvaluator.Update(ref springValue);
+        pulseEvaluator.Update();
 
         ballData.suspensionContainer.localScale = new Vector3(1f + tensionDeformation.x * springValue, 1f + tensionDeformation.y * springValue, 1f);
     }
@@ -141,6 +148,8 @@ public class HumanballProcessor
         humanController.enabled = true;
 
         UpdateCenterOfMass();
+
+        pulseEvaluator.Click(ballData.pulsingSettings.clickValue);
 
         return nextCell;
     }

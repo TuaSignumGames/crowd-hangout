@@ -24,7 +24,7 @@ public class Shuffler : MonoBehaviour
 
         for (int i = 0; i < transforms.Count; i++)
         {
-            transforms[i].ApplyData(transformsData.CutRandom());
+            transforms[i].SetData(transformsData.CutRandom());
         }
     }
 }

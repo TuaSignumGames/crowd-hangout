@@ -60,7 +60,7 @@ public class HumanballGenerator
         return humanballLayers;
     }
 
-    public HumanballLayer GenerateLayer(IList<HumanballCell> layerCells, float radius, string layerTag = "")
+    public HumanballLayer GenerateLayer(IList<HumanballCell> layerCells, float radius, string layerTag)
     {
         humanballCells = new List<HumanballCell>(layerCells);
 
@@ -71,7 +71,7 @@ public class HumanballGenerator
             humanballCells[i].transform.SetParent(newLayerContainer.transform);
         }
 
-        return new HumanballLayer(newLayerContainer, humanballCells, radius);
+        return new HumanballLayer(newLayerContainer, humanballCells, radius, true);
     }
 
     private HumanballLayer GenerateProceduralLayer(float radius)
@@ -109,7 +109,7 @@ public class HumanballGenerator
             }
         }
 
-        return new HumanballLayer(newLayerContainer, humanballCells, radius);
+        return new HumanballLayer(newLayerContainer, humanballCells, radius, false);
     }
 
     private HumanballCell InstantiateHumanballCell()

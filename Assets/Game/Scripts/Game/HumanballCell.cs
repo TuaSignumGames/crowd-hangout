@@ -46,7 +46,7 @@ public class HumanballCell
         {
             human.SetPose(placedHumanPose);
 
-            placedHuman.transform.ApplyData(placedHumanLocalTransformData);
+            placedHuman.transform.SetData(placedHumanLocalTransformData);
         }
         else
         {

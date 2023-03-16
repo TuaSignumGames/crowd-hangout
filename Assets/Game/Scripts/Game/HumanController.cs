@@ -221,7 +221,7 @@ public class HumanController : MonoBehaviour
         transform.SetParent(cell.transform);
 
         transform.localPosition = new Vector3();
-        transform.localEulerAngles = new Vector3();
+        transform.localEulerAngles = new Vector3(0, 0, cell.Layer.IsBaked ? 0 : Random.Range(0, 360f));
 
         motionSimulator.enabled = false;
 
@@ -233,6 +233,8 @@ public class HumanController : MonoBehaviour
         components.collider.enabled = false;
 
         transform.SetParent(null);
+
+        transform.localScale = Vector3.one;
 
         isFree = true;
     }
@@ -255,13 +257,15 @@ public class HumanController : MonoBehaviour
 
         motionSimulator.SetGround(LevelGenerator.Instance.BattlePath.position.y - components.animator.transform.localPosition.y);
 
-        Drop(velocity, Vector3.zero);
+        motionSimulator.angularVelocity = Vector3.zero;
 
-        PlayAnimation(HumanAnimationType.Flying);
+        Drop(velocity, Vector3.zero);
 
         transform.forward = Vector3.right;
 
         targetPointSqrRadius = motionSettings.targetPointRadius * motionSettings.targetPointRadius;
+
+        PlayAnimation(HumanAnimationType.Flying);
 
         inBattle = true;
     }
@@ -304,7 +308,7 @@ public class HumanController : MonoBehaviour
 
         for (int i = 0; i < actualPose.boneTransformDatas.Length; i++)
         {
-            rigSettings.bones[i].transform.ApplyData(actualPose.boneTransformDatas[i]);
+            rigSettings.bones[i].transform.SetData(actualPose.boneTransformDatas[i]);
         }
     }
 
@@ -372,6 +376,8 @@ public class HumanController : MonoBehaviour
             if (other.gameObject.layer == 7)
             {
                 PlayerController.Humanball.UnstickHuman(this);
+
+                PlayerController.Humanball.Rigidbody.velocity += (PlayerController.Humanball.Transform.position - transform.position).normalized * 3f;
             }
         }
     }

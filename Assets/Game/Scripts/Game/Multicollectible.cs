@@ -37,11 +37,10 @@ public class Multicollectible : Collectible
     public class MulticollectibleSettings
     {
         public MulticollectibleCapsule[] capsules;
-        public Vector3 destructionImpulseRatio;
-        public Vector2 angularMomentumRange;
-        public float externalImpulseFactor;
+        public ScatterData capsuleScatteringSettings;
         [Space]
         public float collectiblePullingSpeed;
         public float collectiblePullingDelay;
+        public ScatterData collectibleScatteringSettings;
     }
 }
