@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [Fix collectible dropping impulses / Implement humanball collisions] <- 
+// -> [Implement humanball collisions / Continue main scope] <- 
 //
 // Level
 //  - Add Collectible types (Multiplier, WeaponBox) 
@@ -299,11 +299,11 @@ public class LevelGenerator : MonoBehaviour
         {
             if (blockPairs[i].Position.x > position.x)
             {
-                return blockPairs[i].Position.x - position.x < blockSettings.blockLength / 2f ? blockPairs[i] : blockPairs[Mathf.Clamp(i, 0, blockPairs.Count)];
+                return blockPairs[i].Position.x - position.x < blockSettings.blockLength / 2f ? blockPairs[i] : blockPairs[Mathf.Clamp(i - 1, 0, blockPairs.Count - 1)];
             }
         }
 
-        return null;
+        return blockPairs.GetLast();
     }
 
     private void OnValidate()

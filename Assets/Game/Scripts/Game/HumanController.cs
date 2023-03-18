@@ -69,6 +69,8 @@ public class HumanController : MonoBehaviour
     {
         InitializeAnimatorHashes();
 
+        actualTeamInfo = teamSettings[1];
+
         if (!(this.team == HumanTeam.Yellow && team == HumanTeam.Yellow))
         {
             SetTeam(this.team = team);
@@ -136,6 +138,17 @@ public class HumanController : MonoBehaviour
                 healthBar.Update();
 
                 components.animator.SetBool(animatorGroundedHash, motionSimulator.IsGrounded);
+            }
+            else
+            {
+                motionSimulator.SetGround(LevelGenerator.Instance.GetBlockPair(transform.position).floorBlock.transform.position.y);
+            }
+
+            if (motionSimulator.IsGrounded)
+            {
+                motionSimulator.angularVelocity = new Vector3();
+
+                transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
             }
         }
     }
@@ -212,7 +225,7 @@ public class HumanController : MonoBehaviour
         components.animator.SetBool(animatorAttackingHash, false);
     }
 
-    public void PlaceInCell(HumanballCell cell)
+    public void PlaceInCell(HumanballCell cell, bool playVFX = true)
     {
         isFree = false;
 
@@ -220,35 +233,46 @@ public class HumanController : MonoBehaviour
 
         transform.SetParent(cell.transform);
 
-        transform.localPosition = new Vector3();
+        transform.localPosition = Vector3.zero;
         transform.localEulerAngles = new Vector3(0, 0, cell.Layer.IsBaked ? 0 : Random.Range(0, 360f));
+        transform.localScale = Vector3.one;
 
         motionSimulator.enabled = false;
 
         components.collider.enabled = true;
+
+        if (playVFX)
+        {
+            actualTeamInfo.impactVFX.Play();
+        }
     }
 
-    public void EjectFromCell()
+    public void EjectFromCell(bool playVFX = false)
     {
         components.collider.enabled = false;
 
         transform.SetParent(null);
-
         transform.localScale = Vector3.one;
+
+        motionSimulator.velocityMultiplier = 1f;
+        motionSimulator.enabled = true;
+
+        if (playVFX)
+        {
+            actualTeamInfo.impactVFX.Play();
+        }
+
+        PlayAnimation(HumanAnimationType.Falling);
 
         isFree = true;
     }
 
-    public void Drop(Vector3 impulse, Vector3 angularMomentum)
+    public void Drop(Vector3 impulse, Vector3 angularMomentum, bool playVFX = false)
     {
-        EjectFromCell();
+        EjectFromCell(playVFX);
 
         motionSimulator.velocity = impulse;
         motionSimulator.angularVelocity = angularMomentum;
-
-        motionSimulator.enabled = true;
-
-        PlayAnimation(HumanAnimationType.Falling);
     }
 
     public void DropToBattle(Vector3 velocity)
@@ -302,6 +326,19 @@ public class HumanController : MonoBehaviour
         }
     }
 
+    public void Die(bool disableController = true)
+    {
+        components.animator.SetBool(animatorAttackingHash, false);
+
+        PlayAnimation(HumanAnimationType.Dying);
+
+        SetTeam(HumanTeam.Neutral);
+
+        actualCrowd?.RemoveMember(this);
+
+        enabled = !disableController;
+    }
+
     public void SetPose(HumanPose pose)
     {
         actualPose = pose;
@@ -340,19 +377,6 @@ public class HumanController : MonoBehaviour
         {
             actualTeamInfo.impactVFX.gameObject.SetActive(true);
         }
-    }
-
-    private void Die()
-    {
-        components.animator.SetBool(animatorAttackingHash, false);
-
-        PlayAnimation(HumanAnimationType.Dying);
-
-        SetTeam(HumanTeam.Neutral);
-
-        actualCrowd?.RemoveMember(this);
-
-        enabled = false;
     }
 
     private void PlayAnimation(HumanAnimationType animationType)

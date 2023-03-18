@@ -10,6 +10,7 @@ public class Humanball
 
     private List<HumanballCell> filledCells;
     private List<HumanballCell> emptyCells;
+    private List<HumanballCell> usedCells;
 
     private Vector3 midpoint;
 
@@ -42,13 +43,25 @@ public class Humanball
     public Humanball()
     {
         layers = new List<HumanballLayer>();
+
+        usedCells = new List<HumanballCell>();
     }
 
     public Humanball(List<HumanballLayer> layers)
     {
         this.layers = new List<HumanballLayer>(layers);
 
+        usedCells = new List<HumanballCell>();
+
         cellsCount = GetAvailableCellsCount();
+    }
+
+    public void LateUpdate()
+    {
+        for (int i = 0; i < usedCells.Count; i++)
+        {
+            usedCells[i].Update();
+        }
     }
 
     public HumanballCell ReserveCell(HumanController human, bool closestCell = true)
@@ -104,6 +117,8 @@ public class Humanball
                 {
                     filledLayersCount = 1;
 
+                    usedCells.Add(availableCell);
+
                     return availableCell;
                 }
             }
@@ -124,6 +139,8 @@ public class Humanball
                     }
 
                     filledLayersCount = i + 1;
+
+                    usedCells.Add(availableCell);
 
                     return availableCell;
                 }

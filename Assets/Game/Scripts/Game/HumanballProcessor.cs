@@ -47,7 +47,7 @@ public class HumanballProcessor
         ballData = settings;
 
         springEvaluator = new SpringEvaluator(ballData.elasticitySettings);
-        pulseEvaluator = new PulseEvaluator(Transform, ballData.pulsingSettings.retrievalFactor);
+        pulseEvaluator = new PulseEvaluator(Transform, ballData.pulsingSettings.retrievalFactor, ballData.pulsingSettings.clickValue * 2f);
 
         tensionDeformation = ballData.tensionRatio * ballData.tensionMultiplier;
 
@@ -125,9 +125,15 @@ public class HumanballProcessor
         Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, ballData.motionSpeed);
 
         springEvaluator.Update(ref springValue);
-        pulseEvaluator.Update();
 
         ballData.suspensionContainer.localScale = new Vector3(1f + tensionDeformation.x * springValue, 1f + tensionDeformation.y * springValue, 1f);
+    }
+
+    public void LateUpdate()
+    {
+        structure.LateUpdate();
+
+        pulseEvaluator.Update();
     }
 
     public HumanballCell ReserveCell(HumanController humanController)

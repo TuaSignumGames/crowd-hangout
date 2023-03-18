@@ -12,6 +12,8 @@ public class HumanballCell
 
     private HumanPose placedHumanPose;
 
+    private PulseEvaluator pulseEvaluator;
+
     private TransformData placedHumanLocalTransformData;
 
     public Transform transform => gameObject.transform;
@@ -25,9 +27,20 @@ public class HumanballCell
     {
         this.gameObject = gameObject;
 
+        pulseEvaluator = new PulseEvaluator(transform, 0.2f, 5f);
+        pulseEvaluator.pulseRatio = new Vector3(0, 0, 1f);
+
         if (transform.childCount > 0)
         {
             placedHuman = transform.GetComponentInChildren<HumanController>();
+        }
+    }
+
+    public void Update()
+    {
+        if (placedHuman != null)
+        {
+            pulseEvaluator.Update();
         }
     }
 
@@ -52,11 +65,13 @@ public class HumanballCell
         {
             human.SetPose(human.poseSettings.GetConfusedPose(relatedLayer.Radius + 0.6f, ConfusedPoseType.BackConfuse));
         }
+
+        pulseEvaluator.Click(2.5f);
     }
 
     public void EjectHuman()
     {
-        placedHuman.Drop(Vector3.zero, Vector3.zero);
+        placedHuman.Drop(Vector3.zero, Vector3.zero, true);
 
         placedHuman = null;
     }

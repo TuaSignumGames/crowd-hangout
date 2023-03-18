@@ -15,6 +15,7 @@ public class HumanMulticollectible : Multicollectible
     protected Pool<MulticollectibleEntity<HumanController>> humanCollectiblesPool;
 
     protected Vector3 humanMidpoint;
+    protected Vector3 humanDropImpulse;
 
     public override void Initialize(int elementsCount = 1)
     {
@@ -65,10 +66,10 @@ public class HumanMulticollectible : Multicollectible
 
         for (int i = 0; i < humanCollectibles.Count; i++)
         {
-            humanCollectibles[i].Collect();
-
-            humanCollectibles[i].Entity.Drop((humanCollectibles[i].Entity.transform.position - humanMidpoint).normalized.Multiplied(multicollectibleSettings.collectibleScatteringSettings.impulseRatio) + PlayerController.Humanball.Velocity * multicollectibleSettings.collectibleScatteringSettings.externalImpulseFactor, Random.insideUnitSphere.normalized * multicollectibleSettings.collectibleScatteringSettings.angularMomentumRange.Value);
+            humanCollectibles[i].Entity.EjectFromCell();
         }
+
+        DropElements(humanMidpoint, PlayerController.Humanball.Velocity);
 
         yield return base.CollectingCoroutine();
     }

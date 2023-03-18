@@ -23,6 +23,10 @@ public class MulticollectibleElement
     protected bool isActive;
     protected bool isCollected;
 
+    protected bool internalMotionSimulation;
+
+    public Transform Transform => transform;
+
     public bool IsActive => isActive;
     public bool IsCollected => isCollected;
 
@@ -30,15 +34,19 @@ public class MulticollectibleElement
     {
         transform = elementTransform;
 
+        motionSimulator = new MotionSimulator(transform, MonoUpdateType.FixedUpdate);
+
         pullSpeed = speed;
         pullDelay = delay;
+
+        internalMotionSimulation = true;
     }
 
     public MulticollectibleElement(MotionSimulator elementMotionSimulator, float speed, float delay)
     {
-        motionSimulator = elementMotionSimulator;
+        transform = elementMotionSimulator.Transform;
 
-        transform = motionSimulator.Transform;
+        motionSimulator = elementMotionSimulator;
 
         pullSpeed = speed;
         pullDelay = delay;
@@ -47,6 +55,16 @@ public class MulticollectibleElement
     public virtual void Collect()
     {
         isActive = true;
+
+        transform.gameObject.SetActive(true);
+    }
+
+    public virtual void Drop(Vector3 impulse, Vector3 angularMomentum)
+    {
+        motionSimulator.velocity = impulse;
+        motionSimulator.angularVelocity = angularMomentum;
+
+        Collect();
     }
 
     public virtual bool Pull(Transform targetTransform)
@@ -57,6 +75,8 @@ public class MulticollectibleElement
             {
                 pullAvailabilityTime = Time.timeSinceLevelLoad + pullDelay;
             }
+
+            motionSimulator.DampVelocity(pullDelay);
 
             if (Time.timeSinceLevelLoad > pullAvailabilityTime)
             {
@@ -78,8 +98,15 @@ public class MulticollectibleElement
 
                 if (t >= 1f)
                 {
+                    isActive = false;
+
                     return isCollected = true;
                 }
+            }
+
+            if (internalMotionSimulation)
+            {
+                motionSimulator.Update();
             }
         }
 

@@ -283,6 +283,19 @@ public static class ExtensionMethods
         return gameObject.scene.rootCount == 0;
     }
 
+    public static bool Contain(this IList<object> list, object entity)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i] == entity)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static List<Transform> GetChildren(this Transform transform)
     {
         List<Transform> children = new List<Transform>();

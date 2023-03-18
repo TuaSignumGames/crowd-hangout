@@ -105,6 +105,8 @@ public class PlayerController : MonoBehaviour
 
             rope.Update();
         }
+
+        ball.LateUpdate();
     }
 
     public void SwitchToBattleMode()

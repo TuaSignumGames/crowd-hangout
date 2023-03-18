@@ -28,4 +28,11 @@ public class MulticollectibleEntity<T> where T : MonoBehaviour
 
         entity.gameObject.SetActive(true);
     }
+
+    public void Drop(Vector3 impulse, Vector3 angularMomentum)
+    {
+        element.Drop(impulse, angularMomentum);
+
+        entity.gameObject.SetActive(true);
+    }
 }

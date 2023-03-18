@@ -2896,8 +2896,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 3.5, y: 2.5, z: 2}
-  m_Center: {x: 0, y: 1.25, z: 0}
+  m_Size: {x: 3.5, y: 2.6, z: 2}
+  m_Center: {x: 0, y: 1.3, z: 0}
 --- !u!114 &7820228730557124958
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2929,7 +2929,7 @@ MonoBehaviour:
       angularMomentumRange:
         min: 90
         max: 720
-      externalImpulseFactor: 1.5
+      externalImpulseFactor: 2.5
   humanContainer: {fileID: 3762160643071450838}
   humanPrefab: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
   buildingSettings:

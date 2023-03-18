@@ -36,7 +36,7 @@ public class BuildingMulticollectible : HumanMulticollectible
 
         for (int i = 0; i < stages.Length; i++)
         {
-            stages[i] = new BuildingStage(i == 0 ? buildingSettings.stage : (i == stages.Length - 1 ? buildingSettings.roof : Instantiate(buildingSettings.stage, buildingSettings.stagesContainer)));
+            stages[i] = new BuildingStage(i == 0 ? buildingSettings.stage : (i == stages.Length - 1 ? buildingSettings.roof : Instantiate(buildingSettings.stage, buildingSettings.stagesContainer)), this);
 
             stages[i].transform.SetCoordinate(TransformComponent.Position, Axis.Y, Space.World, buildingSettings.stagesContainer.position.y + i * buildingSettings.stageHeight);
 
@@ -55,7 +55,7 @@ public class BuildingMulticollectible : HumanMulticollectible
             multicollectibleSettings.capsules[i] = new MulticollectibleCapsule(stages[i].exterior, stages[i].fractures, stages[i].destructionVFX, multicollectibleSettings.capsuleScatteringSettings);
         }
 
-        buildingHeight = buildingSettings.stageHeight * (stages.Length - 1);
+        buildingHeight = 0.2f + buildingSettings.stageHeight * (stages.Length - 1) + 0.9f;
 
         buildingCollider = collectibleSettings.collider as BoxCollider;
 
@@ -65,6 +65,8 @@ public class BuildingMulticollectible : HumanMulticollectible
 
     protected override IEnumerator CollectingCoroutine()
     {
+        contactStageIndex = stages.Length - 1;
+
         for (int i = 0; i < stages.Length; i++)
         {
             if (stages[i].transform.position.y > contactPoint.y)
@@ -86,7 +88,7 @@ public class BuildingMulticollectible : HumanMulticollectible
 
             if (i < stages.Length - 1)
             {
-                stages[i].DropHumanCollectibles(multicollectibleSettings.collectibleScatteringSettings);
+                stages[i].DropElements();
             }
 
             yield return new WaitForSeconds(buildingSettings.stageDestructionDelay);
@@ -119,15 +121,18 @@ public class BuildingMulticollectible : HumanMulticollectible
 
         private MulticollectibleEntity<HumanController>[] humanCollectibles;
 
+        private BuildingMulticollectible buildingMulticollectible;
+
         private List<Transform> children;
 
         private Vector3 collectibleDropImpulse;
 
         public Transform transform => gameObject.transform;
 
-        public BuildingStage(GameObject gameObject)
+        public BuildingStage(GameObject gameObject, BuildingMulticollectible buildingMulticollectible)
         {
             this.gameObject = gameObject;
+            this.buildingMulticollectible = buildingMulticollectible;
 
             children = gameObject.transform.GetChildren();
 
@@ -153,16 +158,13 @@ public class BuildingMulticollectible : HumanMulticollectible
             }
         }
 
-        public void DropHumanCollectibles(ScatterData scatterData)
+        public void DropElements()
         {
             for (int i = 0; i < humanCollectibles.Length; i++)
             {
-                humanCollectibles[i].Collect();
+                humanCollectibles[i].Entity.EjectFromCell();
 
-                collectibleDropImpulse = (humanCollectibles[i].Transform.position - transform.position).normalized.Multiplied(scatterData.impulseRatio) + PlayerController.Humanball.Velocity * scatterData.externalImpulseFactor;
-                collectibleDropImpulse = new Vector3(collectibleDropImpulse.x, Mathf.Abs(collectibleDropImpulse.y), collectibleDropImpulse.z);
-
-                humanCollectibles[i].Entity.Drop(collectibleDropImpulse, Random.insideUnitSphere * scatterData.angularMomentumRange.Value);
+                buildingMulticollectible.DropElement(humanCollectibles[i].Element, transform.position, PlayerController.Humanball.Velocity);
             }
         }
     }

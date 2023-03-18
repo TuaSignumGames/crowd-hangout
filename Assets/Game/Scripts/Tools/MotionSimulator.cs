@@ -9,11 +9,15 @@ public class MotionSimulator
 
     private Transform transform;
 
+    public float velocityMultiplier = 1f;
+
     private Vector3 gravity;
     private Vector3 gravityFixedDelta;
 
     private Vector3 position;
     private Vector3 eulerAngles;
+
+    private float velocityMultiplierDelta;
 
     private float groundCoordY;
 
@@ -23,8 +27,6 @@ public class MotionSimulator
     private bool isGrounded;
 
     public bool enabled = true;
-
-    public int instanceID;
 
     public Vector3 Gravity { get { return gravity; } set { gravity = value; if (useFixedUpdate) gravityFixedDelta = gravity * Time.fixedDeltaTime; } }
 
@@ -76,7 +78,7 @@ public class MotionSimulator
         {
             velocity += useFixedUpdate ? gravityFixedDelta : gravity * Time.deltaTime;
 
-            position = transform.position + velocity * Time.fixedDeltaTime;
+            position = transform.position + velocity * velocityMultiplier * Time.fixedDeltaTime;
 
             eulerAngles += angularVelocity * Time.fixedDeltaTime;
 
@@ -89,11 +91,30 @@ public class MotionSimulator
 
                 transform.position = new Vector3(transform.position.x, isGrounded ? groundCoordY : transform.position.y, transform.position.z);
             }
+        }
+    }
 
-            if (instanceID > 0)
+    public bool DampVelocity(float dampingDuration)
+    {
+        if (enabled)
+        {
+            if (velocityMultiplierDelta == 0)
             {
-                Debug.Log($" - Motion simulator is updating [{instanceID}]");
+                velocityMultiplierDelta = velocityMultiplier / dampingDuration * Time.fixedDeltaTime;
             }
+
+            velocityMultiplier -= velocityMultiplierDelta;
+
+            if (velocityMultiplier <= 0)
+            {
+                velocityMultiplier = 0;
+            }
+
+            return velocityMultiplier == 0;
+        }
+        else
+        {
+            return true;
         }
     }
 
