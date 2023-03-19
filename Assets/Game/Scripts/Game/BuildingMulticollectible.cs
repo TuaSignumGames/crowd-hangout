@@ -80,6 +80,11 @@ public class BuildingMulticollectible : HumanMulticollectible
         if (contactStageIndex > 0)
         {
             multicollectibleSettings.capsules[contactStageIndex - 1].BreakPartially(PlayerController.Humanball.Velocity, stages[contactStageIndex].transform.position, 2.5f);
+
+            if (contactStageIndex == stages.Length - 1)
+            {
+                stages[stages.Length - 2].DropElements();
+            }
         }
 
         for (int i = contactStageIndex; i < stages.Length; i++)

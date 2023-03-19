@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [Implement humanball collisions / Continue main scope] <- 
+// -> [Implement humanball returning after collision (RopeLength/DistanceToNextFloorBlock) / Continue main scope] <- 
 //
 // Level
 //  - Add Collectible types (Multiplier, WeaponBox) 

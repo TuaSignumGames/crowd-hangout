@@ -18711,7 +18711,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ballSettings:
     rigidbody: {fileID: 1779204876}
-    motionSpeed: 10
+    speed: 11
+    acceleration: 50
+    bumpRatio: {x: 8, y: 8}
     suspensionContainer: {fileID: 838087752}
     structureContainer: {fileID: 2097472858}
     elasticitySettings:

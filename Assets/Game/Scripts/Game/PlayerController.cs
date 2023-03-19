@@ -59,13 +59,13 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                if (InputManager.touchPresent)
+                if (InputManager.touchPresent && !ball.isAccidented)
                 {
                     if (targetBlockTransform)
                     {
                         if (rope.Connect(targetBlockTransform.position))
                         {
-                            ball.Swing(ballSettings.motionSpeed);
+                            ball.Swing();
                         }
                     }
                 }
@@ -97,10 +97,21 @@ public class PlayerController : MonoBehaviour
         {
             if (InputManager.touch)
             {
+                ball.isAccidented = false;
+
                 if (!rope.IsConnected)
                 {
                     targetBlockTransform = RaycastBlock(raycastDirection);
                 }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                float targetCoordY = LevelGenerator.Instance.GetBlockPair(Humanball.Transform.position).Position.y;
+
+                print($"Target height: {targetCoordY}");
+
+                Humanball.Jump(targetCoordY - Humanball.Transform.position.y);
             }
 
             rope.Update();
@@ -154,7 +165,9 @@ public class PlayerController : MonoBehaviour
     {
         public Rigidbody rigidbody;
         [Space]
-        public float motionSpeed;
+        public float speed;
+        public float acceleration;
+        public Vector2 bumpRatio;
         [Space]
         public Transform suspensionContainer;
         public Transform structureContainer;

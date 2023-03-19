@@ -401,7 +401,7 @@ public class HumanController : MonoBehaviour
             {
                 PlayerController.Humanball.UnstickHuman(this);
 
-                PlayerController.Humanball.Rigidbody.velocity += (PlayerController.Humanball.Transform.position - transform.position).normalized * 3f;
+                PlayerController.Humanball.Bump(transform.position);
             }
         }
     }
