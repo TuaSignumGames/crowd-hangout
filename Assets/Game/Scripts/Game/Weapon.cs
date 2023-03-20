@@ -10,6 +10,8 @@ public class Weapon
     public string title;
 
     public GameObject weaponContainer;
+    public GameObject weaponModel;
+    [Space]
     public GameObject ammoContainer;
     [Space]
     public float damageRate;
@@ -29,6 +31,8 @@ public class Weapon
     private Pool<Projectile> projectilePool;
 
     private GameObject projectileGameObject;
+
+    private TransformData modelRestTransformData;
 
     private float damage;
 
@@ -55,6 +59,8 @@ public class Weapon
 
             projectilePool = new Pool<Projectile>(GenerateProjectiles(ammoPoolSize));
         }
+
+        modelRestTransformData = new TransformData(weaponModel.transform, Space.Self);
 
         weaponContainer.SetActive(true);
 
@@ -86,6 +92,8 @@ public class Weapon
 
             if (isTargetReachable)
             {
+                weaponModel?.transform.SetData(new TransformData());
+
                 if (projectilePool == null)
                 {
                     human.Damage(damage, ownerHuman);
@@ -103,6 +111,10 @@ public class Weapon
                 availableAttackTime = Time.timeSinceLevelLoad + reloadingTime;
 
                 return true;
+            }
+            else
+            {
+                weaponModel?.transform.SetData(modelRestTransformData);
             }
 
             return false;

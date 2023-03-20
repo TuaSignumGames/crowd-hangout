@@ -4,10 +4,27 @@ using UnityEngine;
 
 // TODO
 //
-// -> [Implement humanball returning after collision (RopeLength/DistanceToNextFloorBlock) / Continue main scope] <- 
+// -> [Weapon multicollectible / Polish humanball bumping] <- 
+// -> [Record video] <-
+//
+// -> [ UPDATE TASKS ] <- 
+// -> [ 4 DAYS TO FINISH ] <-
+//
+// - Fist ++
+// - Bat ++
+// - Brick ++
+// - Bow ++
+// - Pistol ++
+// - Rifle ++
+// - Grenade +-
+// - AK +-
+// - AR +-
+// - Flame thrower +-
+// - Sniper rifle 
+// - Machinegun 
 //
 // Level
-//  - Add Collectible types (Multiplier, WeaponBox) 
+//  - Add Collectible types (WeaponBox / Multiplier) 
 //  - Collectibles generation pattern
 //
 // Upgrades
