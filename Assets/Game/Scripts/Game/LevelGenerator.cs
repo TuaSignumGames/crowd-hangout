@@ -16,12 +16,12 @@ using UnityEngine;
 // - Bow ++
 // - Pistol ++
 // - Rifle ++
-// - Grenade +-
-// - AK +-
-// - AR +-
+// - Grenade ++ 
+// - AK ++
+// - AR ++
 // - Flame thrower +-
-// - Sniper rifle 
-// - Machinegun 
+// - Sniper rifle ++
+// - Machinegun ++
 //
 // Level
 //  - Add Collectible types (WeaponBox / Multiplier) 
