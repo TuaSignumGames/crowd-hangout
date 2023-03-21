@@ -92,7 +92,10 @@ public class HumanballProcessor
 
         structureLayers.AddRange(ballData.proceduralCells.GenerateProceduralCells(cellsCount));//GenerateProceduralLayers(5));
 
-        baseLayerCells[0].Human.isFree = false;
+        HumanController.selectedHuman = baseLayerCells[0].Human;
+
+        HumanController.selectedHuman.isFree = false;
+        HumanController.selectedHuman.SetWeapon(2);
 
         structure = new Humanball(structureLayers);
     }

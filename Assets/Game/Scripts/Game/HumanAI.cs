@@ -66,6 +66,8 @@ public class HumanAI
                 {
                     hostHuman.Stop();
                 }
+
+                //hostHuman.AttackAnimatorListener.Reset();
             }
 
             if (isTargetPositionAvailable)

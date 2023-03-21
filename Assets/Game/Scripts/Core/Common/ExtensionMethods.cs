@@ -714,6 +714,15 @@ public static class ExtensionMethods
         return transform;
     }
 
+    public static Transform Reset(this Transform transform)
+    {
+        transform.localPosition = new Vector3();
+        transform.localEulerAngles = new Vector3();
+        transform.localScale = new Vector3(1f, 1f, 1f);
+
+        return transform;
+    }
+
     public static Transform GetClosest(this IList<Transform> array, Transform transform)
     {
         Transform closestTransform = null;

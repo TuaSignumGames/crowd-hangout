@@ -809,7 +809,7 @@ AnimatorState:
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
-  m_CycleOffsetParameter: 
+  m_CycleOffsetParameter: SpeedFactor
   m_TimeParameter: 
 --- !u!1101 &3207200813460013582
 AnimatorStateTransition:

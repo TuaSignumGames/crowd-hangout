@@ -4,24 +4,12 @@ using UnityEngine;
 
 // TODO
 //
+// -> [ UPDATE TASKS ] <- 
+// -> [ 3 DAYS TO FINISH ] <-
+//
+// -> [Test weapons] <- 
 // -> [Weapon multicollectible / Polish humanball bumping] <- 
 // -> [Record video] <-
-//
-// -> [ UPDATE TASKS ] <- 
-// -> [ 4 DAYS TO FINISH ] <-
-//
-// - Fist ++
-// - Bat ++
-// - Brick ++
-// - Bow ++
-// - Pistol ++
-// - Rifle ++
-// - Grenade ++ 
-// - AK ++
-// - AR ++
-// - Flame thrower +-
-// - Sniper rifle ++
-// - Machinegun ++
 //
 // Level
 //  - Add Collectible types (WeaponBox / Multiplier) 
@@ -96,9 +84,9 @@ public class LevelGenerator : MonoBehaviour
     {
         GenerateBlocks();
 
-        GenerateBattlePath(6);
+        GenerateBattlePath(3);
 
-        PlaceCollectibles();
+        //PlaceCollectibles();
     }
 
     public void GenerateFromEditor(bool collectibles, bool battlePath)

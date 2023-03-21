@@ -7,6 +7,8 @@ public enum HumanAnimationType { Running, Flying, Attacking, Falling, Dying }
 
 public class HumanController : MonoBehaviour
 {
+    public static HumanController selectedHuman;
+
     public HumanControllerComponents components;
     [Space]
     public HumanTeam team;
@@ -27,8 +29,11 @@ public class HumanController : MonoBehaviour
     private HumanAI ai;
 
     private MotionSimulator motionSimulator;
+    private AnimatorListener attackAnimatorListener;
 
     private Weapon currentWeapon;
+
+    private AnimatorStateInfo currentAnimationInfo;
 
     private Vector3 motionVector;
 
@@ -44,6 +49,8 @@ public class HumanController : MonoBehaviour
     public HumanPose ActualPose => actualPose;
 
     public MotionSimulator MotionSimulator => motionSimulator;
+    public AnimatorListener AttackAnimatorListener => attackAnimatorListener;
+
     public Weapon Weapon => currentWeapon;
 
     public static int animatorFlyHash;
@@ -69,6 +76,9 @@ public class HumanController : MonoBehaviour
     {
         InitializeAnimatorHashes();
 
+        motionSimulator = new MotionSimulator(transform, -1000f, MonoUpdateType.FixedUpdate);
+        attackAnimatorListener = new AnimatorListener(components.animator);
+
         actualTeamInfo = teamSettings[1];
 
         if (!(this.team == HumanTeam.Yellow && team == HumanTeam.Yellow))
@@ -79,8 +89,6 @@ public class HumanController : MonoBehaviour
         SetWeapon(weaponSettings[weaponIndex]);
 
         healthCapacity = healthPoints = health;
-
-        motionSimulator = new MotionSimulator(transform, -1000f, MonoUpdateType.FixedUpdate);
 
         isInitialized = true;
     }
@@ -181,9 +189,21 @@ public class HumanController : MonoBehaviour
             {
                 FocusOn(human.transform.position, currentWeapon.directionAngularOffset, true);
 
-                if (currentWeapon.Attack(human))
+                if (currentWeapon.animationRelated)
                 {
-                    PlayAnimation(HumanAnimationType.Attacking);
+                    if (currentWeapon.IsTargetReachable(human.transform.position))
+                    {
+                        PlayAnimation(HumanAnimationType.Attacking);
+
+                        currentWeapon.AttackWithAnimation(human);
+                    }
+                }
+                else
+                {
+                    if (currentWeapon.Attack(human))
+                    {
+                        PlayAnimation(HumanAnimationType.Attacking);
+                    }
                 }
             }
         }
@@ -194,6 +214,8 @@ public class HumanController : MonoBehaviour
         if (motionSimulator.IsGrounded)
         {
             motionVector = position - transform.position;
+
+            currentWeapon.Lower();
 
             if (motionVector.sqrMagnitude > targetPointSqrRadius)
             {
@@ -281,7 +303,7 @@ public class HumanController : MonoBehaviour
 
         motionSimulator.SetGround(LevelGenerator.Instance.BattlePath.position.y - components.animator.transform.localPosition.y);
 
-        motionSimulator.angularVelocity = Vector3.zero;
+        motionSimulator.rotationEnabled = false;
 
         Drop(velocity, Vector3.zero);
 

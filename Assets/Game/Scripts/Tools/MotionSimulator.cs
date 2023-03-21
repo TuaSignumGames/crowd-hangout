@@ -27,6 +27,8 @@ public class MotionSimulator
     private bool isGrounded;
 
     public bool enabled = true;
+    public bool translationEnabled = true;
+    public bool rotationEnabled = true;
 
     public Vector3 Gravity { get { return gravity; } set { gravity = value; if (useFixedUpdate) gravityFixedDelta = gravity * Time.fixedDeltaTime; } }
 
@@ -76,14 +78,21 @@ public class MotionSimulator
     {
         if (enabled)
         {
-            velocity += useFixedUpdate ? gravityFixedDelta : gravity * Time.deltaTime;
+            if (translationEnabled)
+            {
+                velocity += useFixedUpdate ? gravityFixedDelta : gravity * Time.deltaTime;
 
-            position = transform.position + velocity * velocityMultiplier * Time.fixedDeltaTime;
+                position = transform.position + velocity * velocityMultiplier * Time.fixedDeltaTime;
 
-            eulerAngles += angularVelocity * Time.fixedDeltaTime;
+                transform.position = position;
+            }
 
-            transform.position = position;
-            transform.eulerAngles = eulerAngles;
+            if (rotationEnabled)
+            {
+                eulerAngles += angularVelocity * Time.fixedDeltaTime;
+
+                transform.eulerAngles = eulerAngles;
+            }
 
             if (useGround)
             {

@@ -235,28 +235,37 @@ MonoBehaviour:
     projectileSpeed: 0
     directionAngularOffset: 60
     attackAnimationID: 0
+    animationRelated: 0
+    animationName: 
+    keyframeTime: 0
     attackVFX: {fileID: 0}
   - title: Bat
     weaponContainer: {fileID: 5002936460844173615}
     weaponModel: {fileID: 4373479425591376124}
     ammoContainer: {fileID: 0}
     damageRate: 10
-    reloadingTime: 1
-    attackDistance: 2
+    reloadingTime: 0.567
+    attackDistance: 1.4
     projectileSpeed: 0
-    directionAngularOffset: 0
+    directionAngularOffset: 90
     attackAnimationID: 1
+    animationRelated: 0
+    animationName: 
+    keyframeTime: 0
     attackVFX: {fileID: 0}
   - title: Brick
     weaponContainer: {fileID: 3429199240765688056}
     weaponModel: {fileID: 7447150962484643364}
     ammoContainer: {fileID: 7463677023535137702}
-    damageRate: 10
-    reloadingTime: 1.5
+    damageRate: 25
+    reloadingTime: 2.2
     attackDistance: 8
     projectileSpeed: 10
     directionAngularOffset: 0
     attackAnimationID: 2
+    animationRelated: 1
+    animationName: Shot-Throw
+    keyframeTime: 0.54
     attackVFX: {fileID: 0}
   - title: Bow
     weaponContainer: {fileID: 5652893008443664743}
@@ -268,6 +277,9 @@ MonoBehaviour:
     projectileSpeed: 0
     directionAngularOffset: 0
     attackAnimationID: 3
+    animationRelated: 0
+    animationName: 
+    keyframeTime: 0
     attackVFX: {fileID: 0}
   - title: Pistol
     weaponContainer: {fileID: 6702893980190087776}
@@ -279,6 +291,9 @@ MonoBehaviour:
     projectileSpeed: 25
     directionAngularOffset: 0
     attackAnimationID: 4
+    animationRelated: 0
+    animationName: 
+    keyframeTime: 0
     attackVFX: {fileID: 3364544254698358871}
   - title: Rifle
     weaponContainer: {fileID: 7692074514500365887}
@@ -290,6 +305,9 @@ MonoBehaviour:
     projectileSpeed: 25
     directionAngularOffset: 0
     attackAnimationID: 5
+    animationRelated: 0
+    animationName: 
+    keyframeTime: 0
     attackVFX: {fileID: 7560757168807600987}
   - title: AK
     weaponContainer: {fileID: 6113200975160171124}
@@ -301,6 +319,9 @@ MonoBehaviour:
     projectileSpeed: 25
     directionAngularOffset: 0
     attackAnimationID: 5
+    animationRelated: 0
+    animationName: 
+    keyframeTime: 0
     attackVFX: {fileID: 392227314702766939}
   - title: AR
     weaponContainer: {fileID: 1087849034247035176}
@@ -312,6 +333,9 @@ MonoBehaviour:
     projectileSpeed: 28
     directionAngularOffset: 0
     attackAnimationID: 5
+    animationRelated: 0
+    animationName: 
+    keyframeTime: 0
     attackVFX: {fileID: 1858966421438232894}
   - title: Machinegun
     weaponContainer: {fileID: 2010242087336658420}
@@ -323,6 +347,9 @@ MonoBehaviour:
     projectileSpeed: 28
     directionAngularOffset: 0
     attackAnimationID: 5
+    animationRelated: 0
+    animationName: 
+    keyframeTime: 0
     attackVFX: {fileID: 6768503558947413412}
   - title: SniperRifle
     weaponContainer: {fileID: 5144247701632660959}
@@ -334,6 +361,9 @@ MonoBehaviour:
     projectileSpeed: 35
     directionAngularOffset: 0
     attackAnimationID: 5
+    animationRelated: 0
+    animationName: 
+    keyframeTime: 0
     attackVFX: {fileID: 6631081880609808557}
   - title: Grenade
     weaponContainer: {fileID: 6332381708442063528}
@@ -345,6 +375,9 @@ MonoBehaviour:
     projectileSpeed: 10
     directionAngularOffset: 0
     attackAnimationID: 2
+    animationRelated: 0
+    animationName: 
+    keyframeTime: 0
     attackVFX: {fileID: 3364544254698358871}
   - title: Flamethrower
     weaponContainer: {fileID: 8613084343064516235}
@@ -356,6 +389,9 @@ MonoBehaviour:
     projectileSpeed: 15
     directionAngularOffset: 0
     attackAnimationID: 5
+    animationRelated: 0
+    animationName: 
+    keyframeTime: 0
     attackVFX: {fileID: 0}
   rigSettings:
     bones:
@@ -43426,23 +43462,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c0ffb04586184a359c756a91a33f708, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.92956686
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c0ffb04586184a359c756a91a33f708, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.36865357
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c0ffb04586184a359c756a91a33f708, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.000000042797474
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c0ffb04586184a359c756a91a33f708, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0.000000008111904
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c0ffb04586184a359c756a91a33f708, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: -43.265
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c0ffb04586184a359c756a91a33f708, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y

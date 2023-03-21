@@ -23,6 +23,11 @@ public class Weapon
     public float directionAngularOffset;
     [Space]
     public int attackAnimationID;
+    [Space]
+    public bool animationRelated;
+    public string animationName;
+    public float keyframeTime;
+    [Space]
     public ParticleSystem attackVFX;
 
     private HumanController ownerHuman;
@@ -36,6 +41,7 @@ public class Weapon
 
     private float damage;
 
+    private float previousAttackTime;
     private float availableAttackTime;
 
     private float sqrAttackDistance;
@@ -43,6 +49,7 @@ public class Weapon
 
     private int ammoPoolSize;
 
+    private bool isAttackRequested;
     private bool isTargetReachable;
 
     public Weapon Apply(HumanController ownerHuman)
@@ -60,9 +67,17 @@ public class Weapon
             projectilePool = new Pool<Projectile>(GenerateProjectiles(ammoPoolSize));
         }
 
-        modelRestTransformData = new TransformData(weaponModel.transform, Space.Self);
+        if (weaponModel)
+        {
+            modelRestTransformData = new TransformData(weaponModel.transform, Space.Self);
+        }
 
         weaponContainer.SetActive(true);
+
+        if (animationRelated)
+        {
+            ownerHuman.AttackAnimatorListener.ListenToState(animationName);
+        }
 
         return this;
     }
@@ -92,7 +107,10 @@ public class Weapon
 
             if (isTargetReachable)
             {
-                weaponModel?.transform.SetData(new TransformData());
+                if (weaponModel)
+                {
+                    weaponModel.transform.Reset();
+                }
 
                 if (projectilePool == null)
                 {
@@ -112,10 +130,6 @@ public class Weapon
 
                 return true;
             }
-            else
-            {
-                weaponModel?.transform.SetData(modelRestTransformData);
-            }
 
             return false;
         }
@@ -123,11 +137,55 @@ public class Weapon
         return false;
     }
 
+    public void AttackImmediate(HumanController human)
+    {
+        if (weaponModel)
+        {
+            weaponModel.transform.Reset();
+        }
+
+        if (projectilePool == null)
+        {
+            human.Damage(damageRate * Mathf.Clamp(Time.timeSinceLevelLoad - previousAttackTime, 0, reloadingTime), ownerHuman);
+        }
+        else
+        {
+            projectilePool.Eject().Launch(human.transform.position, projectileSpeed, () => human.Damage(damage, ownerHuman));
+        }
+
+        if (attackVFX)
+        {
+            attackVFX.Play();
+        }
+
+        previousAttackTime = Time.timeSinceLevelLoad;
+    }
+
+    public void AttackWithAnimation(HumanController human)
+    {
+        if (ownerHuman.AttackAnimatorListener.IsFrameReached(keyframeTime))
+        {
+            AttackImmediate(human);
+        }
+    }
+
+    public void Lower()
+    {
+        isAttackRequested = false;
+
+        ownerHuman.AttackAnimatorListener.Reset();
+
+        if (weaponModel)
+        {
+            weaponModel.transform.SetData(modelRestTransformData);
+        }
+    }
+
     public bool IsTargetReachable(Vector3 position)
     {
         sqrDistanceToTarget = (position - ownerHuman.transform.position).GetPlanarSqrMagnitude(Axis.Y);
 
-        return isTargetReachable = sqrDistanceToTarget < sqrAttackDistance;
+        return isTargetReachable = sqrDistanceToTarget <= sqrAttackDistance;
     }
 
     private List<Projectile> GenerateProjectiles(int count)
