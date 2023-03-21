@@ -1,9 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
+[System.Serializable]
 public class Weapon
 {
     [HideInInspector]
@@ -15,10 +14,11 @@ public class Weapon
     public GameObject ammoContainer;
     [Space]
     public float damageRate;
+    public float attackDistance;
     public float reloadingTime;
     [Space]
-    public float attackDistance;
     public float projectileSpeed;
+    public bool disableOnImpact = true;
     [Space]
     public float directionAngularOffset;
     [Space]
@@ -62,7 +62,7 @@ public class Weapon
 
         if (ammoContainer && projectileSpeed > 0)
         {
-            ammoPoolSize = Mathf.CeilToInt(attackDistance * reloadingTime / projectileSpeed) * 2;
+            ammoPoolSize = Mathf.CeilToInt(attackDistance / (projectileSpeed * reloadingTime)) + 1;
 
             projectilePool = new Pool<Projectile>(GenerateProjectiles(ammoPoolSize));
         }
@@ -118,7 +118,7 @@ public class Weapon
                 }
                 else
                 {
-                    projectilePool.Eject().Launch(human.transform.position, projectileSpeed, () => human.Damage(damage, ownerHuman));
+                    projectilePool.Eject().Launch(human.transform.position + Random.insideUnitSphere * 0.2f, projectileSpeed, () => human.Damage(damage, ownerHuman));
                 }
 
                 if (attackVFX)
@@ -150,7 +150,7 @@ public class Weapon
         }
         else
         {
-            projectilePool.Eject().Launch(human.transform.position, projectileSpeed, () => human.Damage(damage, ownerHuman));
+            projectilePool.Eject().Launch(human.transform.position + Random.insideUnitSphere * 0.2f, projectileSpeed, () => human.Damage(damage, ownerHuman));
         }
 
         if (attackVFX)
@@ -165,6 +165,8 @@ public class Weapon
     {
         if (ownerHuman.AttackAnimatorListener.IsFrameReached(keyframeTime))
         {
+            Debug.Log(" --- Attack with animation");
+
             AttackImmediate(human);
         }
     }
@@ -196,7 +198,7 @@ public class Weapon
 
         for (int i = 0; i < count; i++)
         {
-            projectiles.Add(new Projectile(i == 0 ? projectileGameObject : GameObject.Instantiate(projectileGameObject, projectileGameObject.transform.parent), ammoContainer.transform));
+            projectiles.Add(new Projectile(i == 0 ? projectileGameObject : GameObject.Instantiate(projectileGameObject, projectileGameObject.transform.parent), ammoContainer.transform, disableOnImpact));
         }
 
         return projectiles;
@@ -219,16 +221,19 @@ public class Weapon
         private float targetPathLength;
         private float actualPathLength;
 
+        private bool disableOnImpact;
+
         private bool isLaunched;
 
-        private Action onPathComplete;
+        private System.Action onPathComplete;
 
         public bool IsLaunched => isLaunched;
 
-        public Projectile(GameObject gameObject, Transform originTransform)
+        public Projectile(GameObject gameObject, Transform originTransform, bool disableOnImpact)
         {
             this.gameObject = gameObject;
-            this.originTransform = originTransform; 
+            this.originTransform = originTransform;
+            this.disableOnImpact = disableOnImpact;
 
             trailRenderer = gameObject.GetComponent<TrailRenderer>();
         }
@@ -243,11 +248,14 @@ public class Weapon
             {
                 onPathComplete();
 
-                Disable();
+                if (disableOnImpact)
+                {
+                    Disable();
+                }
             }
         }
 
-        public Projectile Launch(Vector3 point, float speed, Action onPointReached)
+        public Projectile Launch(Vector3 point, float speed, System.Action onPointReached)
         {
             gameObject.transform.position = originTransform.position;
 

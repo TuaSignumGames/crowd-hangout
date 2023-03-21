@@ -7,7 +7,6 @@ using UnityEngine;
 // -> [ UPDATE TASKS ] <- 
 // -> [ 3 DAYS TO FINISH ] <-
 //
-// -> [Test weapons] <- 
 // -> [Weapon multicollectible / Polish humanball bumping] <- 
 // -> [Record video] <-
 //

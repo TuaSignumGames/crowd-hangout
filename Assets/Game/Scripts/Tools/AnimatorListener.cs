@@ -41,6 +41,8 @@ public class AnimatorListener
 
             animationNormalizedTime = Mathf.Repeat(Time.timeSinceLevelLoad - animationStartTime, animatorStateInfo.length);
 
+            //Debug.Log($" - T: {animationNormalizedTime}");
+
             if (animationNormalizedTime >= time)
             {
                 if (!isFrameReached)

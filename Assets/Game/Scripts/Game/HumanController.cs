@@ -446,7 +446,7 @@ public class HumanController : MonoBehaviour
             {
                 if (weaponSettings[i].weaponContainer)
                 {
-                    weaponSettings[i].title = weaponSettings[i].weaponContainer.name;
+                    weaponSettings[i].title = $"{weaponSettings[i].weaponContainer.name}  [P:{weaponSettings[i].damageRate * weaponSettings[i].attackDistance}]";
                 }
             }
         }

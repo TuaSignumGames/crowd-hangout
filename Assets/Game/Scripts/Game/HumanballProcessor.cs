@@ -95,7 +95,7 @@ public class HumanballProcessor
         HumanController.selectedHuman = baseLayerCells[0].Human;
 
         HumanController.selectedHuman.isFree = false;
-        HumanController.selectedHuman.SetWeapon(2);
+        HumanController.selectedHuman.SetWeapon(11);
 
         structure = new Humanball(structureLayers);
     }

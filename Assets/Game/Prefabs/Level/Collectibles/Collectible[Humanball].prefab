@@ -683,6 +683,10 @@ PrefabInstance:
       propertyPath: rigSettings.randomizePose
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
+      propertyPath: weaponSettings.Array.data[3].projectileSpeed
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 529501744668645737, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 8.80538e-10
@@ -1481,6 +1485,10 @@ PrefabInstance:
       propertyPath: rigSettings.randomizePose
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
+      propertyPath: weaponSettings.Array.data[3].projectileSpeed
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 529501744668645737, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.99222565
@@ -1847,6 +1855,10 @@ PrefabInstance:
       propertyPath: rigSettings.randomizePose
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
+      propertyPath: weaponSettings.Array.data[3].projectileSpeed
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 529501744668645737, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.9999949
@@ -2128,6 +2140,10 @@ PrefabInstance:
     - target: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
       propertyPath: rigSettings.randomizePose
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
+      propertyPath: weaponSettings.Array.data[3].projectileSpeed
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 929853523359194759, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2430,6 +2446,10 @@ PrefabInstance:
     - target: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
       propertyPath: rigSettings.randomizePose
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
+      propertyPath: weaponSettings.Array.data[3].projectileSpeed
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 529501744668645737, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
       propertyPath: m_LocalPosition.x
