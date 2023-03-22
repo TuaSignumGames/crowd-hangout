@@ -40,6 +40,8 @@ public class Humanball
     public int FilledCellsCount => cellsCount - GetAvailableCellsCount();
     public int FilledLayersCount => filledLayersCount;
 
+    public HumanballCell[] FilledCells => filledCells.ToArray();
+
     public Humanball()
     {
         layers = new List<HumanballLayer>();

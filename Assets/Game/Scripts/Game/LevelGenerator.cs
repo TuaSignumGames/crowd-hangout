@@ -5,7 +5,7 @@ using UnityEngine;
 // TODO
 //
 // -> [ UPDATE TASKS ] <- 
-// -> [ 3 DAYS TO FINISH ] <-
+// -> [ 2 DAYS TO FINISH ] <-
 //
 // -> [Weapon multicollectible / Polish humanball bumping] <- 
 // -> [Record video] <-
@@ -190,7 +190,7 @@ public class LevelGenerator : MonoBehaviour
                 {
                     progressFactor = i / (float)blockPairs.Count;
 
-                    collectiblePrefab = collectibleSettings.collectibles.GetRandom().prefab;
+                    collectiblePrefab = collectibleSettings.humanCollectibles.GetRandom().prefab;
 
                     collectibleInstance = Instantiate(collectiblePrefab, blockPairs[i + collectiblePrefab.RangeNumber].container.transform);
 
@@ -211,6 +211,11 @@ public class LevelGenerator : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void PlaceHumanCollectible(int humansCount)
+    {
+
     }
 
     private BlockPair InstantiateBlockPair(Vector3 origin, int orderIndex)
@@ -356,7 +361,8 @@ public class LevelGenerator : MonoBehaviour
     [System.Serializable]
     public class CollectibleSettings
     {
-        public List<CollectibleData> collectibles;
+        public List<CollectibleData> humanCollectibles;
+        public List<WeaponMulticollectible> weaponCollectibles;
         public AnimationCurve populationCurve;
     }
 

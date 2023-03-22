@@ -29,6 +29,7 @@ public class MulticollectibleElement
 
     public bool IsActive => isActive;
     public bool IsCollected => isCollected;
+    public bool IsCollecting => isActive && !isCollected;
 
     public MulticollectibleElement(Transform elementTransform, float speed, float delay)
     {

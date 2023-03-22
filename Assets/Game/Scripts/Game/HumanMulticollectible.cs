@@ -36,8 +36,6 @@ public class HumanMulticollectible : Multicollectible
             humanCollectibles.Add(new MulticollectibleEntity<HumanController>(humanInstance, elements[i]));
         }
 
-
-
         humanCollectiblesPool = new Pool<MulticollectibleEntity<HumanController>>(humanCollectibles);
     }
 
@@ -45,7 +43,7 @@ public class HumanMulticollectible : Multicollectible
     {
         for (int i = 0; i < humanCollectibles.Count; i++)
         {
-            if (humanCollectibles[i].IsCollecting)
+            if (humanCollectibles[i].Element.IsCollecting)
             {
                 if (humanCollectibles[i].Element.Pull(PlayerController.Humanball.Transform))
                 {

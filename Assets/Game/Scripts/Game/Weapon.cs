@@ -49,12 +49,17 @@ public class Weapon
 
     private int ammoPoolSize;
 
+    private int weaponIndex;
+
     private bool isAttackRequested;
     private bool isTargetReachable;
 
-    public Weapon Apply(HumanController ownerHuman)
+    public int WeaponID => weaponIndex;
+
+    public Weapon Apply(HumanController ownerHuman, int weaponIndex)
     {
         this.ownerHuman = ownerHuman;
+        this.weaponIndex = weaponIndex;
 
         damage = damageRate * reloadingTime;
 

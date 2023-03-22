@@ -373,12 +373,12 @@ public class HumanController : MonoBehaviour
 
     public void SetWeapon(Weapon weapon)
     {
-        currentWeapon = weapon.Apply(this);
+        currentWeapon = weapon.Apply(this, weaponSettings.IndexOf(weapon));
     }
 
     public void SetWeapon(int index)
     {
-        currentWeapon = weaponSettings[index].Apply(this);
+        currentWeapon = weaponSettings[index].Apply(this, index);
     }
 
     private void UpdateMotion()

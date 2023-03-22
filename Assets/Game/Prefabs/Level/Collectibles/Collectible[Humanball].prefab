@@ -480,7 +480,7 @@ MonoBehaviour:
       endTransform: {fileID: 84780433837167375}
       swingContainer: {fileID: 84780432381945507}
       swingAmplitude: 2
-      swingPeriodRange: {x: 2, y: 3}
+      swingPeriodRange: {x: 3, y: 3}
       elasticitySettings:
         springFactor: 300
         dampingFactor: 0.9

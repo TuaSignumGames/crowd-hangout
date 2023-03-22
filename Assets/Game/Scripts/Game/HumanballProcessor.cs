@@ -184,6 +184,13 @@ public class HumanballProcessor
         }
     }
 
+    public void StickWeapon(HumanController humanController, int weaponID)
+    {
+        humanController.SetWeapon(weaponID);
+
+        pulseEvaluator.Click(ballData.pulsingSettings.clickValue);
+    }
+
     public void Swing()
     {
         if (!isLaunched)
