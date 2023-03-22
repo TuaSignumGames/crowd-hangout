@@ -3954,13 +3954,6 @@ MonoBehaviour:
       heightIncrement: 0.75
       transitionShift: 3
       transitionLength: 3
-  wavePatternSettings:
-  - title: Major Pattern
-    waveHeight: 10
-    waveFrequency: 2
-  - title: Minor Pattern 1
-    waveHeight: 3
-    waveFrequency: 20
   collectibleSettings:
     humanCollectibles:
     - populationValue: 0
@@ -3986,7 +3979,24 @@ MonoBehaviour:
     translationDuration: 2
     viewEulerAngles: {x: 25, y: 75, z: 0}
     rotationDuration: 1
-  levelLength: 60
+  constructorSettings:
+    structures:
+    - title: Tutorial
+      cycle:
+      - blocksCount: 5
+        collectiblePointType: 1
+      - blocksCount: 5
+        collectiblePointType: 0
+      cyclesCount: 3
+    landscapes:
+    - title: Karpathians
+      patterns:
+      - title: 
+        waveHeight: 10
+        waveFrequency: 2
+      - title: 
+        waveHeight: 3
+        waveFrequency: 20
 --- !u!1 &1030127074
 GameObject:
   m_ObjectHideFlags: 0

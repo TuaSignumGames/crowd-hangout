@@ -7,6 +7,7 @@ using UnityEngine;
 // -> [ UPDATE TASKS ] <- 
 // -> [ 2 DAYS TO FINISH ] <-
 //
+// -> [Rewrite Generate() based on LevelData] <- 
 // -> [Weapon multicollectible / Polish humanball bumping] <- 
 // -> [Record video] <-
 //
@@ -26,13 +27,12 @@ public class LevelGenerator : MonoBehaviour
     public static LevelGenerator Instance;
 
     public BlockSettings blockSettings;
-    public List<WavePatternInfo> wavePatternSettings;
-    [Space]
     public CollectibleSettings collectibleSettings;
-    [Space]
     public BattlePathSettings battlePathSettings;
     [Space]
-    public float levelLength;
+    public LevelSettings constructorSettings;
+
+    private LevelData levelData;
 
     private List<BlockPair> blockPairs;
 
@@ -46,15 +46,22 @@ public class LevelGenerator : MonoBehaviour
     private Multicollectible collectiblePrefab;
     private Multicollectible collectibleInstance;
 
+    private WeaponMulticollectible weaponCollectible;
+
     private GameObject newBlockPairContainer;
 
     private Vector2 perlinNoiseOrigin;
 
     private List<float> offsetMap;
 
+    private float progressValue;
+
     private float perlinValue;
 
     private int blockPairsCount;
+    private int availableBlockPairIndex;
+
+    private int localHumansCount;
     private int totalHumansCount;
 
     private bool isCavePassed;
@@ -81,6 +88,8 @@ public class LevelGenerator : MonoBehaviour
 
     public void Generate()
     {
+        levelData = constructorSettings.GetConfiguration();
+
         GenerateBlocks();
 
         GenerateBattlePath(3);
@@ -126,6 +135,7 @@ public class LevelGenerator : MonoBehaviour
 
         blockPairs = new List<BlockPair>();
 
+        /*
         blockPairsCount = Mathf.RoundToInt(levelLength / blockSettings.blockLength);
 
         perlinNoiseOrigin = new Vector2(Random.Range(-500f, 500f), Random.Range(-500f, 500f));
@@ -150,6 +160,7 @@ public class LevelGenerator : MonoBehaviour
         }
 
         blockSettings.blocksContainer.position = new Vector3(-blockSettings.blockLength * 3f, -offsetMap[3], 0);
+        */
     }
 
     private void GenerateBattlePath(int stagesCount)
@@ -177,35 +188,28 @@ public class LevelGenerator : MonoBehaviour
 
     private void PlaceCollectibles()
     {
-        int generatedHumansCount = 0;
-        int nextAvailableBlockPairIndex = 0;
 
-        float progressFactor = 0;
 
         for (int i = 0; i < blockPairs.Count; i++)
         {
             if (i > 5 && i < blockPairs.Count - 3 && i % 4 == 0)//(i == 10)//(i > 5)
             {
-                if (i >= nextAvailableBlockPairIndex)
+                if (i >= availableBlockPairIndex)
                 {
-                    progressFactor = i / (float)blockPairs.Count;
+                    progressValue = i / (float)blockPairs.Count;
 
-                    collectiblePrefab = collectibleSettings.humanCollectibles.GetRandom().prefab;
+                    
 
-                    collectibleInstance = Instantiate(collectiblePrefab, blockPairs[i + collectiblePrefab.RangeNumber].container.transform);
 
-                    generatedHumansCount = Random.Range((int)Mathf.Lerp(1, 16, progressFactor), (int)Mathf.Lerp(5, 26, progressFactor));
-
-                    blockPairs[i].AddCollectible(collectibleInstance, generatedHumansCount);
 
                     if (collectibleInstance.RangeNumber > 0)
                     {
                         AlignBlocksForCollectible(collectibleInstance, i);
                     }
 
-                    nextAvailableBlockPairIndex = i + 1 + collectiblePrefab.RangeNumber * 2;
+                    availableBlockPairIndex = i + 1 + collectiblePrefab.RangeNumber * 2;
 
-                    totalHumansCount += generatedHumansCount;
+                    totalHumansCount += localHumansCount;
 
                     //return;
                 }
@@ -213,7 +217,18 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private void PlaceHumanCollectible(int humansCount)
+    private void PlaceHumanCollectible(int blockPairIndex, int humansCount)
+    {
+        collectiblePrefab = collectibleSettings.humanCollectibles.GetRandom().prefab;
+
+        Instantiate(collectiblePrefab, blockPairs[blockPairIndex + collectiblePrefab.RangeNumber].container.transform);
+
+        localHumansCount = Random.Range((int)Mathf.Lerp(1, 16, progressValue), (int)Mathf.Lerp(5, 26, progressValue));
+
+        blockPairs[blockPairIndex].AddCollectible(collectibleInstance, localHumansCount);
+    }
+
+    private void PlaceWeaponCollectible(int weaponID, int weaponsCount)
     {
 
     }
@@ -317,78 +332,20 @@ public class LevelGenerator : MonoBehaviour
 
     private void OnValidate()
     {
-        if (wavePatternSettings.Count > 0)
+        if (constructorSettings.landscapes.Count > 0)
         {
-            for (int i = 0; i < wavePatternSettings.Count; i++)
+            for (int i = 0; i < constructorSettings.landscapes.Count; i++)
             {
-                wavePatternSettings[i].title = i == 0 ? "Major Pattern" : $"Minor Pattern {i}";
+                if (constructorSettings.landscapes[i].patterns.Count > 0)
+                {
+                    for (int j = 0; j < constructorSettings.landscapes[i].patterns.Count; j++)
+                    {
+                        WavePatternData pattern = constructorSettings.landscapes[i].patterns[j];
+
+                        pattern.title = i == 0 ? "Major Pattern" : $"Minor Pattern {i}";
+                    }
+                }
             }
         }
-    }
-
-    [System.Serializable]
-    public class BlockSettings
-    {
-        public Transform blocksContainer;
-        public GameObject[] ceilBlockPrefabs;
-        public GameObject[] floorBlockPrefabs;
-        public float blockLength;
-        [Space]
-        public Vector2 caveHeightRange;
-        public float thresholdValue;
-        [Space]
-        public HeightIncrementData heightIncrementSettings;
-    }
-
-    [System.Serializable]
-    public class BattlePathSettings
-    {
-        public Transform pathContainer;
-        public Transform stagesContainer;
-        [Space]
-        public Transform baseStageTransform;
-        [Space]
-        public GameObject stagePrefab;
-        public List<GameObject> guardPrefabs;
-        [Space]
-        public Vector3 viewLocalOffset;
-        public float translationDuration;
-        [Space]
-        public Vector3 viewEulerAngles;
-        public float rotationDuration;
-    }
-
-    [System.Serializable]
-    public class CollectibleSettings
-    {
-        public List<CollectibleData> humanCollectibles;
-        public List<WeaponMulticollectible> weaponCollectibles;
-        public AnimationCurve populationCurve;
-    }
-
-    [System.Serializable]
-    public class WavePatternInfo
-    {
-        [HideInInspector]
-        public string title;
-
-        public float waveHeight;
-        public float waveFrequency;
-    }
-
-    [System.Serializable]
-    public struct CollectibleData
-    {
-        public float populationValue;
-        public Multicollectible prefab;
-    }
-
-    [System.Serializable]
-    public struct HeightIncrementData
-    {
-        public float heightIncrement;
-        [Space]
-        public int transitionShift;
-        public int transitionLength;
     }
 }
