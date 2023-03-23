@@ -52,11 +52,11 @@ public class BattlePathStage
 
             foreach (HumanController member in guardCrew.Members)
             {
-                member.Initialize(100f, 0);
+                member.Initialize(100f, Random.Range(0, 11));
 
                 member.MotionSimulator.SetGround(LevelGenerator.Instance.BattlePath.transform.position.y - member.components.animator.transform.localPosition.y);
 
-                member.DropToBattle(Vector3.zero);
+                member.DropToBattle(Vector3.zero, -Vector3.right);
             }
         }
     }

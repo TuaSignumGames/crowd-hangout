@@ -28,6 +28,8 @@ public class HumanballProcessor
     private float linearSpeed;
     private float linearAccelerationDelta;
 
+    private float speedLimit;
+
     private float swingAngularSpeed;
     private float swingAngularSpeedDelta;
 
@@ -134,7 +136,9 @@ public class HumanballProcessor
             tensionValue = 0;
         }
 
-        Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, ballData.speed); // Dynamic speed limit <--- 
+        speedLimit = Mathf.Lerp(speedLimit, ballData.speed, ballData.bumpDampingFactor);
+
+        Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, speedLimit);
 
         springEvaluator.Update(ref springValue);
 
@@ -251,7 +255,9 @@ public class HumanballProcessor
 
         Release();
 
-        Rigidbody.velocity += (Transform.position - contactPoint).normalized.Multiplied(ballData.bumpRatio);
+        speedLimit = ballData.speed * 3f;
+
+        Rigidbody.velocity += (Transform.position - contactPoint).normalized * ballData.bumpImpulse;
     }
 
     public void UpdateContainerOrientation(Vector3 connectionPoint)

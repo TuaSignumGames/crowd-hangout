@@ -86,7 +86,22 @@ public class HumanController : MonoBehaviour
             SetTeam(this.team = team);
         }
 
-        SetWeapon(weaponSettings[weaponIndex]);
+        if (weaponIndex > 0)
+        {
+            SetWeapon(weaponSettings[weaponIndex]);
+        }
+        else
+        {
+            for (int i = 0; i < weaponSettings.Count; i++)
+            {
+                if (weaponSettings[i].weaponContainer.gameObject.activeSelf)
+                {
+                    SetWeapon(i);
+
+                    break;
+                }
+            }
+        }
 
         healthCapacity = healthPoints = health;
 
@@ -297,7 +312,7 @@ public class HumanController : MonoBehaviour
         motionSimulator.angularVelocity = angularMomentum;
     }
 
-    public void DropToBattle(Vector3 velocity)
+    public void DropToBattle(Vector3 velocity, Vector3 direction)
     {
         ai = new HumanAI(this);
 
@@ -307,7 +322,7 @@ public class HumanController : MonoBehaviour
 
         Drop(velocity, Vector3.zero);
 
-        transform.forward = Vector3.right;
+        transform.forward = direction;
 
         targetPointSqrRadius = motionSettings.targetPointRadius * motionSettings.targetPointRadius;
 
@@ -340,6 +355,7 @@ public class HumanController : MonoBehaviour
         if (agressor)
         {
             ai.SetEnemy(agressor);
+            ai.Assault();
         }
 
         if (healthPoints <= 0)

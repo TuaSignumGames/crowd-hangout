@@ -112,7 +112,7 @@ MonoBehaviour:
     skinMaterial: {fileID: 2100000, guid: a1557c96280594424ba225b39ab49919, type: 2}
     impactVFX: {fileID: 2288019555575076631}
   motionSettings:
-    runSpeed: 4
+    runSpeed: 6
     turnSpeed: 90
     speedLerpingFactor: 0.2
     targetPointRadius: 0.2
@@ -36630,7 +36630,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6132956692130445153
 Transform:
   m_ObjectHideFlags: 0

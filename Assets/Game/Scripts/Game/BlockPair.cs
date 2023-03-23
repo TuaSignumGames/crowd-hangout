@@ -9,10 +9,16 @@ public class BlockPair
 
     public GameObject container;
 
+    public Transform landscapeContainer;
+
     private Collectible collectible;
+
+    private List<Transform> landscapeBlocks;
 
     private float height;
     private float halfHeight;
+
+    private float thresholdValue;
 
     private int orderIndex;
 
@@ -27,7 +33,7 @@ public class BlockPair
 
     public int OrderIndex => orderIndex;
 
-    public BlockPair(GameObject ceilBlock, GameObject floorBlock, GameObject container, int orderIndex)
+    public BlockPair(GameObject ceilBlock, GameObject floorBlock, GameObject container, int orderIndex, float thresholdValue)
     {
         this.ceilBlock = ceilBlock;
         this.floorBlock = floorBlock;
@@ -38,9 +44,12 @@ public class BlockPair
         this.floorBlock.transform.SetParent(container.transform);
 
         this.orderIndex = orderIndex;
+        this.thresholdValue = thresholdValue;
+
+        DeformLandscape();
     }
 
-    public void SetHeight(float height, float thresholdValue)
+    public void SetHeight(float height)
     {
         this.height = height;
 
@@ -65,5 +74,16 @@ public class BlockPair
     public void FitCollectible()
     {
         collectible.UpdatePlacement(this);
+    }
+
+    private void DeformLandscape()
+    {
+        landscapeContainer = floorBlock.transform.GetChildren().GetLast();
+        landscapeBlocks = landscapeContainer.GetChildren();
+
+        for (int i = 0; i < landscapeBlocks.Count; i++)
+        {
+            landscapeBlocks[i].localPosition += new Vector3(0, thresholdValue * Random.Range(-1, 1), 0);
+        }
     }
 }

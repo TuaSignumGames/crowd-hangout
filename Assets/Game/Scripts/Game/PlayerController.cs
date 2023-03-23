@@ -97,12 +97,7 @@ public class PlayerController : MonoBehaviour
         {
             if (InputManager.touch)
             {
-                if (ball.isAccidented)
-                {
-                    ball.isAccidented = false;
-
-                    //ball.Jump((LevelGenerator.Instance.GetBlockPair(Humanball.Transform.position).Position.y - Humanball.Transform.position.y) * 2f);
-                }
+                ball.isAccidented = false;
 
                 if (!rope.IsConnected)
                 {
@@ -144,7 +139,7 @@ public class PlayerController : MonoBehaviour
         {
             humanballCrowd.AddMember(cell.Human);
 
-            cell.Human.DropToBattle(ball.Velocity + Random.insideUnitSphere);
+            cell.Human.DropToBattle(ball.Velocity + Random.insideUnitSphere, Vector3.right);
         }
     }
 
@@ -172,7 +167,9 @@ public class PlayerController : MonoBehaviour
         [Space]
         public float speed;
         public float acceleration;
-        public Vector2 bumpRatio;
+        [Space]
+        public float bumpImpulse;
+        public float bumpDampingFactor;
         [Space]
         public Transform suspensionContainer;
         public Transform structureContainer;

@@ -574,6 +574,7 @@ GameObject:
   - component: {fileID: 1540288154617946505}
   - component: {fileID: 1540288154617946510}
   - component: {fileID: 1540288154617946511}
+  - component: {fileID: 2334377540706139649}
   m_Layer: 9
   m_Name: Collectible[Weapon]
   m_TagString: Untagged
@@ -660,6 +661,22 @@ MonoBehaviour:
   - {fileID: 1540288154215634999}
   - {fileID: 1540288153276918353}
   - {fileID: 1540288153905621521}
+--- !u!111 &2334377540706139649
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540288154617946504}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 6cf1b4e9234fc44e091cb302da89092c, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 6cf1b4e9234fc44e091cb302da89092c, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!1 &1540288154743626008
 GameObject:
   m_ObjectHideFlags: 0

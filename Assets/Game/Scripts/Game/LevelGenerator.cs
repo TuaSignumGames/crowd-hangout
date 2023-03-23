@@ -7,7 +7,7 @@ using UnityEngine;
 // -> [ UPDATE TASKS ] <- 
 // -> [ 2 DAYS TO FINISH ] <-
 //
-// -> [Polish humanball bumping] <- 
+// -> [Weapon multicollectible animation] <-  
 // -> [Record video] <- 
 //
 // Level
@@ -94,7 +94,7 @@ public class LevelGenerator : MonoBehaviour
         levelData = constructorSettings.GetConfiguration();
 
         GenerateBlocks(levelData.landscapePatterns, levelData.blocksCount);
-        GenerateBattlePath(3);
+        GenerateBattlePath(10);
         PlaceCollectibles(levelData.cycleSteps, levelData.cyclesCount);
     }
 
@@ -254,9 +254,9 @@ public class LevelGenerator : MonoBehaviour
         newBlockPairContainer.transform.position = origin;
         newBlockPairContainer.transform.SetParent(blockSettings.blocksContainer);
 
-        newBlockPair = new BlockPair(Instantiate(blockSettings.ceilBlockPrefabs.GetRandom()), Instantiate(blockSettings.floorBlockPrefabs.GetRandom()), newBlockPairContainer, orderIndex);
+        newBlockPair = new BlockPair(Instantiate(blockSettings.ceilBlockPrefabs.GetRandom()), Instantiate(blockSettings.floorBlockPrefabs.GetRandom()), newBlockPairContainer, orderIndex, blockSettings.thresholdValue);
 
-        newBlockPair.SetHeight(Random.Range(blockSettings.caveHeightRange.x, blockSettings.caveHeightRange.y), blockSettings.thresholdValue);
+        newBlockPair.SetHeight(Random.Range(blockSettings.caveHeightRange.x, blockSettings.caveHeightRange.y));
 
         blockPairs.Add(newBlockPair);
 
@@ -289,7 +289,7 @@ public class LevelGenerator : MonoBehaviour
 
             for (int i = startOrderIndex; i < blockPairs.Count; i++)
             {
-                blockPairs[i].SetHeight(blockPairs[i].Height + incrementData.heightIncrement * Mathf.Clamp01((i - startOrderIndex) / transitionLength), blockSettings.thresholdValue);
+                blockPairs[i].SetHeight(blockPairs[i].Height + incrementData.heightIncrement * Mathf.Clamp01((i - startOrderIndex) / transitionLength));
             }
         }
     }
