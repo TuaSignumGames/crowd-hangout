@@ -67,10 +67,8 @@ public class WeaponMulticollectible : Multicollectible
                             PlayerController.Humanball.StickWeapon(human, weaponIndex);
                         }
                     }
-                    else
-                    {
-                        elements[i].Transform.gameObject.SetActive(false);
-                    }
+
+                    elements[i].Transform.gameObject.SetActive(false);
                 }
             }
         }
@@ -88,6 +86,9 @@ public class WeaponMulticollectible : Multicollectible
             (humanballFilledCells[i].Human.Weapon.WeaponID > 0 ? armedHumans : unarmedHumans).Add(humanballFilledCells[i].Human);
         }
 
+        assortment[0].transform.parent.gameObject.SetActive(false);
+
+        BreakCapsules(PlayerController.Humanball.Velocity);
         DropElements(transform.position, PlayerController.Humanball.Velocity);
 
         yield return base.CollectingCoroutine();

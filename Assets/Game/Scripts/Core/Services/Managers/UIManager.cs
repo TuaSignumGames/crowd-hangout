@@ -96,7 +96,7 @@ public class UIManager : Service<UIManager>
 
     public void SetBackgroundTriggerEvent(EventTriggerType eventTriggerType, Action newEvent)
     {
-        _backgroundTrigger.AddEvent(eventTriggerType, newEvent);
+        _backgroundTrigger.OverrideEvent(eventTriggerType, newEvent);
 
         SetBasicBackgroundTriggerEvents();
     }

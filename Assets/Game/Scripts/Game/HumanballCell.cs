@@ -49,11 +49,11 @@ public class HumanballCell
         placedHuman = human;
     }
 
-    public void PutHuman(HumanController human)
+    public void PutHuman(HumanController human, bool playVFX = true)
     {
         placedHuman = human;
 
-        placedHuman.PlaceInCell(this);
+        placedHuman.PlaceInCell(this, playVFX);
 
         if (placedHumanPose != null)
         {

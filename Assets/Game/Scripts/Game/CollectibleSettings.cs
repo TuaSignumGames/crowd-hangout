@@ -16,5 +16,5 @@ public class CollectibleSettings
 public struct CollectibleData
 {
     public float populationValue;
-    public Multicollectible prefab;
+    public HumanMulticollectible prefab;
 }

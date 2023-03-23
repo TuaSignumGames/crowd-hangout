@@ -31,9 +31,12 @@ public class MulticollectibleCapsule
 
     public void Update()
     {
-        for (int i = 0; i < debrisMotionSimulators.Count; i++)
+        if (debrisMotionSimulators != null)
         {
-            debrisMotionSimulators[i].Update();
+            for (int i = 0; i < debrisMotionSimulators.Count; i++)
+            {
+                debrisMotionSimulators[i].Update();
+            }
         }
     }
 

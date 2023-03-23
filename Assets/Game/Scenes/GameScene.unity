@@ -3983,9 +3983,13 @@ MonoBehaviour:
     structures:
     - title: Tutorial
       cycle:
-      - blocksCount: 5
+      - blocksCount: 6
         collectiblePointType: 1
-      - blocksCount: 5
+      - blocksCount: 6
+        collectiblePointType: 1
+      - blocksCount: 6
+        collectiblePointType: 2
+      - blocksCount: 6
         collectiblePointType: 0
       cyclesCount: 3
     landscapes:
@@ -5250,7 +5254,7 @@ MonoBehaviour:
     rigidbody: {fileID: 1779204876}
     speed: 11
     acceleration: 50
-    bumpRatio: {x: 8, y: 8}
+    bumpRatio: {x: 20, y: 20}
     suspensionContainer: {fileID: 838087752}
     structureContainer: {fileID: 2097472858}
     elasticitySettings:

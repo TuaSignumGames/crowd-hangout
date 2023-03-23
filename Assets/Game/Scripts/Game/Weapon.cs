@@ -170,8 +170,6 @@ public class Weapon
     {
         if (ownerHuman.AttackAnimatorListener.IsFrameReached(keyframeTime))
         {
-            Debug.Log(" --- Attack with animation");
-
             AttackImmediate(human);
         }
     }

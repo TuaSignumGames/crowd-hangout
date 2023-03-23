@@ -25,6 +25,7 @@ public struct LevelData
     public WavePatternData[] landscapePatterns;
 
     public int cyclesCount;
+    public int blocksCount;
 
     public LevelData(LevelCycleData structureData, LandscapeData landscapeData)
     {
@@ -32,6 +33,14 @@ public struct LevelData
         landscapePatterns = landscapeData.patterns.ToArray();
 
         cyclesCount = structureData.cyclesCount;
+        blocksCount = 0;
+
+        for (int i = 0; i < cycleSteps.Length; i++)
+        {
+            blocksCount += cycleSteps[i].blocksCount + 1;
+        }
+
+        blocksCount *= cyclesCount;
     }
 }
 

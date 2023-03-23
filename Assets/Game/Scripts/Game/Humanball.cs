@@ -23,6 +23,7 @@ public class Humanball
     private float minCellSqrDistance;
 
     private int cellsCount;
+    private int humansCount;
 
     private int previousLayerIndex;
     private int filledLayersCount;
@@ -40,7 +41,9 @@ public class Humanball
     public int FilledCellsCount => cellsCount - GetAvailableCellsCount();
     public int FilledLayersCount => filledLayersCount;
 
-    public HumanballCell[] FilledCells => filledCells.ToArray();
+    public int HumansCount => humansCount;
+
+    public HumanballCell[] FilledCells => filledCells == null ?  GetFilledCells().ToArray() : filledCells.ToArray();
 
     public Humanball()
     {
@@ -107,13 +110,13 @@ public class Humanball
         return null;
     }
 
-    public HumanballCell AddHuman(HumanController human, bool closestCell = true)
+    public HumanballCell AddHuman(HumanController human, bool closestCell = true, bool playVFX = true)
     {
         for (int i = 0; i < layers.Count; i++)
         {
             if (i == 0)
             {
-                availableCell = layers[i].AddHumanInNextCell(human);
+                availableCell = layers[i].AddHumanInNextCell(human, playVFX);
 
                 if (availableCell != null)
                 {
@@ -121,12 +124,14 @@ public class Humanball
 
                     usedCells.Add(availableCell);
 
+                    humansCount++;
+
                     return availableCell;
                 }
             }
             else
             {
-                availableCell = closestCell ? layers[i].AddHumanInClosestCell(human) : layers[i].AddHumanInRandomCell(human);
+                availableCell = closestCell ? layers[i].AddHumanInClosestCell(human, playVFX) : layers[i].AddHumanInRandomCell(human, playVFX);
 
                 if (availableCell != null)
                 {
@@ -144,6 +149,8 @@ public class Humanball
 
                     usedCells.Add(availableCell);
 
+                    humansCount++;
+
                     return availableCell;
                 }
             }
@@ -158,6 +165,13 @@ public class Humanball
         {
             if (layers[i].TryRemoveHuman(human))
             {
+                humansCount--;
+
+                if (humansCount <= 0)
+                {
+                    LevelManager.Instance.OnLevelFinished(false);
+                }
+
                 return;
             }
         }

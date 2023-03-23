@@ -60,6 +60,14 @@ public class Multicollectible : Collectible
         }
     }
 
+    public void BreakCapsules(Vector3 externalImpulse)
+    {
+        for (int i = 0; i < multicollectibleSettings.capsules.Length; i++)
+        {
+            multicollectibleSettings.capsules[i].Break(externalImpulse);
+        }
+    }
+
     protected virtual void ProcessCollecting() { }
 
     [System.Serializable]

@@ -101,7 +101,7 @@ public class HumanballLayer
         }
     }
 
-    public HumanballCell AddHumanInNextCell(HumanController human)
+    public HumanballCell AddHumanInNextCell(HumanController human, bool playVFX = true)
     {
         if (availableCellsCount == 0)
         {
@@ -109,13 +109,13 @@ public class HumanballLayer
         }
         else
         {
-            cells[cells.Count - availableCellsCount].PutHuman(human);
+            cells[cells.Count - availableCellsCount].PutHuman(human, playVFX);
 
             return cells[cells.Count - availableCellsCount--];
         }
     }
 
-    public HumanballCell AddHumanInClosestCell(HumanController human)
+    public HumanballCell AddHumanInClosestCell(HumanController human, bool playVFX = true)
     {
         if (availableCellsCount == 0)
         {
@@ -123,7 +123,7 @@ public class HumanballLayer
         }
         else if (GetClosestEmptyCell(human.transform.position) != null)
         {
-            requiredCell.PutHuman(human);
+            requiredCell.PutHuman(human, playVFX);
 
             availableCellsCount--;
 
@@ -133,7 +133,7 @@ public class HumanballLayer
         return null;
     }
 
-    public HumanballCell AddHumanInRandomCell(HumanController human)
+    public HumanballCell AddHumanInRandomCell(HumanController human, bool playVFX = true)
     {
         if (availableCellsCount == 0)
         {
@@ -145,7 +145,7 @@ public class HumanballLayer
 
             requiredCell = requiredCells.GetRandom();
 
-            requiredCell.PutHuman(human);
+            requiredCell.PutHuman(human, playVFX);
 
             availableCellsCount--;
 

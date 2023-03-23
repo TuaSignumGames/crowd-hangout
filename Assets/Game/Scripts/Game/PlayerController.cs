@@ -97,7 +97,12 @@ public class PlayerController : MonoBehaviour
         {
             if (InputManager.touch)
             {
-                ball.isAccidented = false;
+                if (ball.isAccidented)
+                {
+                    ball.isAccidented = false;
+
+                    //ball.Jump((LevelGenerator.Instance.GetBlockPair(Humanball.Transform.position).Position.y - Humanball.Transform.position.y) * 2f);
+                }
 
                 if (!rope.IsConnected)
                 {

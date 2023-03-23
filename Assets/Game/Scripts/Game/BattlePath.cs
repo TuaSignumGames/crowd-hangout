@@ -42,7 +42,7 @@ public class BattlePath
                 }
                 else
                 {
-                    activeStageIndex++;
+                    activeStageIndex = Mathf.Clamp(activeStageIndex + 1, 0, stages.Count - 1);
 
                     StartBattleOnActiveStage();
                 }

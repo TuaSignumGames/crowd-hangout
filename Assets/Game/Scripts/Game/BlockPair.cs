@@ -59,16 +59,7 @@ public class BlockPair
     {
         this.collectible = collectible;
 
-        collectible.Initialize();
         collectible.SetPlacement(this, placementFactor);
-    }
-
-    public void AddCollectible(Multicollectible multicollectible, int elementsCount, float placementFactor = 0.5f)
-    {
-        collectible = multicollectible;
-
-        multicollectible.Initialize(elementsCount);
-        multicollectible.SetPlacement(this, placementFactor);
     }
 
     public void FitCollectible()

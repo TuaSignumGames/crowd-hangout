@@ -93,9 +93,7 @@ public class HumanballProcessor
         structureLayers.AddRange(ballData.proceduralCells.GenerateProceduralCells(cellsCount));//GenerateProceduralLayers(5));
 
         HumanController.selectedHuman = baseLayerCells[0].Human;
-
         HumanController.selectedHuman.isFree = false;
-        HumanController.selectedHuman.SetWeapon(11);
 
         structure = new Humanball(structureLayers);
     }
@@ -136,7 +134,7 @@ public class HumanballProcessor
             tensionValue = 0;
         }
 
-        Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, assignedRope.IsConnected ? ballData.speed : 100f);
+        Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, ballData.speed); // Dynamic speed limit <--- 
 
         springEvaluator.Update(ref springValue);
 
@@ -253,7 +251,7 @@ public class HumanballProcessor
 
         Release();
 
-        Rigidbody.velocity += (Transform.position - contactPoint).normalized * 20f;
+        Rigidbody.velocity += (Transform.position - contactPoint).normalized.Multiplied(ballData.bumpRatio);
     }
 
     public void UpdateContainerOrientation(Vector3 connectionPoint)

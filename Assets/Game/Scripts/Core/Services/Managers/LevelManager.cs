@@ -67,6 +67,8 @@ public class LevelManager : Service<LevelManager>
             _isLevelFinished = true;
             _isLevelPassed = success;
 
+            SwitchLevelEntities(false);
+
             if (_isLevelPassed)
             {
                 //GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "level_" + LevelNumber.ToString("D3"));
@@ -82,7 +84,7 @@ public class LevelManager : Service<LevelManager>
 
             //UIRewardPanel.Instance.SetReward(_rewardAmount);
 
-            UIManager.Instance.SetBackgroundTriggerEvent(UnityEngine.EventSystems.EventTriggerType.PointerDown, GameManager.Instance.ReloadGameScene);
+            //UIManager.Instance.SetBackgroundTriggerEvent(UnityEngine.EventSystems.EventTriggerType.PointerDown, GameManager.Instance.ReloadGameScene);
 
             UIManager.Instance.ChangeState(success ? UIState.Success : UIState.Fail);
         }
@@ -127,9 +129,18 @@ public class LevelManager : Service<LevelManager>
         _rewardAmount += increment;
     }
 
-    private void SwitchLevelEntities()
+    private void SwitchLevelEntities(bool enabled)
     {
-        CameraController.Instance.enabled = true;
+        CameraController.Instance.enabled = enabled;
+
+        if (enabled)
+        {
+
+        }
+        else
+        {
+
+        }
     }
 
     private IEnumerator LevelInitializationCoroutine()
@@ -156,7 +167,7 @@ public class LevelManager : Service<LevelManager>
 
         _isLevelStarted = true;
 
-        SwitchLevelEntities();
+        SwitchLevelEntities(true);
 
         if (GameManager.Instance.creativeMode) //&& !CreativeManager.Instance.creativeModeSettings.actionPhaseUI)
         {

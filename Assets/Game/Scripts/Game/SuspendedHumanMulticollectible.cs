@@ -89,7 +89,7 @@ public class SuspendedHumanMulticollectible : HumanMulticollectible
 
         for (int i = 0; i < count; i++)
         {
-            structure.AddHuman(humanCollectibles[i].Entity, i < baseLayerCells.Count);
+            structure.AddHuman(humanCollectibles[i].Entity, i < baseLayerCells.Count, false);
         }
     }
 

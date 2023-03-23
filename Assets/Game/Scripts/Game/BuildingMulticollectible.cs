@@ -148,8 +148,6 @@ public class BuildingMulticollectible : HumanMulticollectible
             {
                 destructionVFX = children[2].GetComponent<ParticleSystem>();
             }
-
-            Debug.Log($" - Fractures added: {fractures.Length}");
         }
 
         public void AddHumanCollectibles(MulticollectibleEntity<HumanController>[] humanCollectibles)
