@@ -46,7 +46,7 @@ public class BlockPair
         this.orderIndex = orderIndex;
         this.thresholdValue = thresholdValue;
 
-        DeformLandscape();
+        //DeformLandscape();
     }
 
     public void SetHeight(float height)

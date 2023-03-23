@@ -4,20 +4,26 @@ using UnityEngine;
 
 // TODO
 //
-// -> [ UPDATE TASKS ] <- 
-// -> [ 2 DAYS TO FINISH ] <-
-//
-// -> [Weapon multicollectible animation] <-  
-// -> [Record video] <- 
-//
-// Level
-//  - Add Collectible types (Multiplier) 
-//  - Collectibles generation pattern
+// -> [ MAR 25 - FINALIZATION DAY ] <- 
 //
 // Upgrades
 //  - Health
 //  - Population
 //  - Weapon
+//
+// BattlePath
+//  - Power-based stage setup (Method(Power, GuardsCount) -> WeaponSet[GuardsCount] from Fist to NewestOpened)
+//  - Reward collecting implementation
+//
+// Scope
+//  - Attack delay
+//  - Projectile: impact VFX, impact Reaction
+//  - Level viewing optimization
+//  - DropToBattle() actually present humans (Check 'usedCells')
+//  - Multicollectible blocks fitting (Building)
+//  - Directioning via angle lerping
+//  - Hide rope on touch not present
+//  - Building colors (+2)
 //
 // Polishing
 
@@ -94,8 +100,8 @@ public class LevelGenerator : MonoBehaviour
         levelData = constructorSettings.GetConfiguration();
 
         GenerateBlocks(levelData.landscapePatterns, levelData.blocksCount);
-        GenerateBattlePath(10);
-        PlaceCollectibles(levelData.cycleSteps, levelData.cyclesCount);
+        GenerateBattlePath(3);
+        PlaceCollectibles(levelData.startStep, levelData.cycleSteps, levelData.cyclesCount);
     }
 
     public void GenerateFromEditor(bool collectibles, bool battlePath)
@@ -106,7 +112,7 @@ public class LevelGenerator : MonoBehaviour
 
         if (collectibles)
         {
-            PlaceCollectibles(levelData.cycleSteps, levelData.cyclesCount);
+            PlaceCollectibles(levelData.startStep, levelData.cycleSteps, levelData.cyclesCount);
         }
 
         if (battlePath)
@@ -185,11 +191,13 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private void PlaceCollectibles(LevelStepData[] cycleSteps, int cyclesCount)
+    private void PlaceCollectibles(LevelStepData startStep, LevelStepData[] cycleSteps, int cyclesCount)
     {
         CollectibleType[] collectibleMap = new CollectibleType[blockPairs.Count];
 
         int previousCollectiblePlacementIndex = 0;
+
+        collectibleMap[previousCollectiblePlacementIndex = startStep.blocksCount] = startStep.collectiblePointType;
 
         for (int i = 0; i < cyclesCount; i++)
         {
@@ -215,7 +223,7 @@ public class LevelGenerator : MonoBehaviour
 
                 if (multicollectibleInstance.RangeNumber > 0)
                 {
-                    //AlignBlocksForCollectible(multicollectibleInstance, i);
+                    AlignBlocksForCollectible(multicollectibleInstance, i);
                 }
             }
         }

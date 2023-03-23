@@ -21,6 +21,7 @@ public class LevelSettings
 
 public struct LevelData
 {
+    public LevelStepData startStep;
     public LevelStepData[] cycleSteps;
     public WavePatternData[] landscapePatterns;
 
@@ -29,6 +30,7 @@ public struct LevelData
 
     public LevelData(LevelCycleData structureData, LandscapeData landscapeData)
     {
+        startStep = structureData.startStep;
         cycleSteps = structureData.cycle.ToArray();
         landscapePatterns = landscapeData.patterns.ToArray();
 
@@ -41,6 +43,7 @@ public struct LevelData
         }
 
         blocksCount *= cyclesCount;
+        blocksCount += structureData.startStep.blocksCount + 1;
     }
 }
 
@@ -48,6 +51,7 @@ public struct LevelData
 public struct LevelCycleData
 {
     public string title;
+    public LevelStepData startStep;
     public List<LevelStepData> cycle;
     public int cyclesCount;
 }
