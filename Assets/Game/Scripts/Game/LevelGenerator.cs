@@ -7,13 +7,10 @@ using UnityEngine;
 // -> [ MAR 25 - FINALIZATION DAY ] <- 
 //
 // Upgrades
-//  - Health
-//  - Population
-//  - Weapon
+//  - Implement upgrading 
 //
 // BattlePath
-//  - Power-based stage setup (Method(Power, GuardsCount) -> WeaponSet[GuardsCount] from Fist to NewestOpened)
-//  - Reward collecting implementation
+//  - Reward collecting implementation 
 //
 // Scope
 //  - Attack delay
@@ -100,7 +97,7 @@ public class LevelGenerator : MonoBehaviour
         levelData = constructorSettings.GetConfiguration();
 
         GenerateBlocks(levelData.landscapePatterns, levelData.blocksCount);
-        GenerateBattlePath(3);
+        GenerateBattlePath(1);
         PlaceCollectibles(levelData.startStep, levelData.cycleSteps, levelData.cyclesCount);
     }
 
@@ -185,7 +182,8 @@ public class LevelGenerator : MonoBehaviour
         {
             newBattlePathStage = new BattlePathStage(Instantiate(battlePathSettings.stagePrefab, battlePathSettings.stagesContainer), i % 2 == 0);
 
-            newBattlePathStage.Initialize(battlePath.position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.size.x, 0, 0), 100f + i * 100f, battlePathSettings.guardPrefabs[0]);
+            newBattlePathStage.Initialize(battlePath.position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.size.x, 0, 0), 100f + i * 100f);
+            //newBattlePathStage.GenerateGuard(20, 36f);
 
             battlePath.stages.Add(newBattlePathStage);
         }

@@ -19,6 +19,9 @@ public class GameManager : Service<GameManager>
 
     public static float Currency { get { return PlayerPrefs.GetFloat("COIN", 0); } set { PlayerPrefs.SetFloat("COIN", value); } }
 
+    public static float WeaponUpgradeValue { get { return PlayerPrefs.GetFloat("UPG.WPN", 0); } set { PlayerPrefs.SetFloat("UPG.WPN", value); } }
+    public static float PopulationUpgradeValue { get { return PlayerPrefs.GetFloat("UPG.PPL", 0); } set { PlayerPrefs.SetFloat("UPG.PPL", value); } }
+
     protected override void Awake()
     {
         base.Awake();

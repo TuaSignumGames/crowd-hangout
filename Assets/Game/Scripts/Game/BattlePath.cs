@@ -51,7 +51,7 @@ public class BattlePath
             {
                 if (playerCrowd.IsGrounded)
                 {
-                    activeStageIndex = stages.IndexOf(DefineStage(playerCrowd.DefineMidpointXY()));
+                    activeStageIndex = Mathf.Clamp(stages.IndexOf(DefineStage(playerCrowd.DefineMidpointXY())), 0, stages.Count - 1);
 
                     StartBattleOnActiveStage();
 
@@ -68,6 +68,10 @@ public class BattlePath
 
     private void StartBattleOnActiveStage()
     {
+        Debug.Log($" Player crowd DamageRate: {playerCrowd.DamageRate}");
+
+        stages[0].GenerateGuard(10, playerCrowd.DamageRate * playerCrowd.MembersCount / 10);
+
         playerCrowd.Assault(stages[Mathf.Clamp(activeStageIndex, 0, stages.Count - 1)].GuardCrew.Defend(playerCrowd));
     }
 

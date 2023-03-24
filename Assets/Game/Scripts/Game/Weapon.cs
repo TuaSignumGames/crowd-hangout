@@ -54,6 +54,8 @@ public class Weapon
     private bool isAttackRequested;
     private bool isTargetReachable;
 
+    public float DamageRate { get { return damageRate; } set { damageRate = value; damage = damageRate * reloadingTime; } }
+
     public int WeaponID => weaponIndex;
 
     public Weapon Apply(HumanController ownerHuman, int weaponIndex)

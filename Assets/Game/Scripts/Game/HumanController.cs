@@ -397,6 +397,30 @@ public class HumanController : MonoBehaviour
         currentWeapon = weaponSettings[index].Apply(this, index);
     }
 
+    public void SetWeapon(int index, float damageRate)
+    {
+        SetWeapon(index);
+
+        currentWeapon.DamageRate = damageRate;
+    }
+
+    public void SetWeapon(float damageRate)
+    {
+        int suitableWeaponIndex = weaponSettings.Count - 1;
+
+        for (int i = 0; i < weaponSettings.Count; i++)
+        {
+            if (weaponSettings[i].damageRate > damageRate)
+            {
+                suitableWeaponIndex = i - 1;
+
+                break;
+            }
+        }
+
+        SetWeapon(suitableWeaponIndex, damageRate);
+    }
+
     private void UpdateMotion()
     {
         motionSimulator.velocity = transform.forward * actualSpeed;
