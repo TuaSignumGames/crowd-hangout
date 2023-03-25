@@ -13,9 +13,6 @@ public class BattlePathSettings
     public GameObject stagePrefab;
     public List<GameObject> guardPrefabs;
     [Space]
-    public Vector3 viewLocalOffset;
-    public float translationDuration;
-    [Space]
-    public Vector3 viewEulerAngles;
-    public float rotationDuration;
+    public CameraViewData battleView;
+    public CameraViewData finishView;
 }

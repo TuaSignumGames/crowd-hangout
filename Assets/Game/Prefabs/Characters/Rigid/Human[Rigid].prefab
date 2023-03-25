@@ -117,7 +117,7 @@ MonoBehaviour:
     speedLerpingFactor: 0.2
     targetPointRadius: 0.2
   weaponSettings:
-  - title: Fist  [P:6]
+  - title: Fist  [P:5]
     weaponContainer: {fileID: 6196655106733567505}
     weaponModel: {fileID: 0}
     ammoContainer: {fileID: 0}
@@ -132,7 +132,7 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 0}
-  - title: Bat  [P:11.2]
+  - title: Bat  [P:8]
     weaponContainer: {fileID: 5002936460844173615}
     weaponModel: {fileID: 4373479425591376124}
     ammoContainer: {fileID: 0}
@@ -147,7 +147,7 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 0}
-  - title: Brick  [P:60]
+  - title: Brick  [P:12]
     weaponContainer: {fileID: 3429199240765688056}
     weaponModel: {fileID: 7447150962484643364}
     ammoContainer: {fileID: 7463677023535137702}
@@ -162,7 +162,7 @@ MonoBehaviour:
     animationName: Shot-Throw
     keyframeTime: 0.54
     attackVFX: {fileID: 0}
-  - title: Bow  [P:150]
+  - title: Bow  [P:15]
     weaponContainer: {fileID: 5652893008443664743}
     weaponModel: {fileID: 8866199217812137040}
     ammoContainer: {fileID: 2862717599313583601}
@@ -177,7 +177,7 @@ MonoBehaviour:
     animationName: Shot-Bow
     keyframeTime: 1.39
     attackVFX: {fileID: 0}
-  - title: Pistol  [P:216]
+  - title: Pistol  [P:18]
     weaponContainer: {fileID: 6702893980190087776}
     weaponModel: {fileID: 1633066646947184436}
     ammoContainer: {fileID: 2074564833369408583}
@@ -192,7 +192,7 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 3364544254698358871}
-  - title: Rifle  [P:260]
+  - title: Rifle  [P:20]
     weaponContainer: {fileID: 7692074514500365887}
     weaponModel: {fileID: 7784078876880965072}
     ammoContainer: {fileID: 1148832322333219703}
@@ -207,11 +207,11 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 7560757168807600987}
-  - title: AK  [P:390]
+  - title: AK  [P:25]
     weaponContainer: {fileID: 6113200975160171124}
     weaponModel: {fileID: 6984221268682583114}
     ammoContainer: {fileID: 8902783578381812959}
-    damageRate: 30
+    damageRate: 25
     attackDistance: 13
     reloadingTime: 0.2
     projectileSpeed: 30
@@ -222,11 +222,11 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 392227314702766939}
-  - title: AR  [P:490]
+  - title: AR  [P:30]
     weaponContainer: {fileID: 1087849034247035176}
     weaponModel: {fileID: 678878297822511608}
     ammoContainer: {fileID: 8782860110760478519}
-    damageRate: 35
+    damageRate: 30
     attackDistance: 14
     reloadingTime: 0.15
     projectileSpeed: 30
@@ -237,11 +237,11 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 1858966421438232894}
-  - title: Machinegun  [P:600]
+  - title: Machinegun  [P:50]
     weaponContainer: {fileID: 2010242087336658420}
     weaponModel: {fileID: 3124975935779912704}
     ammoContainer: {fileID: 2498501284245186146}
-    damageRate: 60
+    damageRate: 50
     attackDistance: 10
     reloadingTime: 0.05
     projectileSpeed: 30
@@ -252,11 +252,11 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 6768503558947413412}
-  - title: SniperRifle  [P:1350]
+  - title: SniperRifle  [P:60]
     weaponContainer: {fileID: 5144247701632660959}
     weaponModel: {fileID: 4211186143169583184}
     ammoContainer: {fileID: 8069652107406077708}
-    damageRate: 75
+    damageRate: 60
     attackDistance: 18
     reloadingTime: 2
     projectileSpeed: 40
@@ -267,11 +267,11 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 6631081880609808557}
-  - title: Grenade  [P:2400]
+  - title: Grenade  [P:80]
     weaponContainer: {fileID: 6332381708442063528}
     weaponModel: {fileID: 4078667986338721682}
     ammoContainer: {fileID: 4174932333036043079}
-    damageRate: 240
+    damageRate: 80
     attackDistance: 10
     reloadingTime: 2.2
     projectileSpeed: 10
@@ -282,11 +282,11 @@ MonoBehaviour:
     animationName: Shot-Throw
     keyframeTime: 0.54
     attackVFX: {fileID: 3364544254698358871}
-  - title: Flamethrower  [P:3600]
+  - title: Flamethrower  [P:100]
     weaponContainer: {fileID: 8613084343064516235}
     weaponModel: {fileID: 8799029970763752760}
     ammoContainer: {fileID: 7909030947818995549}
-    damageRate: 240
+    damageRate: 100
     attackDistance: 15
     reloadingTime: 0.1
     projectileSpeed: 15
@@ -664,6 +664,7 @@ MonoBehaviour:
     fillingTransform: {fileID: 845311172772245390}
     hideOnMinValue: 1
     hideOnMaxValue: 1
+  isImmortal: 0
   isFree: 1
 --- !u!1 &415746434134637567
 GameObject:

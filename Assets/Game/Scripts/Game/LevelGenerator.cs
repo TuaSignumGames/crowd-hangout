@@ -10,7 +10,7 @@ using UnityEngine;
 //  - Implement upgrading 
 //
 // BattlePath
-//  - Reward collecting implementation 
+//  - Reward collecting implementation (Uncomment to default flow) 
 //
 // Scope
 //  - Attack delay
@@ -62,8 +62,10 @@ public class LevelGenerator : MonoBehaviour
     private List<float> offsetMap;
 
     private float progressValue;
-
     private float perlinValue;
+
+    private float humanPower;
+    private float levelPower;
 
     private int availableBlockPairIndex;
 
@@ -96,9 +98,16 @@ public class LevelGenerator : MonoBehaviour
     {
         levelData = constructorSettings.GetConfiguration();
 
+        humanPower = WorldManager.GetWeaponPower(0);
+        levelPower = humanPower;
+
+        print($" Human Power: {humanPower}");
+
         GenerateBlocks(levelData.landscapePatterns, levelData.blocksCount);
-        GenerateBattlePath(1);
         PlaceCollectibles(levelData.startStep, levelData.cycleSteps, levelData.cyclesCount);
+        GenerateBattlePath(3, 1);
+
+        print($" -- Level Power: {levelPower}");
     }
 
     public void GenerateFromEditor(bool collectibles, bool battlePath)
@@ -114,7 +123,7 @@ public class LevelGenerator : MonoBehaviour
 
         if (battlePath)
         {
-            GenerateBattlePath(10);
+            GenerateBattlePath(10, 0);
         }
     }
 
@@ -165,30 +174,6 @@ public class LevelGenerator : MonoBehaviour
         blockSettings.blocksContainer.position = new Vector3(-blockSettings.blockLength * 3f, -offsetMap[3], 0);
     }
 
-    private void GenerateBattlePath(int stagesCount)
-    {
-        battlePathSettings.pathContainer.gameObject.SetActive(true);
-
-        if (battlePathSettings.stagesContainer.childCount > 0)
-        {
-            battlePathSettings.stagesContainer.RemoveChildrenImmediate();
-        }
-
-        battlePath = new BattlePath(battlePathSettings.pathContainer.gameObject);
-
-        battlePath.transform.position = newBlockPair.FloorBlockPosition + new Vector3(blockSettings.blockLength / 2f, 0, 0);
-
-        for (int i = 0; i < stagesCount; i++)
-        {
-            newBattlePathStage = new BattlePathStage(Instantiate(battlePathSettings.stagePrefab, battlePathSettings.stagesContainer), i % 2 == 0);
-
-            newBattlePathStage.Initialize(battlePath.position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.size.x, 0, 0), 100f + i * 100f);
-            //newBattlePathStage.GenerateGuard(20, 36f);
-
-            battlePath.stages.Add(newBattlePathStage);
-        }
-    }
-
     private void PlaceCollectibles(LevelStepData startStep, LevelStepData[] cycleSteps, int cyclesCount)
     {
         CollectibleType[] collectibleMap = new CollectibleType[blockPairs.Count];
@@ -227,6 +212,30 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
+    private void GenerateBattlePath(int stagesCount, int cryticalStageIndex)
+    {
+        battlePathSettings.pathContainer.gameObject.SetActive(true);
+
+        if (battlePathSettings.stagesContainer.childCount > 0)
+        {
+            battlePathSettings.stagesContainer.RemoveChildrenImmediate();
+        }
+
+        battlePath = new BattlePath(battlePathSettings.pathContainer.gameObject);
+
+        battlePath.transform.position = blockPairs.GetLast().FloorBlockPosition + new Vector3(blockSettings.blockLength / 2f, 0, 0);
+
+        for (int i = 0; i < stagesCount; i++)
+        {
+            newBattlePathStage = new BattlePathStage(Instantiate(battlePathSettings.stagePrefab, battlePathSettings.stagesContainer), i % 2 == 0);
+
+            newBattlePathStage.Initialize(battlePath.position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.size.x, 0, 0), 100f + i * 100f);
+            newBattlePathStage.GenerateGuard(6 * (i + 1), levelPower * ((i + 1) / (float)(cryticalStageIndex + 1)));
+
+            battlePath.stages.Add(newBattlePathStage);
+        }
+    }
+
     private void PlaceHumanCollectible(BlockPair blockPair, int humansCount)
     {
         humanCollectiblePrefab = collectibleSettings.humanCollectibles.GetRandom().prefab;
@@ -237,6 +246,7 @@ public class LevelGenerator : MonoBehaviour
         blockPair.AddCollectible(humanCollectibleInstance);
 
         totalHumansCount += humansCount;
+        levelPower += humanPower * humansCount;
 
         multicollectibleInstance = humanCollectibleInstance;
     }
@@ -249,6 +259,8 @@ public class LevelGenerator : MonoBehaviour
         weaponCollectibleInstance.Initialize(weaponID, weaponsCount);
 
         blockPair.AddCollectible(weaponCollectibleInstance);
+
+        levelPower += (WorldManager.GetWeaponPower(weaponID) - humanPower) * weaponsCount;
 
         multicollectibleInstance = weaponCollectibleInstance;
     }
@@ -283,8 +295,7 @@ public class LevelGenerator : MonoBehaviour
     {
         PlayerController.Instance.SwitchToBattleMode();
 
-        CameraController.Instance.Translate(battlePathSettings.viewLocalOffset, battlePathSettings.translationDuration, Space.Self);
-        CameraController.Instance.Rotate(battlePathSettings.viewEulerAngles, battlePathSettings.rotationDuration, Space.World);
+        CameraController.Instance.SetView(LevelGenerator.Instance.battlePathSettings.battleView);
     }
 
     private void SetBlocksHeightIncrement(int startOrderIndex, HeightIncrementData incrementData)

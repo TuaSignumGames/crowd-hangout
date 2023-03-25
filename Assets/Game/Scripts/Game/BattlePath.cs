@@ -14,6 +14,7 @@ public class BattlePath
 
     private int activeStageIndex;
 
+    private bool isBattleActive;
     private bool isBattleStarted;
 
     public Vector3 position => transform.position;
@@ -29,33 +30,38 @@ public class BattlePath
 
     public void Update()
     {
-        if (playerCrowd != null)
+        if (isBattleActive)
         {
-            if (isBattleStarted)
+            if (playerCrowd != null)
             {
-                if (stages[activeStageIndex].GuardCrew.IsCombatCapable)
+                if (isBattleStarted)
                 {
-                    if (!playerCrowd.IsCombatCapable)
+                    if (stages[activeStageIndex].GuardCrew.IsCombatCapable)
                     {
-                        // TODO Claim stage reward -> Finish level 
+                        if (playerCrowd.MembersCount == 1)
+                        {
+                            // TODO Claim stage reward -> Finish level 
+
+                            FinishBattle();
+                        }
+                    }
+                    else if (activeStageIndex < stages.Count - 1)
+                    {
+                        activeStageIndex = Mathf.Clamp(activeStageIndex + 1, 0, stages.Count - 1);
+
+                        StartBattleOnActiveStage();
                     }
                 }
                 else
                 {
-                    activeStageIndex = Mathf.Clamp(activeStageIndex + 1, 0, stages.Count - 1);
+                    if (playerCrowd.IsGrounded)
+                    {
+                        activeStageIndex = Mathf.Clamp(stages.IndexOf(DefineStage(playerCrowd.DefineMidpointXY())), 0, stages.Count - 1);
 
-                    StartBattleOnActiveStage();
-                }
-            }
-            else
-            {
-                if (playerCrowd.IsGrounded)
-                {
-                    activeStageIndex = Mathf.Clamp(stages.IndexOf(DefineStage(playerCrowd.DefineMidpointXY())), 0, stages.Count - 1);
+                        StartBattleOnActiveStage();
 
-                    StartBattleOnActiveStage();
-
-                    isBattleStarted = true;
+                        isBattleStarted = true;
+                    }
                 }
             }
         }
@@ -64,15 +70,30 @@ public class BattlePath
     public void Enter(Crowd playerCrowd)
     {
         this.playerCrowd = playerCrowd;
+
+        isBattleActive = true;
     }
 
     private void StartBattleOnActiveStage()
     {
-        Debug.Log($" Player crowd DamageRate: {playerCrowd.DamageRate}");
+        Debug.Log($" Player crowd DamageRate: {playerCrowd.Power}");
 
-        stages[0].GenerateGuard(10, playerCrowd.DamageRate * playerCrowd.MembersCount / 10);
+        //stages[0].GenerateGuard(10, playerCrowd.DamageRate * playerCrowd.MembersCount / 10);
 
         playerCrowd.Assault(stages[Mathf.Clamp(activeStageIndex, 0, stages.Count - 1)].GuardCrew.Defend(playerCrowd));
+    }
+
+    private void FinishBattle()
+    {
+        isBattleActive = false;
+
+        playerCrowd.Members[0].isImmortal = true;
+
+        CameraController.Instance.FocusOn(playerCrowd.Members[0].transform, LevelGenerator.Instance.battlePathSettings.finishView);
+
+        playerCrowd.Stop();
+
+        stages[activeStageIndex].GuardCrew.Stop();
     }
 
     private BattlePathStage DefineStage(Vector3 position)

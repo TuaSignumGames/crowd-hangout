@@ -19,7 +19,9 @@ public class HumanController : MonoBehaviour
     public HumanRig rigSettings;
     public HumanPoseSettings poseSettings;
     [Space]
-    public ProgressBar healthBar; 
+    public ProgressBar healthBar;
+    [Space]
+    public bool isImmortal;
 
     public Crowd actualCrowd;
 
@@ -45,6 +47,10 @@ public class HumanController : MonoBehaviour
 
     private float targetPointSqrRadius;
 
+    private bool isInitialized;
+
+    private bool inBattle;
+
     public HumanAI AI => ai;
     public HumanPose ActualPose => actualPose;
 
@@ -52,6 +58,12 @@ public class HumanController : MonoBehaviour
     public AnimatorListener AttackAnimatorListener => attackAnimatorListener;
 
     public Weapon Weapon => currentWeapon;
+
+    [HideInInspector] public bool isFree = false;
+
+    public bool IsInitialized => isInitialized;
+
+    public bool IsAlive => healthPoints > 0;
 
     public static int animatorFlyHash;
     public static int animatorDefeatHash;
@@ -61,16 +73,6 @@ public class HumanController : MonoBehaviour
     public static int animatorSpeedFactorHash;
     public static int animatorAttackIdHash;
     public static int animatorDefeatIdHash;
-
-    private bool isInitialized;
-
-    private bool inBattle;
-
-    [HideInInspector] public bool isFree = false;
-
-    public bool IsInitialized => isInitialized;
-
-    public bool IsAlive => healthPoints > 0;
 
     public void Initialize(HumanTeam team, float health, int weaponIndex = 0)
     {
@@ -340,7 +342,10 @@ public class HumanController : MonoBehaviour
 
     public void Damage(float value, HumanController agressor = null)
     {
-        healthPoints -= value;
+        if (!isImmortal)
+        {
+            healthPoints -= value;
+        }
 
         if (actualTeamInfo != null)
         {
@@ -352,7 +357,7 @@ public class HumanController : MonoBehaviour
 
         healthBar.SetValue(healthPoints / healthCapacity);
 
-        if (agressor)
+        if (agressor && ai.BehaviourMode != HumanBehaviourType.Assault)
         {
             ai.SetEnemy(agressor);
             ai.Assault();
@@ -401,7 +406,7 @@ public class HumanController : MonoBehaviour
     {
         SetWeapon(index);
 
-        currentWeapon.DamageRate = damageRate;
+        currentWeapon.Power = damageRate;
     }
 
     public void SetWeapon(float damageRate)
@@ -486,7 +491,7 @@ public class HumanController : MonoBehaviour
             {
                 if (weaponSettings[i].weaponContainer)
                 {
-                    weaponSettings[i].title = $"{weaponSettings[i].weaponContainer.name}  [P:{weaponSettings[i].damageRate * weaponSettings[i].attackDistance}]";
+                    weaponSettings[i].title = $"{weaponSettings[i].weaponContainer.name}  [P:{weaponSettings[i].Power}]";
                 }
             }
         }

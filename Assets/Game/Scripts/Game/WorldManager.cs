@@ -13,18 +13,16 @@ public class WorldManager : MonoBehaviour
         humanPrefab = _humanPrefab;
     }
 
-    /*
     public static float GetWeaponPower(int weaponID)
     {
         return humanPrefab.weaponSettings[weaponID].Power;
     }
-    */
 
-    public static int GetWeaponID(float damageRate)
+    public static int GetWeaponID(float power)
     {
         for (int i = 0; i < humanPrefab.weaponSettings.Count; i++)
         {
-            if (humanPrefab.weaponSettings[i].damageRate > damageRate)
+            if (humanPrefab.weaponSettings[i].Power > power)
             {
                 return i - 1;
             }

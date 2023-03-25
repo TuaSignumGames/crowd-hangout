@@ -25,6 +25,12 @@ public class HumanAI
 
     private bool isTargetPositionAvailable;
 
+    private bool isActive = true;
+
+    public HumanBehaviourType BehaviourMode => behaviourMode;
+
+    public HumanController TargetHuman => targetHuman;
+
     public HumanAI(HumanController humanController)
     {
         hostHuman = humanController;
@@ -34,55 +40,64 @@ public class HumanAI
 
     public void Update()
     {
-        if (targetHuman && targetHuman.IsAlive)
+        if (isActive)
         {
-            if (hostHuman.Weapon.IsTargetReachable(targetHuman.transform.position))
+            if (targetHuman && targetHuman.IsAlive)
             {
-                hostHuman.Attack(targetHuman);
-            }
-            else
-            {
-                if (behaviourMode == HumanBehaviourType.Assault)
+                if (hostHuman.Weapon.IsTargetReachable(targetHuman.transform.position))
                 {
-                    hostHuman.MoveTo(targetHuman.transform.position);
+                    hostHuman.Attack(targetHuman);
                 }
                 else
                 {
-                    hostHuman.FocusOn(targetHuman.transform.position);
+                    if (behaviourMode == HumanBehaviourType.Assault)
+                    {
+                        hostHuman.MoveTo(targetHuman.transform.position);
+                    }
+                    else
+                    {
+                        hostHuman.FocusOn(targetHuman.transform.position);
+                    }
+                }
+            }
+            else
+            {
+                if (rivals?.Count > 0)
+                {
+                    activeRivals = GetAliveHumans(rivals);
+
+                    if (activeRivals.Count > 0)
+                    {
+                        targetHuman = activeRivals.GetRandom();
+                    }
+                    else
+                    {
+                        hostHuman.Stop();
+                    }
+
+                    //hostHuman.AttackAnimatorListener.Reset();
+                }
+
+                if (isTargetPositionAvailable)
+                {
+                    if (!hostHuman.MoveTo(targetPosition))
+                    {
+                        isTargetPositionAvailable = false;
+                    }
                 }
             }
         }
         else
         {
-            if (rivals?.Count > 0)
-            {
-                activeRivals = GetAliveHumans(rivals);
-
-                if (activeRivals.Count > 0)
-                {
-                    targetHuman = activeRivals.GetRandom();
-                }
-                else
-                {
-                    hostHuman.Stop();
-                }
-
-                //hostHuman.AttackAnimatorListener.Reset();
-            }
-
-            if (isTargetPositionAvailable)
-            {
-                if (!hostHuman.MoveTo(targetPosition))
-                {
-                    isTargetPositionAvailable = false;
-                }
-            }
+            hostHuman.Stop();
         }
     }
 
     public void Assault()
     {
         behaviourMode = HumanBehaviourType.Assault;
+
+        isActive = true;
     }
 
     public void Defend(Vector3 position)
@@ -92,6 +107,8 @@ public class HumanAI
         targetPosition = position;
 
         isTargetPositionAvailable = true;
+
+        isActive = true;
     }
 
     public void Defend()
@@ -101,6 +118,8 @@ public class HumanAI
         targetPosition = hostHuman.transform.position;
 
         isTargetPositionAvailable = true;
+
+        isActive = true;
     }
 
     public void SetEnemy(HumanController human)
@@ -113,6 +132,11 @@ public class HumanAI
     public void AddRivals(IList<HumanController> humans)
     {
         rivals.AddRange(humans);
+    }
+
+    public void Stop()
+    {
+        isActive = false;
     }
 
     private HumanController GetClosestHuman(List<HumanController> humans, bool isAlive = true)

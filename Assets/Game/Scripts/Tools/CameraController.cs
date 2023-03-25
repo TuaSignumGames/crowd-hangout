@@ -90,6 +90,25 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    public void FocusOn(Transform targetTransform, CameraViewData viewData)
+    {
+        this.targetTransform = targetTransform;
+
+        SetView(viewData);
+
+        targetOffset = Vector3.zero;
+    }
+
+    public void SetView(CameraViewData viewData)
+    {
+        InitializeEvaluator(viewData.translationSpace);
+        InitializeEvaluator(viewData.rotationSpace);
+
+        Translate(viewData.position, viewData.translationDuration, viewData.translationSpace);
+
+        Rotate(viewData.eulerAngles, viewData.rotationDuration, viewData.rotationSpace);
+    }
+
     public void IncreaseViewDistance(int distanceLevel)
     {
         actualViewDistance += viewDistanceIncrement;

@@ -15,11 +15,11 @@ public class Crowd
     private float currentMemberSqrDistance;
     private float closestMemberSqrDistance;
 
-    private float damageRate;
+    private float power;
 
     public HumanController[] Members => members.ToArray();
 
-    public float DamageRate => DefineDamageRate();
+    public float Power => DefinePower();
 
     public int MembersCount => members.Count;
 
@@ -41,7 +41,7 @@ public class Crowd
             AddMember(humans[i]);
         }
 
-        DefineDamageRate();
+        DefinePower();
     }
 
     public Crowd Assault(Crowd enemyCrowd)
@@ -76,6 +76,16 @@ public class Crowd
         {
             members[i].AI.AddRivals(enemyCrowd.Members);
             members[i].AI.Defend();
+        }
+
+        return this;
+    }
+
+    public Crowd Stop()
+    {
+        for (int i = 0; i < members.Count; i++)
+        {
+            members[i].AI.Stop();
         }
 
         return this;
@@ -132,18 +142,18 @@ public class Crowd
         return middlePoint;
     }
 
-    private float DefineDamageRate()
+    private float DefinePower()
     {
-        damageRate = 0;
+        power = 0;
 
         for (int i = 0; i < members.Count; i++)
         {
             //Debug.Log($" Member[{i}] Power: {members[i].Weapon.Power}");
 
-            damageRate += members[i].Weapon.DamageRate;
+            power += members[i].Weapon.Power;
         }
 
-        return damageRate;
+        return power;
     }
 
     private bool IsAnybodyGrounded()
