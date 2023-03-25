@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum HumanTeam { Neutral, Yellow, Red }
-public enum HumanAnimationType { Running, Flying, Attacking, Falling, Dying }
+public enum HumanAnimationType { Running, Flying, Attacking, Falling, Dying, Win }
 
 public class HumanController : MonoBehaviour
 {
@@ -38,12 +38,15 @@ public class HumanController : MonoBehaviour
     private AnimatorStateInfo currentAnimationInfo;
 
     private Vector3 motionVector;
+    private Vector3 facingDirection;
 
     private float healthPoints;
     private float healthCapacity;
 
     private float targetSpeed;
     private float actualSpeed;
+
+    private float targetFacingAngle;
 
     private float targetPointSqrRadius;
 
@@ -66,6 +69,7 @@ public class HumanController : MonoBehaviour
     public bool IsAlive => healthPoints > 0;
 
     public static int animatorFlyHash;
+    public static int animatorWinHash;
     public static int animatorDefeatHash;
     public static int animatorGroundedHash;
     public static int animatorRunningHash;
@@ -173,7 +177,14 @@ public class HumanController : MonoBehaviour
             {
                 motionSimulator.angularVelocity = new Vector3();
 
-                transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
+                if (inBattle)
+                {
+                    transform.eulerAngles = new Vector3(0, Mathf.LerpAngle(transform.eulerAngles.y, targetFacingAngle, motionSettings.turnLerpingFactor), 0);
+                }
+                else
+                {
+                    transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
+                }
             }
         }
     }
@@ -182,15 +193,15 @@ public class HumanController : MonoBehaviour
     {
         if (inPlane)
         {
-            transform.forward = (point - transform.position).GetPlanarDirection(Axis.Y);
+            facingDirection = (point - transform.position).GetPlanarDirection(Axis.Y);
 
-            transform.eulerAngles += new Vector3(0, angularOffset, 0);
+            targetFacingAngle = 90f - new Vector3(1, 0, 0).GetPlanarAngleTo(facingDirection, Axis.Y) + angularOffset;
         }
         else
         {
-            transform.forward = (point - transform.position).normalized;
+            facingDirection = (point - transform.position).normalized;
 
-            transform.eulerAngles += transform.up * angularOffset;
+            targetFacingAngle = 90f - new Vector3(1, 0, 0).GetPlanarAngleTo(facingDirection, Axis.Y) + angularOffset;
         }
     }
 
@@ -236,9 +247,11 @@ public class HumanController : MonoBehaviour
 
             if (motionVector.sqrMagnitude > targetPointSqrRadius)
             {
-                transform.forward = motionVector.GetPlanarDirection(Axis.Y);
+                facingDirection = motionVector.GetPlanarDirection(Axis.Y);
 
                 targetSpeed = motionVector.GetPlanarSqrMagnitude(Axis.Y) > targetPointSqrRadius ? motionSettings.runSpeed : 0;
+
+                targetFacingAngle = 90f - new Vector3(1, 0, 0).GetPlanarAngleTo(facingDirection, Axis.Y);
 
                 components.animator.SetBool(animatorAttackingHash, false);
 
@@ -318,7 +331,7 @@ public class HumanController : MonoBehaviour
     {
         ai = new HumanAI(this);
 
-        motionSimulator.SetGround(LevelGenerator.Instance.BattlePath.position.y - components.animator.transform.localPosition.y);
+        motionSimulator.SetGround(LevelGenerator.Instance.BattlePath.Position.y - components.animator.transform.localPosition.y);
 
         motionSimulator.rotationEnabled = false;
 
@@ -357,10 +370,13 @@ public class HumanController : MonoBehaviour
 
         healthBar.SetValue(healthPoints / healthCapacity);
 
-        if (agressor && ai.BehaviourMode != HumanBehaviourType.Assault)
+        if (BattlePath.Instance.IsBattleActive)
         {
-            ai.SetEnemy(agressor);
-            ai.Assault();
+            if (agressor && ai.BehaviourMode != HumanBehaviourType.Assault)
+            {
+                ai.SetEnemy(agressor);
+                ai.Assault();
+            }
         }
 
         if (healthPoints <= 0)
@@ -446,7 +462,7 @@ public class HumanController : MonoBehaviour
         }
     }
 
-    private void PlayAnimation(HumanAnimationType animationType)
+    public void PlayAnimation(HumanAnimationType animationType)
     {
         components.animator.enabled = true;
 
@@ -457,6 +473,7 @@ public class HumanController : MonoBehaviour
             case HumanAnimationType.Attacking: components.animator.SetInteger(animatorAttackIdHash, currentWeapon.attackAnimationID); components.animator.SetBool(animatorAttackingHash, true); break;
             case HumanAnimationType.Falling: components.animator.SetBool(animatorGroundedHash, false); break;
             case HumanAnimationType.Dying: components.animator.SetInteger(animatorAttackIdHash, Random.Range(0, 5)); components.animator.SetTrigger(animatorDefeatHash); break;
+            case HumanAnimationType.Win: components.animator.SetTrigger(animatorWinHash); break;
         }
     }
 
@@ -500,6 +517,7 @@ public class HumanController : MonoBehaviour
     public static void InitializeAnimatorHashes()
     {
         animatorFlyHash = Animator.StringToHash("Fly");
+        animatorWinHash = Animator.StringToHash("Win");
         animatorDefeatHash = Animator.StringToHash("Defeat");
         animatorGroundedHash = Animator.StringToHash("IsGrounded");
         animatorRunningHash = Animator.StringToHash("IsRunning");
@@ -534,8 +552,9 @@ public class HumanTeamInfo
 public class HumanMotionSettings
 {
     public float runSpeed;
-    public float turnSpeed;
+    [Space]
     public float speedLerpingFactor;
+    public float turnLerpingFactor;
     [Space]
     public float targetPointRadius;
 }

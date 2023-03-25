@@ -22,6 +22,8 @@ public class CameraController : MonoBehaviour
 
     private float actualViewDistance;
 
+    public Vector3 Position => camera.transform.position;
+
     private void Awake()
     {
         Instance = this;
@@ -93,6 +95,17 @@ public class CameraController : MonoBehaviour
     public void FocusOn(Transform targetTransform, CameraViewData viewData)
     {
         this.targetTransform = targetTransform;
+
+        SetView(viewData);
+
+        targetOffset = Vector3.zero;
+    }
+
+    public void FocusOn(Vector3 targetPosition, CameraViewData viewData)
+    {
+        this.targetTransform = null;
+
+        Translate(targetPosition, viewData.translationDuration, Space.World);
 
         SetView(viewData);
 

@@ -137,6 +137,8 @@ public class HumanAI
     public void Stop()
     {
         isActive = false;
+
+        //hostHuman.Stop();
     }
 
     private HumanController GetClosestHuman(List<HumanController> humans, bool isAlive = true)

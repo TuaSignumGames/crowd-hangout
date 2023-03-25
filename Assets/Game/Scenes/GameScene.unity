@@ -18,7 +18,7 @@ RenderSettings:
   m_FogColor: {r: 1, g: 0.9754604, b: 0.7216981, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.01
-  m_LinearFogStart: 40
+  m_LinearFogStart: 50
   m_LinearFogEnd: 100
   m_AmbientSkyColor: {r: 0.9339623, g: 0.9339623, b: 0.9339623, a: 1}
   m_AmbientEquatorColor: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 1}
@@ -35175,9 +35175,9 @@ MonoBehaviour:
       translationDuration: 2
       rotationDuration: 1
     finishView:
-      position: {x: 0, y: 0, z: -12}
+      position: {x: 1, y: 0, z: -50}
       translationSpace: 1
-      eulerAngles: {x: 15, y: 75, z: 0}
+      eulerAngles: {x: 45, y: 60, z: 0}
       rotationSpace: 0
       translationDuration: 2
       rotationDuration: 2

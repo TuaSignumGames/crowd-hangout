@@ -113,8 +113,8 @@ MonoBehaviour:
     impactVFX: {fileID: 2288019555575076631}
   motionSettings:
     runSpeed: 6
-    turnSpeed: 90
     speedLerpingFactor: 0.2
+    turnLerpingFactor: 0.2
     targetPointRadius: 0.2
   weaponSettings:
   - title: Fist  [P:5]

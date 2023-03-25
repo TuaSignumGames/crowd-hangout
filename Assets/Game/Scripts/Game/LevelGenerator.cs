@@ -229,7 +229,7 @@ public class LevelGenerator : MonoBehaviour
         {
             newBattlePathStage = new BattlePathStage(Instantiate(battlePathSettings.stagePrefab, battlePathSettings.stagesContainer), i % 2 == 0);
 
-            newBattlePathStage.Initialize(battlePath.position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.size.x, 0, 0), 100f + i * 100f);
+            newBattlePathStage.Initialize(battlePath.Position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.size.x, 0, 0), 100f + i * 100f);
             newBattlePathStage.GenerateGuard(6 * (i + 1), levelPower * ((i + 1) / (float)(cryticalStageIndex + 1)));
 
             battlePath.stages.Add(newBattlePathStage);
@@ -283,7 +283,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void CheckForBattlePath()
     {
-        if (humanballTransform.position.x > battlePath.position.x)
+        if (humanballTransform.position.x > battlePath.Position.x)
         {
             isCavePassed = true;
 
@@ -359,6 +359,32 @@ public class LevelGenerator : MonoBehaviour
         }
 
         return blockPairs.GetLast();
+    }
+
+    public void FinishBattle()
+    {
+        StartCoroutine(BattleFinishingCoroutine());
+    }
+
+    private IEnumerator BattleFinishingCoroutine()
+    {
+        BattlePath.Instance.PlayerCrew.Members[0].isImmortal = true;
+
+        //CameraController.Instance.FocusOn(BattlePath.Instance.PlayerCrew.Members[0].transform, LevelGenerator.Instance.battlePathSettings.finishView);
+
+        BattlePath.Instance.PlayerCrew.Stop();
+        BattlePath.Instance.GuardCrew.Stop();
+
+        Vector3 activeStageCenter = BattlePath.Instance.ActiveStage.position + new Vector3(BattlePath.Instance.StageSize.x / 2f, 0, 0);
+
+        BattlePath.Instance.PlayerCrew.Members[0].FocusOn(activeStageCenter);
+        BattlePath.Instance.PlayerCrew.Members[0].PlayAnimation(HumanAnimationType.Win);
+
+        yield return new WaitForSeconds(1f);
+
+        CameraController.Instance.FocusOn(activeStageCenter, battlePathSettings.finishView);
+
+        yield return new WaitForSeconds(battlePathSettings.finishView.translationDuration);
     }
 
     private void OnValidate()
