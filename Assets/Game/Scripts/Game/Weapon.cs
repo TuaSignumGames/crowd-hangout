@@ -14,8 +14,10 @@ public class Weapon
     public GameObject ammoContainer;
     [Space]
     public float damageRate;
-    public float attackDistance;
     public float reloadingTime;
+    [Space]
+    public float attackDistance;
+    public float parabolaHeight;
     [Space]
     public float projectileSpeed;
     public bool disableOnImpact = true;
@@ -133,6 +135,8 @@ public class Weapon
                     attackVFX.Play();
                 }
 
+                AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
+
                 availableAttackTime = Time.timeSinceLevelLoad + reloadingTime;
 
                 return true;
@@ -188,6 +192,17 @@ public class Weapon
         }
     }
 
+    public void ClearProjectiles()
+    {
+        if (projectiles != null)
+        {
+            for (int i = 0; i < projectiles.Count; i++)
+            {
+                projectiles[i].Disable();
+            }
+        }
+    }
+
     public bool IsTargetReachable(Vector3 position)
     {
         sqrDistanceToTarget = (position - ownerHuman.transform.position).GetPlanarSqrMagnitude(Axis.Y);
@@ -203,7 +218,7 @@ public class Weapon
 
         for (int i = 0; i < count; i++)
         {
-            projectiles.Add(new Projectile(i == 0 ? projectileGameObject : GameObject.Instantiate(projectileGameObject, projectileGameObject.transform.parent), ammoContainer.transform, disableOnImpact));
+            projectiles.Add(new Projectile(this, i == 0 ? projectileGameObject : GameObject.Instantiate(projectileGameObject, projectileGameObject.transform.parent), ammoContainer.transform));
         }
 
         return projectiles;
@@ -211,22 +226,30 @@ public class Weapon
 
     public class Projectile
     {
+        private Weapon weapon;
+
         private GameObject gameObject;
 
         private TrailRenderer trailRenderer;
 
+        private ParticleSystem impactVFX;
+
         private Transform originTransform;
 
         private Vector3 targetPoint;
+        private Vector3 actualPoint;
         private Vector3 targetVector;
         private Vector3 velocityDelta;
 
         private float displacementDelta;
+        private float heightIncrement;
 
         private float targetPathLength;
         private float actualPathLength;
 
-        private bool disableOnImpact;
+        private float actualParabolaHeight;
+
+        private float progressFactor;
 
         private bool isLaunched;
 
@@ -234,26 +257,49 @@ public class Weapon
 
         public bool IsLaunched => isLaunched;
 
-        public Projectile(GameObject gameObject, Transform originTransform, bool disableOnImpact)
+        public Projectile(Weapon weapon, GameObject gameObject, Transform originTransform)
         {
+            this.weapon = weapon;
             this.gameObject = gameObject;
             this.originTransform = originTransform;
-            this.disableOnImpact = disableOnImpact;
 
             trailRenderer = gameObject.GetComponent<TrailRenderer>();
+
+            impactVFX = gameObject.transform.GetComponentInChildren<ParticleSystem>();
         }
 
         public void Update()
         {
-            gameObject.transform.position += velocityDelta;
-
             actualPathLength += displacementDelta;
+
+            actualPoint += velocityDelta;
+
+            if (weapon.parabolaHeight > 0)
+            {
+                progressFactor = actualPathLength / targetPathLength;
+
+                heightIncrement = actualParabolaHeight * Mathf.Sin(progressFactor * 3.1416f);
+
+                gameObject.transform.position = actualPoint + new Vector3(0, heightIncrement, 0);
+            }
+            else
+            {
+                gameObject.transform.position = actualPoint;
+            }
 
             if (actualPathLength > targetPathLength)
             {
                 onPathComplete();
 
-                if (disableOnImpact)
+                if (impactVFX)
+                {
+                    impactVFX.transform.SetParent(null);
+                    impactVFX.transform.position = gameObject.transform.position;
+
+                    impactVFX.Play(true);
+                }
+
+                if (weapon.disableOnImpact)
                 {
                     Disable();
                 }
@@ -262,9 +308,11 @@ public class Weapon
 
         public Projectile Launch(Vector3 point, float speed, System.Action onPointReached)
         {
-            gameObject.transform.position = originTransform.position;
+            gameObject.transform.position = actualPoint = originTransform.position;
 
-            targetVector = point - gameObject.transform.position;
+            targetVector = point - actualPoint;
+
+            actualParabolaHeight = weapon.parabolaHeight * targetVector.magnitude / weapon.attackDistance;
 
             targetPathLength = targetVector.magnitude;
             actualPathLength = 0;
@@ -289,7 +337,7 @@ public class Weapon
             return this;
         }
 
-        private void Disable()
+        public void Disable()
         {
             if (trailRenderer)
             {

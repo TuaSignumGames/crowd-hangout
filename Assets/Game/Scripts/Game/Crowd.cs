@@ -23,7 +23,7 @@ public class Crowd
 
     public int MembersCount => members.Count;
 
-    public bool IsGrounded => IsAnybodyGrounded();
+    public bool IsGrounded => IsEverybodyGrounded(); //IsAnybodyGrounded();
 
     public bool IsCombatCapable => members.Count > 0;
 
@@ -167,5 +167,18 @@ public class Crowd
         }
 
         return false;
+    }
+
+    private bool IsEverybodyGrounded()
+    {
+        for (int i = 0; i < members.Count; i++)
+        {
+            if (!members[i].MotionSimulator.IsGrounded)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

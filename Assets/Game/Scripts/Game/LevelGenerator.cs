@@ -4,25 +4,25 @@ using UnityEngine;
 
 // TODO
 //
-// -> [ MAR 25 - FINALIZATION DAY ] <- 
+// -> [ MAR 26 - POLISHING DAY ] <- 
 //
-// Upgrades
-//  - Implement upgrading 
+//  Upgrades
+//  -
+//  - Implement upgrading (Upgrade tables, BattlePath) 
 //
-// BattlePath
-//  - Reward collecting implementation (Uncomment to default flow) 
-//
-// Scope
-//  - Attack delay
-//  - Projectile: impact VFX, impact Reaction
+//  Scope
+//  -
 //  - Level viewing optimization
+//
 //  - DropToBattle() actually present humans (Check 'usedCells')
 //  - Multicollectible blocks fitting (Building)
-//  - Directioning via angle lerping
 //  - Hide rope on touch not present
 //  - Building colors (+2)
 //
-// Polishing
+//  - Add count UI for Humanball, Multicollectibles
+//  - Difficulty progression (10-20 levels, Cave height, Landscape complexity, Collectible radius)
+//
+//  Polishing
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -32,7 +32,7 @@ public class LevelGenerator : MonoBehaviour
     public CollectibleSettings collectibleSettings;
     public BattlePathSettings battlePathSettings;
     [Space]
-    public LevelSettings constructorSettings;
+    public LevelSettings levelSettings;
 
     private LevelData levelData;
 
@@ -96,7 +96,7 @@ public class LevelGenerator : MonoBehaviour
 
     public void Generate()
     {
-        levelData = constructorSettings.GetConfiguration();
+        levelData = levelSettings.GetConfiguration();
 
         humanPower = WorldManager.GetWeaponPower(0);
         levelPower = humanPower;
@@ -112,7 +112,7 @@ public class LevelGenerator : MonoBehaviour
 
     public void GenerateFromEditor(bool collectibles, bool battlePath)
     {
-        levelData = constructorSettings.GetConfiguration();
+        levelData = levelSettings.GetConfiguration();
 
         GenerateBlocks(levelData.landscapePatterns, levelData.blocksCount);
 
@@ -201,7 +201,7 @@ public class LevelGenerator : MonoBehaviour
                 switch (collectibleMap[i])
                 {
                     case CollectibleType.Human: PlaceHumanCollectible(blockPairs[i], Random.Range((int)Mathf.Lerp(1, 16, progressValue), (int)Mathf.Lerp(5, 26, progressValue))); break;
-                    case CollectibleType.Weapon: PlaceWeaponCollectible(blockPairs[i], Random.Range(1, 12), Random.Range((int)Mathf.Lerp(3, 8, progressValue), (int)Mathf.Lerp(5, 15, progressValue))); break;
+                    case CollectibleType.Weapon: PlaceWeaponCollectible(blockPairs[i], 10, Random.Range((int)Mathf.Lerp(3, 8, progressValue), (int)Mathf.Lerp(5, 15, progressValue))); break;
                 }
 
                 if (multicollectibleInstance.RangeNumber > 0)
@@ -229,7 +229,7 @@ public class LevelGenerator : MonoBehaviour
         {
             newBattlePathStage = new BattlePathStage(Instantiate(battlePathSettings.stagePrefab, battlePathSettings.stagesContainer), i % 2 == 0);
 
-            newBattlePathStage.Initialize(battlePath.Position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.size.x, 0, 0), 100f + i * 100f);
+            newBattlePathStage.Initialize(battlePath.Position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.Size.x, 0, 0), 100f + i * 100f);
             newBattlePathStage.GenerateGuard(6 * (i + 1), levelPower * ((i + 1) / (float)(cryticalStageIndex + 1)));
 
             battlePath.stages.Add(newBattlePathStage);
@@ -375,7 +375,7 @@ public class LevelGenerator : MonoBehaviour
         BattlePath.Instance.PlayerCrew.Stop();
         BattlePath.Instance.GuardCrew.Stop();
 
-        Vector3 activeStageCenter = BattlePath.Instance.ActiveStage.position + new Vector3(BattlePath.Instance.StageSize.x / 2f, 0, 0);
+        Vector3 activeStageCenter = BattlePath.Instance.ActiveStage.Position + new Vector3(BattlePath.Instance.StageSize.x / 2f, 0, 0);
 
         BattlePath.Instance.PlayerCrew.Members[0].FocusOn(activeStageCenter);
         BattlePath.Instance.PlayerCrew.Members[0].PlayAnimation(HumanAnimationType.Win);
@@ -384,20 +384,26 @@ public class LevelGenerator : MonoBehaviour
 
         CameraController.Instance.FocusOn(activeStageCenter, battlePathSettings.finishView);
 
-        yield return new WaitForSeconds(battlePathSettings.finishView.translationDuration);
+        yield return new WaitForSeconds(battlePathSettings.finishView.translationDuration + 0.1f);
+
+        BattlePath.Instance.ActiveStage.PullOutRewardText();
+
+        LevelManager.Instance.OnLevelFinished(true);
+
+        GameManager.Instance.ChangeCurrency(BattlePath.Instance.ActiveStage.Reward, true);
     }
 
     private void OnValidate()
     {
-        if (constructorSettings.landscapes.Count > 0)
+        if (levelSettings.landscapes.Count > 0)
         {
-            for (int i = 0; i < constructorSettings.landscapes.Count; i++)
+            for (int i = 0; i < levelSettings.landscapes.Count; i++)
             {
-                if (constructorSettings.landscapes[i].patterns.Count > 0)
+                if (levelSettings.landscapes[i].patterns.Count > 0)
                 {
-                    for (int j = 0; j < constructorSettings.landscapes[i].patterns.Count; j++)
+                    for (int j = 0; j < levelSettings.landscapes[i].patterns.Count; j++)
                     {
-                        WavePatternData pattern = constructorSettings.landscapes[i].patterns[j];
+                        WavePatternData pattern = levelSettings.landscapes[i].patterns[j];
 
                         pattern.title = i == 0 ? "Major Pattern" : $"Minor Pattern {i}";
                     }

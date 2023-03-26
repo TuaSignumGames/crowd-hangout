@@ -19,8 +19,8 @@ public class GameManager : Service<GameManager>
 
     public static float Currency { get { return PlayerPrefs.GetFloat("COIN", 0); } set { PlayerPrefs.SetFloat("COIN", value); } }
 
-    public static float WeaponUpgradeValue { get { return PlayerPrefs.GetFloat("UPG.WPN", 0); } set { PlayerPrefs.SetFloat("UPG.WPN", value); } }
-    public static float PopulationUpgradeValue { get { return PlayerPrefs.GetFloat("UPG.PPL", 0); } set { PlayerPrefs.SetFloat("UPG.PPL", value); } }
+    public static float WeaponUpgradeIndex { get { return PlayerPrefs.GetFloat("UPG.WPN", 0); } set { PlayerPrefs.SetFloat("UPG.WPN", value); } }
+    public static float PopulationUpgradeIndex { get { return PlayerPrefs.GetFloat("UPG.PPL", 0); } set { PlayerPrefs.SetFloat("UPG.PPL", value); } }
 
     protected override void Awake()
     {
@@ -69,11 +69,20 @@ public class GameManager : Service<GameManager>
     public void SetCurrency(float value, bool recount = false)
     {
         Currency = value;
+
+        if (recount)
+        {
+            UICurrencyBar.Instance.Recount(value);
+        }
+        else
+        {
+            UICurrencyBar.Instance.SetAmount(value);
+        }
     }
 
-    public void ChangeCurrency(float increment)
+    public void ChangeCurrency(float increment, bool recount = false)
     {
-        SetCurrency(Currency + increment);
+        SetCurrency(Currency + increment, recount);
     }
 
     public void SetTimeScale(float value, float transitionDuration = 0)

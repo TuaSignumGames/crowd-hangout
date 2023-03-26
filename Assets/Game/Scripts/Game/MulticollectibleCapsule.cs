@@ -61,6 +61,8 @@ public class MulticollectibleCapsule
             destructionVFX.Play(true);
         }
 
+        AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
+
         isBroken = true;
     }
 
@@ -84,6 +86,8 @@ public class MulticollectibleCapsule
         {
             destructionVFX.Play(true);
         }
+
+        AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
 
         isBroken = true;
     }
@@ -116,6 +120,8 @@ public class MulticollectibleCapsule
         {
             destructionVFX.Play(true);
         }
+
+        AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
 
         isBroken = true;
     }

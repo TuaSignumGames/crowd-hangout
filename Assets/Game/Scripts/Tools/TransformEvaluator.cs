@@ -451,6 +451,13 @@ public class TransformEvaluator
         _isSpinning = true;
     }
 
+    /*
+    public void Shake(Vector3 amplitudeRatio, float duration, Action completionCallback = null)
+    {
+
+    }
+    */
+
     public void SetDelay(float delay)
     {
         _processingDelay = delay;

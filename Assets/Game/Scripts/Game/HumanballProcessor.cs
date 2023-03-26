@@ -173,6 +173,8 @@ public class HumanballProcessor
 
         pulseEvaluator.Click(ballData.pulsingSettings.clickValue);
 
+        AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
+
         return nextCell;
     }
 
@@ -191,6 +193,8 @@ public class HumanballProcessor
         humanController.SetWeapon(weaponID);
 
         pulseEvaluator.Click(ballData.pulsingSettings.clickValue);
+
+        AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
     }
 
     public void Swing()
@@ -258,6 +262,8 @@ public class HumanballProcessor
         speedLimit = ballData.speed * 3f;
 
         Rigidbody.velocity += (Transform.position - contactPoint).normalized * ballData.bumpImpulse;
+
+        AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
     }
 
     public void UpdateContainerOrientation(Vector3 connectionPoint)

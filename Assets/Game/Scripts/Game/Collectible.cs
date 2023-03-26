@@ -29,6 +29,8 @@ public class Collectible : MonoBehaviour
         isCollected = true;
 
         StartCoroutine(CollectingCoroutine());
+
+        AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
     }
 
     public virtual void SetPlacement(BlockPair blockPair, float placementFactor)

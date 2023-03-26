@@ -10,3 +10,4 @@ public enum IndicatorStateType { Neutral, Waiting, Success, Warning, Fail, Maxim
 public enum ClampedValueType { Custom, Maximal, Minimal }
 public enum ArrayConfigurationType { Line, Arc, Circle }
 public enum ArrayBuildingParameter { Step, Length }
+public enum TrajectoryType { Straight, Parabolic }

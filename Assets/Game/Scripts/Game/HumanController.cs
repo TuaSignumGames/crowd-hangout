@@ -139,51 +139,56 @@ public class HumanController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isFree)
+        if (healthPoints > 0)
         {
-            if (inBattle)
+            if (isFree)
             {
-                actualSpeed = Mathf.Lerp(actualSpeed, targetSpeed, motionSettings.speedLerpingFactor);
+                if (inBattle)
+                {
+                    actualSpeed = Mathf.Lerp(actualSpeed, targetSpeed, motionSettings.speedLerpingFactor);
+                }
 
-                currentWeapon.Update();
+                motionSimulator.Update();
             }
-            else
-            {
+        }
 
-            }
-
-            motionSimulator.Update();
+        if (inBattle)
+        {
+            currentWeapon.Update();
         }
     }
 
     private void LateUpdate()
     {
-        if (isFree)
+        if (healthPoints > 0)
         {
-            if (inBattle)
+            if (isFree)
             {
-                ai.Update();
-
-                healthBar.Update();
-
-                components.animator.SetBool(animatorGroundedHash, motionSimulator.IsGrounded);
-            }
-            else
-            {
-                motionSimulator.SetGround(LevelGenerator.Instance.GetBlockPair(transform.position).floorBlock.transform.position.y);
-            }
-
-            if (motionSimulator.IsGrounded)
-            {
-                motionSimulator.angularVelocity = new Vector3();
-
                 if (inBattle)
                 {
-                    transform.eulerAngles = new Vector3(0, Mathf.LerpAngle(transform.eulerAngles.y, targetFacingAngle, motionSettings.turnLerpingFactor), 0);
+                    ai.Update();
+
+                    healthBar.Update();
+
+                    components.animator.SetBool(animatorGroundedHash, motionSimulator.IsGrounded);
                 }
                 else
                 {
-                    transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
+                    motionSimulator.SetGround(LevelGenerator.Instance.GetBlockPair(transform.position).floorBlock.transform.position.y);
+                }
+
+                if (motionSimulator.IsGrounded)
+                {
+                    motionSimulator.angularVelocity = new Vector3();
+
+                    if (inBattle)
+                    {
+                        transform.eulerAngles = new Vector3(0, Mathf.LerpAngle(transform.eulerAngles.y, targetFacingAngle, motionSettings.turnLerpingFactor), 0);
+                    }
+                    else
+                    {
+                        transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
+                    }
                 }
             }
         }
@@ -366,6 +371,11 @@ public class HumanController : MonoBehaviour
             {
                 actualTeamInfo.impactVFX.Play();
             }
+
+            if (actualTeamInfo.teamType == HumanTeam.Yellow)
+            {
+                AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
+            }
         }
 
         healthBar.SetValue(healthPoints / healthCapacity);
@@ -393,9 +403,11 @@ public class HumanController : MonoBehaviour
 
         SetTeam(HumanTeam.Neutral);
 
+        //currentWeapon.ClearProjectiles();
+
         actualCrowd?.RemoveMember(this);
 
-        enabled = !disableController;
+        //enabled = !disableController;
     }
 
     public void SetPose(HumanPose pose)

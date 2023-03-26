@@ -26,7 +26,7 @@ public class BattlePath
 
     public Vector3 Position => transform.position;
 
-    public Vector3 StageSize => stages[0].size;
+    public Vector3 StageSize => stages[0].Size;
 
     public bool IsBattleActive => isBattleActive;
 
@@ -78,6 +78,10 @@ public class BattlePath
                 }
             }
         }
+        else
+        {
+            stages[activeStageIndex].Update();
+        }
     }
 
     public void Enter(Crowd playerCrowd)
@@ -107,7 +111,7 @@ public class BattlePath
     {
         for (int i = 0; i < stages.Count; i++)
         {
-            if (position.x < stages[i].position.x)
+            if (position.x < stages[i].Position.x)
             {
                 return stages[Mathf.Clamp(i - 1, 0, stages.Count - 1)];
             }

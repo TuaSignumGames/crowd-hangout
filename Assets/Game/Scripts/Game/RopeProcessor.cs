@@ -82,6 +82,10 @@ public class RopeProcessor
             if (ropeData.swingContainer.childCount == 0)
             {
                 assignedBall.Transform.SetParent(ropeData.swingContainer);
+
+                AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
+
+                Debug.Log(" - Rope is connected");
             }
         }
 

@@ -9,10 +9,14 @@ public class BattlePathStage
 
     private List<Transform> stageContent;
     private List<Transform> platformContent;
+    private List<Transform> rewardTextContent;
 
     private Transform guardContainer;
 
     private TextMeshPro rewardText;
+    private TextMeshPro rewardUndertext;
+
+    private TransformEvaluator rewardTextEvaluator;
 
     private HumanController[] guardians;
 
@@ -26,8 +30,10 @@ public class BattlePathStage
 
     public Crowd GuardCrew => guardCrew;
 
-    public Vector3 position => gameObject.transform.position;
-    public Vector3 size => stageContent[0].localScale;
+    public Vector3 Position => gameObject.transform.position;
+    public Vector3 Size => stageContent[0].localScale;
+
+    public float Reward => reward;
 
     public BattlePathStage(GameObject stageGameObject, bool isEven)
     {
@@ -35,13 +41,15 @@ public class BattlePathStage
 
         stageContent = gameObject.transform.GetChildren();
         platformContent = stageContent[0].GetChildren();
+        rewardTextContent = platformContent[2].GetChildren();
 
         platformContent[0].gameObject.SetActive(!isEven);
         platformContent[1].gameObject.SetActive(isEven);
 
         guardContainer = stageContent[1];
 
-        rewardText = platformContent[2].GetComponent<TextMeshPro>();
+        rewardText = rewardTextContent[0].GetComponent<TextMeshPro>();
+        rewardUndertext = rewardTextContent[1].GetComponent<TextMeshPro>();
     }
 
     public void Initialize(Vector3 position, float rewardValue)
@@ -51,6 +59,15 @@ public class BattlePathStage
         reward = rewardValue;
 
         rewardText.text = $"${reward:N0}";
+        rewardUndertext.text = rewardText.text;
+    }
+
+    public void Update()
+    {
+        if (rewardTextEvaluator != null)
+        {
+            rewardTextEvaluator.Update();
+        }
     }
 
     public void GenerateGuard(int guardiansCount, float damageRate)
@@ -112,6 +129,15 @@ public class BattlePathStage
         }
 
         guardCrew = new Crowd(guardians);
+    }
+
+    public void PullOutRewardText()
+    {
+        rewardTextEvaluator = new TransformEvaluator(rewardText.transform, MonoUpdateType.FixedUpdate);
+
+        rewardUndertext.gameObject.SetActive(true);
+
+        rewardTextEvaluator.Translate(new Vector3(rewardText.transform.position.x, rewardText.transform.position.y + 1f, rewardText.transform.position.z), 0.5f, EvaluationType.Smooth);
     }
 
     private HumanController InstantiateGuardian(Vector3 position)

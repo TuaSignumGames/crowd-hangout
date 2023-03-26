@@ -4380,7 +4380,7 @@ RectTransform:
   m_GameObject: {fileID: 625333057}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.75, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1050374221}
@@ -9298,10 +9298,22 @@ MonoBehaviour:
   - title: Success
     uIState: 3
     activeElements:
+    - title: LevelTitle
+      elementReference: {fileID: 1000413885}
+      useAnimation: 1
+      transitionDelay: 0.2
     - title: SuccessTitle
       elementReference: {fileID: 1783735831}
       useAnimation: 1
       transitionDelay: 0.4
+    - title: CurrencyBar
+      elementReference: {fileID: 400020372}
+      useAnimation: 1
+      transitionDelay: 0.5
+    - title: Button[Continue]
+      elementReference: {fileID: 2065290819}
+      useAnimation: 1
+      transitionDelay: 1
   - title: Fail
     uIState: 4
     activeElements:
@@ -10222,7 +10234,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 10
+  m_Text: LVL 1
 --- !u!222 &1612740164
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10865,7 +10877,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: PASSED
+  m_Text: COMPLETE
 --- !u!222 &1783735834
 CanvasRenderer:
   m_ObjectHideFlags: 0

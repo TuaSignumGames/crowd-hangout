@@ -7,6 +7,9 @@ public class WorldManager : MonoBehaviour
     public static HumanController humanPrefab;
 
     public HumanController _humanPrefab;
+    [Space]
+    public List<UpgradeInfo> weaponUpgradeTable;
+    public List<UpgradeInfo> populationUpgradeTable;
 
     private void Awake()
     {
@@ -29,5 +32,24 @@ public class WorldManager : MonoBehaviour
         }
 
         return humanPrefab.weaponSettings.Count - 1;
+    }
+
+    private void OnValidate()
+    {
+        if (weaponUpgradeTable.Count > 0)
+        {
+            for (int i = 0; i < weaponUpgradeTable.Count; i++)
+            {
+                weaponUpgradeTable[i].title = weaponUpgradeTable[i].ToString();
+            }
+        }
+
+        if (populationUpgradeTable.Count > 0)
+        {
+            for (int i = 0; i < populationUpgradeTable.Count; i++)
+            {
+                populationUpgradeTable[i].title = populationUpgradeTable[i].ToString();
+            }
+        }
     }
 }
