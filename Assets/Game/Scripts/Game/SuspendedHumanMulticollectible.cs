@@ -26,7 +26,7 @@ public class SuspendedHumanMulticollectible : HumanMulticollectible
 
         rope = suspensionSettings.rope;
 
-        swingPeriod = Random.Range(rope.swingPeriodRange.x, rope.swingPeriodRange.y);
+        swingPeriod = rope.swingPeriod;
         swingPeriodOffset = Random.Range(0, swingPeriod);
 
         GenerateHumanball(elementsCount);
@@ -62,6 +62,18 @@ public class SuspendedHumanMulticollectible : HumanMulticollectible
     public override void UpdatePlacement(BlockPair blockPair)
     {
         SetPlacement(blockPair, placementFactor);
+    }
+
+    public override void SetVisible(bool isVisible)
+    {
+        enabled = isVisible;
+
+        rope.SetVisible(isVisible);
+
+        foreach (HumanballCell cell in structure.UsedCells)
+        {
+            cell.Human.SetActive(isVisible, false);
+        }
     }
 
     protected void GenerateHumanball(int count)

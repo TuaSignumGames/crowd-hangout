@@ -146,6 +146,9 @@ public class BattlePathStage
 
         guardianInstance.Initialize(HumanTeam.Red);
         guardianInstance.MotionSimulator.SetGround(LevelGenerator.Instance.BattlePath.transform.position.y - guardianInstance.components.animator.transform.localPosition.y);
+
+        guardianInstance.defaultContainer = guardContainer;
+
         guardianInstance.DropToBattle(Vector3.zero, -Vector3.right);
 
         return guardianInstance;

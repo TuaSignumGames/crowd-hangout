@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GroundBrown-SL
+  m_Name: Grass-D2-SL
   m_Shader: {fileID: 4800000, guid: 8d2bb70cbf9db8d4da26e15b26e74248, type: 3}
   m_ValidKeywords:
   - _SPECULAR_COLOR
@@ -111,8 +111,8 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.7169812, g: 0.47521192, b: 0, a: 1}
-    - _Color: {r: 0.7169812, g: 0.47521186, b: 0, a: 1}
+    - _BaseColor: {r: 0.2796295, g: 0.6226415, b: 0, a: 1}
+    - _Color: {r: 0.27962947, g: 0.62264144, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999993, g: 0.19999993, b: 0.19999993, a: 0}
   m_BuildTextureStacks: []

@@ -17,10 +17,10 @@ public class GameManager : Service<GameManager>
     private float _defaultFixedDeltaTime;
     private float _timeScaleValue;
 
-    public static float Currency { get { return PlayerPrefs.GetFloat("COIN", 0); } set { PlayerPrefs.SetFloat("COIN", value); } }
+    public static float Currency { get { return PlayerPrefs.GetFloat("COIN", 100f); } set { PlayerPrefs.SetFloat("COIN", value); } }
 
-    public static float WeaponUpgradeIndex { get { return PlayerPrefs.GetFloat("UPG.WPN", 0); } set { PlayerPrefs.SetFloat("UPG.WPN", value); } }
-    public static float PopulationUpgradeIndex { get { return PlayerPrefs.GetFloat("UPG.PPL", 0); } set { PlayerPrefs.SetFloat("UPG.PPL", value); } }
+    public static int WeaponUpgradeIndex { get { return PlayerPrefs.GetInt("UPG.WPN", 0); } set { PlayerPrefs.SetInt("UPG.WPN", value); } }
+    public static int PopulationUpgradeIndex { get { return PlayerPrefs.GetInt("UPG.PPL", 0); } set { PlayerPrefs.SetInt("UPG.PPL", value); } }
 
     protected override void Awake()
     {

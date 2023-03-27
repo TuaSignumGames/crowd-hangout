@@ -91,6 +91,11 @@ public class BattlePath
         isBattleActive = true;
     }
 
+    public void SetActive(bool isActive)
+    {
+        gameObject.SetActive(isActive);
+    }
+
     private void StartBattleOnActiveStage()
     {
         Debug.Log($" Player crowd DamageRate: {playerCrew.Power}");

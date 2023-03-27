@@ -18,7 +18,7 @@ public class SuspendedMulticollectible : Multicollectible
 
         rope = suspensionSettings.rope;
 
-        swingPeriod = Random.Range(rope.swingPeriodRange.x, rope.swingPeriodRange.y);
+        swingPeriod = rope.swingPeriod;
         swingPeriodOffset = Random.Range(0, swingPeriod);
     }
 

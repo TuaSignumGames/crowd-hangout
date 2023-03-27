@@ -11,8 +11,9 @@ public class BattlePathSettings
     public Transform baseStageTransform;
     [Space]
     public GameObject stagePrefab;
-    public List<GameObject> guardPrefabs;
     [Space]
     public CameraViewData battleView;
     public CameraViewData finishView;
+    [Space]
+    public float visibilityDistance; 
 }

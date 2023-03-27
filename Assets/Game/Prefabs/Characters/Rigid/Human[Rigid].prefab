@@ -677,6 +677,7 @@ MonoBehaviour:
     hideOnMinValue: 1
     hideOnMaxValue: 1
   isImmortal: 0
+  defaultContainer: {fileID: 0}
   isFree: 1
 --- !u!1 &415746434134637567
 GameObject:

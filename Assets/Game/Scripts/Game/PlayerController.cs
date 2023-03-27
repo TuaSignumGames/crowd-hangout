@@ -147,7 +147,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Physics.Raycast(ballSettings.suspensionContainer.position, direction, out hitInfo, 100f, 1 << 7))
         {
-            return hitInfo.transform.parent;
+            return hitInfo.transform;
         }
 
         return null;

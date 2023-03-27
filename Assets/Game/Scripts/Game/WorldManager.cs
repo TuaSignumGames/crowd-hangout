@@ -2,18 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO Design progression (Base table -> multiplying) 
+
 public class WorldManager : MonoBehaviour
 {
     public static HumanController humanPrefab;
 
+    public static List<Weapon> weaponAssortment;
+
+    public static UpgradeSettings weaponUpgradeSettings;
+    public static UpgradeSettings populationUpgradeSettings;
+
     public HumanController _humanPrefab;
     [Space]
-    public List<UpgradeInfo> weaponUpgradeTable;
-    public List<UpgradeInfo> populationUpgradeTable;
+    public UpgradeSettings _weaponUpgradeSettings;
+    public UpgradeSettings _populationUpgradeSettings;
 
     private void Awake()
     {
         humanPrefab = _humanPrefab;
+
+        weaponAssortment = new List<Weapon>(humanPrefab.weaponSettings);
+
+        weaponUpgradeSettings = _weaponUpgradeSettings;
+        populationUpgradeSettings = _populationUpgradeSettings;
     }
 
     public static float GetWeaponPower(int weaponID)
@@ -23,6 +35,8 @@ public class WorldManager : MonoBehaviour
 
     public static int GetWeaponID(float power)
     {
+        print($" Get Weapon ID -- Power: {power}");
+
         for (int i = 0; i < humanPrefab.weaponSettings.Count; i++)
         {
             if (humanPrefab.weaponSettings[i].Power > power)
@@ -32,24 +46,5 @@ public class WorldManager : MonoBehaviour
         }
 
         return humanPrefab.weaponSettings.Count - 1;
-    }
-
-    private void OnValidate()
-    {
-        if (weaponUpgradeTable.Count > 0)
-        {
-            for (int i = 0; i < weaponUpgradeTable.Count; i++)
-            {
-                weaponUpgradeTable[i].title = weaponUpgradeTable[i].ToString();
-            }
-        }
-
-        if (populationUpgradeTable.Count > 0)
-        {
-            for (int i = 0; i < populationUpgradeTable.Count; i++)
-            {
-                populationUpgradeTable[i].title = populationUpgradeTable[i].ToString();
-            }
-        }
     }
 }

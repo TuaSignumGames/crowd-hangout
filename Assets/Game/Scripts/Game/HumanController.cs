@@ -62,6 +62,8 @@ public class HumanController : MonoBehaviour
 
     public Weapon Weapon => currentWeapon;
 
+    [HideInInspector] public Transform defaultContainer;
+
     [HideInInspector] public bool isFree = false;
 
     public bool IsInitialized => isInitialized;
@@ -110,6 +112,8 @@ public class HumanController : MonoBehaviour
         }
 
         healthCapacity = healthPoints = health;
+
+        defaultContainer = LevelGenerator.Instance.transform;
 
         isInitialized = true;
     }
@@ -308,7 +312,7 @@ public class HumanController : MonoBehaviour
     {
         components.collider.enabled = false;
 
-        transform.SetParent(null);
+        transform.SetParent(defaultContainer);
         transform.localScale = Vector3.one;
 
         motionSimulator.velocityMultiplier = 1f;
@@ -422,12 +426,12 @@ public class HumanController : MonoBehaviour
 
     public void SetWeapon(Weapon weapon)
     {
-        currentWeapon = weapon.Apply(this, weaponSettings.IndexOf(weapon));
+        currentWeapon = weapon.Apply(this);
     }
 
     public void SetWeapon(int index)
     {
-        currentWeapon = weaponSettings[index].Apply(this, index);
+        currentWeapon = weaponSettings[index].Apply(this);
     }
 
     public void SetWeapon(int index, float damageRate)
@@ -454,6 +458,33 @@ public class HumanController : MonoBehaviour
         SetWeapon(suitableWeaponIndex, damageRate);
     }
 
+    public void PlayAnimation(HumanAnimationType animationType)
+    {
+        components.animator.enabled = true;
+
+        switch (animationType)
+        {
+            case HumanAnimationType.Running: components.animator.SetBool(animatorGroundedHash, true); components.animator.SetBool(animatorRunningHash, true); break;
+            case HumanAnimationType.Flying: components.animator.SetTrigger(animatorFlyHash); break;
+            case HumanAnimationType.Attacking: components.animator.SetInteger(animatorAttackIdHash, currentWeapon.attackAnimationID); components.animator.SetBool(animatorAttackingHash, true); break;
+            case HumanAnimationType.Falling: components.animator.SetBool(animatorGroundedHash, false); break;
+            case HumanAnimationType.Dying: components.animator.SetInteger(animatorAttackIdHash, Random.Range(0, 5)); components.animator.SetTrigger(animatorDefeatHash); break;
+            case HumanAnimationType.Win: components.animator.SetTrigger(animatorWinHash); break;
+        }
+    }
+
+    public void SetActive(bool isActive, bool includeCollider)
+    {
+        enabled = isActive;
+
+        if (includeCollider)
+        {
+            components.collider.enabled = isActive;
+        }
+
+        components.skinRenderer.enabled = isActive;
+    }
+
     private void UpdateMotion()
     {
         motionSimulator.velocity = transform.forward * actualSpeed;
@@ -471,21 +502,6 @@ public class HumanController : MonoBehaviour
         if (actualTeamInfo.impactVFX)
         {
             actualTeamInfo.impactVFX.gameObject.SetActive(true);
-        }
-    }
-
-    public void PlayAnimation(HumanAnimationType animationType)
-    {
-        components.animator.enabled = true;
-
-        switch (animationType)
-        {
-            case HumanAnimationType.Running: components.animator.SetBool(animatorGroundedHash, true); components.animator.SetBool(animatorRunningHash, true); break;
-            case HumanAnimationType.Flying: components.animator.SetTrigger(animatorFlyHash); break;
-            case HumanAnimationType.Attacking: components.animator.SetInteger(animatorAttackIdHash, currentWeapon.attackAnimationID); components.animator.SetBool(animatorAttackingHash, true); break;
-            case HumanAnimationType.Falling: components.animator.SetBool(animatorGroundedHash, false); break;
-            case HumanAnimationType.Dying: components.animator.SetInteger(animatorAttackIdHash, Random.Range(0, 5)); components.animator.SetTrigger(animatorDefeatHash); break;
-            case HumanAnimationType.Win: components.animator.SetTrigger(animatorWinHash); break;
         }
     }
 

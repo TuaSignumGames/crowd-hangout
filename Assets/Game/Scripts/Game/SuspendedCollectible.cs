@@ -15,7 +15,7 @@ public class SuspendedCollectible : Collectible
     {
         rope = suspensionSettings.rope;
 
-        swingPeriod = Random.Range(rope.swingPeriodRange.x, rope.swingPeriodRange.y);
+        swingPeriod = rope.swingPeriod;
         swingPeriodOffset = Random.Range(0, swingPeriod);
     }
 
@@ -75,7 +75,7 @@ public class SuspendedCollectible : Collectible
         public Transform swingContainer;
         [Space]
         public float swingAmplitude;
-        public Vector2 swingPeriodRange;
+        public float swingPeriod;
         [Space]
         public SpringData elasticitySettings;
 
@@ -120,6 +120,12 @@ public class SuspendedCollectible : Collectible
             springEvaluator.Update(ref springValue);
 
             swingContainer.localScale = new Vector3(1f, springValue, 1f);
+        }
+
+        public void SetVisible(bool isVisible)
+        {
+            lineTransform.gameObject.SetActive(isVisible);
+            endTransform.gameObject.SetActive(isVisible);
         }
     }
 }

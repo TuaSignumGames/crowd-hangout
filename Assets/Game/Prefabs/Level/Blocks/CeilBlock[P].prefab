@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4793454751304758903}
+  - component: {fileID: 1112701577360773543}
   m_Layer: 7
   m_Name: CeilBlock[P]
   m_TagString: Untagged
@@ -32,6 +33,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1112701577360773543
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4793454751304758902}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 3.9, y: 20, z: 3}
+  m_Center: {x: 0, y: 10, z: 0}
 --- !u!1 &4793454751778024476
 GameObject:
   m_ObjectHideFlags: 0
@@ -43,7 +57,6 @@ GameObject:
   - component: {fileID: 4793454751778024477}
   - component: {fileID: 4793454751778024464}
   - component: {fileID: 4793454751778024467}
-  - component: {fileID: 4793454751778024466}
   m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
@@ -94,7 +107,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ba077ea80fbd24c6a8a0785df1821698, type: 2}
+  - {fileID: 2100000, guid: 179457c9cfb2e4dc085f7229b15a6b7c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -116,16 +129,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4793454751778024466
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4793454751778024476}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.9, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}

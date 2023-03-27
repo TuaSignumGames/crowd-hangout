@@ -8329,7 +8329,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1720126401}
         m_TargetAssemblyTypeName: UIUpgradeMenu, Assembly-CSharp
-        m_MethodName: UpgradePopulation
+        m_MethodName: UpgradeWeapon
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -10234,7 +10234,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: LVL 1
+  m_Text: FIST
 --- !u!222 &1612740164
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10589,7 +10589,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initializeAutomatically: 1
   followStateTransitions: 1
-  upgradeCards: []
+  weaponCard:
+    buttonComponent: {fileID: 1250088498}
+    sliderTransform: {fileID: 625333058}
+    valueText: {fileID: 1612740163}
+    priceText: {fileID: 389583280}
+  populationCard:
+    buttonComponent: {fileID: 2018390355566614271}
+    sliderTransform: {fileID: 0}
+    valueText: {fileID: 823054930}
+    priceText: {fileID: 273514088}
 --- !u!95 &1720126402
 Animator:
   serializedVersion: 5

@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [ MAR 26 - POLISHING DAY ] <- 
+// -> [ MAR 26 - POLISHING DAY, but not only ] <- 
 //
 //  Upgrades
 //  -
@@ -12,15 +12,13 @@ using UnityEngine;
 //
 //  Scope
 //  -
-//  - Level viewing optimization
+//  - Add count UI for Humanball, Multicollectibles
+//  - Difficulty progression (10-20 levels, Cave height, Landscape complexity, Collectible radius)
 //
 //  - DropToBattle() actually present humans (Check 'usedCells')
 //  - Multicollectible blocks fitting (Building)
 //  - Hide rope on touch not present
 //  - Building colors (+2)
-//
-//  - Add count UI for Humanball, Multicollectibles
-//  - Difficulty progression (10-20 levels, Cave height, Landscape complexity, Collectible radius)
 //
 //  Polishing
 
@@ -74,6 +72,8 @@ public class LevelGenerator : MonoBehaviour
 
     private bool isCavePassed;
 
+    private bool isLevelGenerated;
+
     public BattlePath BattlePath => battlePath;
 
     public int TotalHumansCount => totalHumansCount;
@@ -108,6 +108,8 @@ public class LevelGenerator : MonoBehaviour
         GenerateBattlePath(3, 1);
 
         print($" -- Level Power: {levelPower}");
+
+        isLevelGenerated = true;
     }
 
     public void GenerateFromEditor(bool collectibles, bool battlePath)
@@ -129,13 +131,18 @@ public class LevelGenerator : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!isCavePassed)
+        if (isLevelGenerated)
         {
-            CheckForBattlePath();
-        }
-        else
-        {
-            battlePath.Update();
+            if (isCavePassed)
+            {
+                battlePath.Update();
+            }
+            else
+            {
+                CheckForBattlePath();
+
+                UpdateVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
+            }
         }
     }
 
@@ -234,6 +241,8 @@ public class LevelGenerator : MonoBehaviour
 
             battlePath.stages.Add(newBattlePathStage);
         }
+
+        battlePath.SetActive(false);
     }
 
     private void PlaceHumanCollectible(BlockPair blockPair, int humansCount)
@@ -348,6 +357,24 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
+    public void FinishBattle()
+    {
+        StartCoroutine(BattleFinishingCoroutine());
+    }
+
+    public void UpdateVisibility(int pivotBlockIndex)
+    {
+        for (int i = 0; i < blockPairs.Count; i++)
+        {
+            blockPairs[i].SetVisible(i >= pivotBlockIndex + levelSettings.visibilityRange.x && i <= pivotBlockIndex + levelSettings.visibilityRange.y);
+        }
+
+        if (!battlePath.gameObject.activeSelf && blockPairs[pivotBlockIndex].Position.x > battlePath.Position.x - battlePathSettings.visibilityDistance)
+        {
+            battlePath.SetActive(true);
+        }
+    }
+
     public BlockPair GetBlockPair(Vector3 position)
     {
         for (int i = 0; i < blockPairs.Count; i++)
@@ -359,11 +386,6 @@ public class LevelGenerator : MonoBehaviour
         }
 
         return blockPairs.GetLast();
-    }
-
-    public void FinishBattle()
-    {
-        StartCoroutine(BattleFinishingCoroutine());
     }
 
     private IEnumerator BattleFinishingCoroutine()
@@ -391,24 +413,5 @@ public class LevelGenerator : MonoBehaviour
         LevelManager.Instance.OnLevelFinished(true);
 
         GameManager.Instance.ChangeCurrency(BattlePath.Instance.ActiveStage.Reward, true);
-    }
-
-    private void OnValidate()
-    {
-        if (levelSettings.landscapes.Count > 0)
-        {
-            for (int i = 0; i < levelSettings.landscapes.Count; i++)
-            {
-                if (levelSettings.landscapes[i].patterns.Count > 0)
-                {
-                    for (int j = 0; j < levelSettings.landscapes[i].patterns.Count; j++)
-                    {
-                        WavePatternData pattern = levelSettings.landscapes[i].patterns[j];
-
-                        pattern.title = i == 0 ? "Major Pattern" : $"Minor Pattern {i}";
-                    }
-                }
-            }
-        }
     }
 }

@@ -7,6 +7,8 @@ public class LevelSettings
 {
     public List<LevelCycleData> structures;
     public List<LandscapeData> landscapes;
+    [Space]
+    public Vector2Int visibilityRange;
 
     public LevelData GetConfiguration()
     {

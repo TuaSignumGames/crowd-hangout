@@ -5,6 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class Weapon
 {
+    public static float TopWeaponPower { get { return PlayerPrefs.GetFloat("WPN.TP", WorldManager.GetWeaponPower(0)); } set { PlayerPrefs.SetFloat("WPN.TP", value); } }
+
     [HideInInspector]
     public string title;
 
@@ -51,19 +53,16 @@ public class Weapon
 
     private int ammoPoolSize;
 
-    private int weaponIndex;
-
     private bool isAttackRequested;
     private bool isTargetReachable;
 
     public float Power { get { return damageRate; } set { damageRate = value; damage = damageRate * reloadingTime; } }
 
-    public int WeaponID => weaponIndex;
+    public int WeaponID => WorldManager.GetWeaponID(Power);
 
-    public Weapon Apply(HumanController ownerHuman, int weaponIndex)
+    public Weapon Apply(HumanController ownerHuman)
     {
         this.ownerHuman = ownerHuman;
-        this.weaponIndex = weaponIndex;
 
         damage = damageRate * reloadingTime;
 

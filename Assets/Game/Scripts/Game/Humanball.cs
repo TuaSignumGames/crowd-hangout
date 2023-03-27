@@ -44,6 +44,7 @@ public class Humanball
     public int HumansCount => humansCount;
 
     public HumanballCell[] FilledCells => filledCells == null ?  GetFilledCells().ToArray() : filledCells.ToArray();
+    public HumanballCell[] UsedCells => usedCells.ToArray();
 
     public Humanball()
     {

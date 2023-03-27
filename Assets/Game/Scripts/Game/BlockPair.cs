@@ -9,6 +9,9 @@ public class BlockPair
 
     public GameObject container;
 
+    public List<Transform> ceilBlockContent;
+    public List<Transform> floorBlockContent;
+
     public Transform landscapeContainer;
 
     private Collectible collectible;
@@ -21,6 +24,8 @@ public class BlockPair
     private float thresholdValue;
 
     private int orderIndex;
+
+    private bool isVisible;
 
     public Collectible Collectible => collectible;
 
@@ -40,11 +45,16 @@ public class BlockPair
 
         this.container = container;
 
+        ceilBlockContent = ceilBlock.transform.GetChildren();
+        floorBlockContent = floorBlock.transform.GetChildren();
+
         this.ceilBlock.transform.SetParent(container.transform);
         this.floorBlock.transform.SetParent(container.transform);
 
         this.orderIndex = orderIndex;
         this.thresholdValue = thresholdValue;
+
+        isVisible = true;
 
         //DeformLandscape();
     }
@@ -74,6 +84,34 @@ public class BlockPair
     public void FitCollectible()
     {
         collectible.UpdatePlacement(this);
+    }
+
+    public void SetVisible(bool isVisible)
+    {
+        if (this.isVisible != isVisible)
+        {
+            ceilBlock.SetActive(isVisible);
+            floorBlock.SetActive(isVisible);
+
+            /*
+            for (int i = 0; i < ceilBlockContent.Count; i++)
+            {
+                ceilBlockContent[i].gameObject.SetActive(isVisible);
+            }
+
+            for (int i = 0; i < floorBlockContent.Count; i++)
+            {
+                floorBlockContent[i].gameObject.SetActive(isVisible);
+            }
+            */
+
+            if (collectible && !collectible.IsCollected)
+            {
+                collectible.SetVisible(isVisible);
+            }
+
+            this.isVisible = isVisible;
+        }
     }
 
     private void DeformLandscape()

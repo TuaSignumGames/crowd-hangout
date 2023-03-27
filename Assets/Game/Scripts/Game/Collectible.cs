@@ -50,6 +50,11 @@ public class Collectible : MonoBehaviour
         SetPlacement(blockPair, placementFactor);
     }
 
+    public virtual void SetVisible(bool isVisible)
+    {
+        gameObject.SetActive(isVisible);
+    }
+
     protected virtual IEnumerator CollectingCoroutine()
     {
         return null;

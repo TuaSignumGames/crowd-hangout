@@ -158,7 +158,10 @@ public class LevelManager : Service<LevelManager>
         UIManager.Instance.ChangeState(GameManager.Instance.creativeMode ? UIState.Empty : UIState.Start);
 
         UILevelTitle.Instance.SetLevelNumber(LevelNumber);
+
         UIProgressBar.Instance.Initialize(LevelNumber);
+
+        UIUpgradeMenu.Instance.UpdateCards();
     }
 
     private IEnumerator LevelStartingCoroutine()
