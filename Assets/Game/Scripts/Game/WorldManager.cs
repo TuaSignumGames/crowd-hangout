@@ -35,7 +35,7 @@ public class WorldManager : MonoBehaviour
 
     public static int GetWeaponID(float power)
     {
-        print($" Get Weapon ID -- Power: {power}");
+        //print($" Get Weapon ID -- Power: {power}");
 
         for (int i = 0; i < humanPrefab.weaponSettings.Count; i++)
         {

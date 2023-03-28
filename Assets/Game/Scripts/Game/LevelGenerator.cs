@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [ MAR 26 - POLISHING DAY, but not only ] <- 
+// -> [ MAR 26 - POLISHING DAY, but not only ] <- LOL 
 //
 //  Upgrades
 //  -
@@ -12,8 +12,7 @@ using UnityEngine;
 //
 //  Scope
 //  -
-//  - Add count UI for Humanball, Multicollectibles
-//  - Difficulty progression (10-20 levels, Cave height, Landscape complexity, Collectible radius)
+//  - Difficulty progression (10-20 levels, Cave height, Landscape complexity, Collectible radius) 
 //
 //  - DropToBattle() actually present humans (Check 'usedCells')
 //  - Multicollectible blocks fitting (Building)
@@ -145,7 +144,7 @@ public class LevelGenerator : MonoBehaviour
             {
                 CheckForBattlePath();
 
-                UpdateVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
+                //UpdateVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
 
                 UIProgressBar.Instance.SetProgressValue(Mathf.Clamp01(PlayerController.Humanball.Transform.position.x / levelLength));
             }
@@ -171,7 +170,9 @@ public class LevelGenerator : MonoBehaviour
         {
             for (int blockIndex = 0; blockIndex < blocksCount; blockIndex++)
             {
-                perlinValue = Mathf.PerlinNoise(perlinNoiseOrigin.x + (float)blockIndex / blocksCount * landscapePatterns[patternIndex].waveFrequency, perlinNoiseOrigin.y);
+                perlinValue = Mathf.PerlinNoise(perlinNoiseOrigin.x + (float)blockIndex * landscapePatterns[patternIndex].waveFrequency, perlinNoiseOrigin.y);
+
+                print(perlinValue);
 
                 offsetMap[blockIndex] += (perlinValue - 0.5f) * 2f * landscapePatterns[patternIndex].waveHeight;
             }

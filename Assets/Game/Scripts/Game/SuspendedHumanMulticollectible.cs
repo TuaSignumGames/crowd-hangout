@@ -111,6 +111,8 @@ public class SuspendedHumanMulticollectible : HumanMulticollectible
     {
         rope.Release();
 
+        multicollectibleSettings.elementCountMarker?.SetActive(false);
+
         yield return base.CollectingCoroutine();
     }
 }

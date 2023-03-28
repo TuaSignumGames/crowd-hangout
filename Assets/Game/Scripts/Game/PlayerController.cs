@@ -132,6 +132,8 @@ public class PlayerController : MonoBehaviour
     {
         ball.Data.rigidbody.isKinematic = true;
 
+        humanCountMarker.SetActive(false);
+
         DropHumansToBattle();
 
         LevelGenerator.Instance.BattlePath.Enter(humanballCrowd);

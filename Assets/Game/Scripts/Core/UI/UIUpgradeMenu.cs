@@ -64,7 +64,7 @@ public class UIUpgradeMenu : UIElement
 
     private void UpdatePopulationCard(UpgradeInfo upgradeInfo)
     {
-        populationCard.valueText.text = weaponInfo.weaponContainer.name.ToUpper();
+        populationCard.valueText.text = upgradeInfo.value.ToString();
         populationCard.priceText.text = "$" + upgradeInfo.price.ToString("N0");
 
         populationCard.buttonComponent.Interactable = GameManager.Currency >= upgradeInfo.price;

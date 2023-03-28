@@ -28,6 +28,16 @@ public class BuildingMulticollectible : HumanMulticollectible
         GenerateBuilding(elementsCount);
     }
 
+    public override void LateUpdate()
+    {
+        base.LateUpdate();
+
+        for (int i = 0; i < stages.Length; i++)
+        {
+            stages[i].humanCountMarker?.Update();
+        }
+    }
+
     protected void GenerateBuilding(int humansCount)
     {
         stages = new BuildingStage[Mathf.CeilToInt(humansCount / (float)buildingSettings.stageCapacity) + 1];
@@ -122,6 +132,8 @@ public class BuildingMulticollectible : HumanMulticollectible
 
         public GameObject[] fractures;
 
+        public TextMarker humanCountMarker;
+
         public ParticleSystem destructionVFX;
 
         private MulticollectibleEntity<HumanController>[] humanCollectibles;
@@ -147,6 +159,11 @@ public class BuildingMulticollectible : HumanMulticollectible
             if (children.Count > 2)
             {
                 destructionVFX = children[2].GetComponent<ParticleSystem>();
+
+                if (children.Count > 3)
+                {
+                    humanCountMarker = new TextMarker(children[3]);
+                }
             }
         }
 
@@ -159,6 +176,8 @@ public class BuildingMulticollectible : HumanMulticollectible
                 humanCollectibles[i].Entity.gameObject.SetActive(false);
                 humanCollectibles[i].Entity.transform.position = transform.position + new Vector3(Random.Range(-1.5f, 1.5f), 0.2f, 0);
             }
+
+            humanCountMarker.SetValue(humanCollectibles.Length.ToString());
         }
 
         public void DropElements()
@@ -168,6 +187,11 @@ public class BuildingMulticollectible : HumanMulticollectible
                 humanCollectibles[i].Entity.EjectFromCell();
 
                 buildingMulticollectible.DropElement(humanCollectibles[i].Element, transform.position, PlayerController.Humanball.Velocity);
+            }
+
+            if (humanCountMarker != null)
+            {
+                humanCountMarker.SetActive(false);
             }
         }
     }
