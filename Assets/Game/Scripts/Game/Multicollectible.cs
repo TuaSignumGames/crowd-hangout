@@ -16,6 +16,8 @@ public class Multicollectible : Collectible
         base.Initialize();
 
         elements = new MulticollectibleElement[elementsCount];
+
+        multicollectibleSettings.elementCountMarker.SetValue(elementsCount.ToString());
     }
 
     public virtual void FixedUpdate()
@@ -31,6 +33,18 @@ public class Multicollectible : Collectible
                     multicollectibleSettings.capsules[i].Update();
                 }
             }
+        }
+        else
+        {
+            //multicollectibleSettings.elementCountMarker.Update();
+        }
+    }
+
+    public virtual void LateUpdate()
+    {
+        if (!isCollected)
+        {
+            multicollectibleSettings.elementCountMarker.Update();
         }
     }
 
@@ -66,6 +80,8 @@ public class Multicollectible : Collectible
         {
             multicollectibleSettings.capsules[i].Break(externalImpulse);
         }
+
+        multicollectibleSettings.elementCountMarker.SetActive(false);
     }
 
     protected virtual void ProcessCollecting() { }
@@ -73,6 +89,8 @@ public class Multicollectible : Collectible
     [System.Serializable]
     public class MulticollectibleSettings
     {
+        public TextMarker elementCountMarker;
+        [Space]
         public MulticollectibleCapsule[] capsules;
         public ScatterData capsuleScatteringSettings;
         [Space]

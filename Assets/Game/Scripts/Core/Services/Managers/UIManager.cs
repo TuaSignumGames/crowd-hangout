@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public enum UIState { Empty, Start, ActionPhase, Success, Fail, Settings, Tutorial, Countdown }
+public enum UIState { Empty, Start, ActionPhase, Success, Fail, Settings, Tutorial, Countdown, BattlePath }
 
 public class UIManager : Service<UIManager>
 {

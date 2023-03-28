@@ -42,8 +42,10 @@ public class SuspendedHumanMulticollectible : HumanMulticollectible
         }
     }
 
-    private void LateUpdate()
+    public override void LateUpdate()
     {
+        base.LateUpdate();
+
         if (rope.IsConnected)
         {
             rope.swingContainer.localEulerAngles = new Vector3(0, 0, Mathf.Sin(6.28f * (swingPeriodOffset + Time.timeSinceLevelLoad) / swingPeriod) * rope.swingAmplitude);

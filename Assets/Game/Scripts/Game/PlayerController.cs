@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
 
     public BallSettings ballSettings;
     public RopeSettings ropeSettings;
+    [Space]
+    public TextMarker humanCountMarker;
 
     private HumanballProcessor ball;
     private RopeProcessor rope;
@@ -40,6 +42,10 @@ public class PlayerController : MonoBehaviour
         rope.AssignBall(ball);
 
         Humanball = ball;
+
+        humanCountMarker.Initialize();
+
+        ball.Structure.OnLayerIncremented += (a) => humanCountMarker.IncrementDistance(0.2f);
 
         HumanController.InitializeAnimatorHashes();
 
@@ -85,6 +91,8 @@ public class PlayerController : MonoBehaviour
         }
 
         ball.Update();
+
+        humanCountMarker.Update();
     }
 
     private void LateUpdate()

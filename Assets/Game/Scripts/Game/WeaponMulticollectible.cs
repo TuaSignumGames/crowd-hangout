@@ -7,7 +7,6 @@ public class WeaponMulticollectible : Multicollectible
 {
     [Space]
     public GameObject iconFrame;
-    public TextMeshPro countText;
     [Space]
     public GameObject[] assortment;
 
@@ -31,8 +30,6 @@ public class WeaponMulticollectible : Multicollectible
         this.weaponIndex = weaponIndex;
 
         assortment[weaponIndex - 1].SetActive(true);
-
-        countText.text = $"x {elementsCount}";
 
         for (int i = 0; i < elementsCount; i++)
         {

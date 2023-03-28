@@ -66,6 +66,8 @@ public class HumanballProcessor
 
         InitializeBallStructure(cellsCount);
 
+        //PlayerController.Instance.humanCountMarker.SetValue(structure.humansCount.ToString());
+
         //UpdateCenterOfMass();
     }
 
@@ -98,6 +100,10 @@ public class HumanballProcessor
         HumanController.selectedHuman.isFree = false;
 
         structure = new Humanball(structureLayers);
+
+        structure.humansCount = 1;
+
+        PlayerController.Instance.humanCountMarker.SetValue(structure.humansCount.ToString());
     }
 
     public void AssignRope(RopeProcessor ropeProcessor)
@@ -173,6 +179,8 @@ public class HumanballProcessor
 
         pulseEvaluator.Click(ballData.pulsingSettings.clickValue);
 
+        PlayerController.Instance.humanCountMarker.SetValue(structure.humansCount.ToString());
+
         AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
 
         return nextCell;
@@ -186,6 +194,8 @@ public class HumanballProcessor
         {
             UpdateCenterOfMass();
         }
+
+        PlayerController.Instance.humanCountMarker.SetValue(structure.humansCount.ToString());
     }
 
     public void StickWeapon(HumanController humanController, int weaponID)

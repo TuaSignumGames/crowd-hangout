@@ -23,12 +23,13 @@ public class Humanball
     private float minCellSqrDistance;
 
     private int cellsCount;
-    private int humansCount;
 
     private int previousLayerIndex;
     private int filledLayersCount;
 
     private int counter;
+
+    public int humansCount;
 
     public Action<int> OnLayerIncremented;
 
@@ -40,8 +41,6 @@ public class Humanball
 
     public int FilledCellsCount => cellsCount - GetAvailableCellsCount();
     public int FilledLayersCount => filledLayersCount;
-
-    public int HumansCount => humansCount;
 
     public HumanballCell[] FilledCells => filledCells == null ?  GetFilledCells().ToArray() : filledCells.ToArray();
     public HumanballCell[] UsedCells => usedCells.ToArray();

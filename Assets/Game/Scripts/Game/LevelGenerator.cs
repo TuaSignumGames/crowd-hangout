@@ -65,6 +65,8 @@ public class LevelGenerator : MonoBehaviour
     private float humanPower;
     private float levelPower;
 
+    private float levelLength;
+
     private int availableBlockPairIndex;
 
     private int localHumansCount;
@@ -107,6 +109,8 @@ public class LevelGenerator : MonoBehaviour
         PlaceCollectibles(levelData.startStep, levelData.cycleSteps, levelData.cyclesCount);
         GenerateBattlePath(3, 1);
 
+        levelLength = blockPairs.GetLast().Position.x - blockPairs[3].Position.x;
+
         print($" -- Level Power: {levelPower}");
 
         isLevelGenerated = true;
@@ -142,6 +146,8 @@ public class LevelGenerator : MonoBehaviour
                 CheckForBattlePath();
 
                 UpdateVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
+
+                UIProgressBar.Instance.SetProgressValue(Mathf.Clamp01(PlayerController.Humanball.Transform.position.x / levelLength));
             }
         }
     }
@@ -305,6 +311,8 @@ public class LevelGenerator : MonoBehaviour
         PlayerController.Instance.SwitchToBattleMode();
 
         CameraController.Instance.SetView(LevelGenerator.Instance.battlePathSettings.battleView);
+
+        UIManager.Instance.ChangeState(UIState.BattlePath);
     }
 
     private void SetBlocksHeightIncrement(int startOrderIndex, HeightIncrementData incrementData)
