@@ -15,6 +15,8 @@ public class WorldManager : MonoBehaviour
 
     public HumanController _humanPrefab;
     [Space]
+    public ProgressionSettings _progressionSettings;
+    [Space]
     public UpgradeSettings _weaponUpgradeSettings;
     public UpgradeSettings _populationUpgradeSettings;
 

@@ -12,7 +12,7 @@ using UnityEngine;
 //
 //  Scope
 //  -
-//  - Difficulty progression (10-20 levels, Cave height, Landscape complexity, Collectible radius) 
+//  - Difficulty progression (10-20 levels, Cave height, Landscape complexity, Collectible radius) -- WorldManager -> progressionSettings
 //
 //  - DropToBattle() actually present humans (Check 'usedCells')
 //  - Multicollectible blocks fitting (Building)
@@ -41,6 +41,8 @@ public class LevelGenerator : MonoBehaviour
 
     private BlockPair newBlockPair;
     private BattlePathStage newBattlePathStage;
+
+    private CollectibleType[] collectibleMap;
 
     private Multicollectible multicollectibleInstance;
 
@@ -71,6 +73,8 @@ public class LevelGenerator : MonoBehaviour
     private int localHumansCount;
     private int totalHumansCount;
 
+    private int previousCollectiblePlacementIndex;
+
     private bool isCavePassed;
 
     private bool isLevelGenerated;
@@ -97,14 +101,12 @@ public class LevelGenerator : MonoBehaviour
 
     public void Generate()
     {
-        levelData = levelSettings.GetConfiguration();
+        levelData = levelSettings.GetConfiguration(0, 0);
 
         humanPower = WorldManager.GetWeaponPower(0);
         levelPower = humanPower;
 
-        print($" Human Power: {humanPower}");
-
-        GenerateBlocks(levelData.landscapePatterns, levelData.blocksCount);
+        GenerateBlocks(levelData.landscapeData, levelData.blocksCount);
         PlaceCollectibles(levelData.startStep, levelData.cycleSteps, levelData.cyclesCount);
         GenerateBattlePath(3, 1);
 
@@ -117,9 +119,9 @@ public class LevelGenerator : MonoBehaviour
 
     public void GenerateFromEditor(bool collectibles, bool battlePath)
     {
-        levelData = levelSettings.GetConfiguration();
+        levelData = levelSettings.GetConfiguration(0, 0);
 
-        GenerateBlocks(levelData.landscapePatterns, levelData.blocksCount);
+        GenerateBlocks(levelData.landscapeData, levelData.blocksCount);
 
         if (collectibles)
         {
@@ -144,14 +146,14 @@ public class LevelGenerator : MonoBehaviour
             {
                 CheckForBattlePath();
 
-                //UpdateVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
+                UpdateVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
 
                 UIProgressBar.Instance.SetProgressValue(Mathf.Clamp01(PlayerController.Humanball.Transform.position.x / levelLength));
             }
         }
     }
 
-    public void GenerateBlocks(WavePatternData[] landscapePatterns, int blocksCount)
+    public void GenerateBlocks(LandscapeData landscapeData, int blocksCount)
     {
         if (blockSettings.blocksContainer.childCount > 0)
         {
@@ -166,15 +168,13 @@ public class LevelGenerator : MonoBehaviour
 
         offsetMap = new List<float>(new float[blocksCount]);
 
-        for (int patternIndex = 0; patternIndex < landscapePatterns.Length; patternIndex++)
+        for (int patternIndex = 0; patternIndex < landscapeData.patterns.Count; patternIndex++)
         {
             for (int blockIndex = 0; blockIndex < blocksCount; blockIndex++)
             {
-                perlinValue = Mathf.PerlinNoise(perlinNoiseOrigin.x + (float)blockIndex * landscapePatterns[patternIndex].waveFrequency, perlinNoiseOrigin.y);
+                perlinValue = Mathf.PerlinNoise(perlinNoiseOrigin.x + (float)blockIndex * landscapeData.patterns[patternIndex].waveFrequency, perlinNoiseOrigin.y);
 
-                print(perlinValue);
-
-                offsetMap[blockIndex] += (perlinValue - 0.5f) * 2f * landscapePatterns[patternIndex].waveHeight;
+                offsetMap[blockIndex] += (perlinValue - 0.5f) * 2f * landscapeData.patterns[patternIndex].waveHeight;
             }
         }
 
@@ -182,7 +182,7 @@ public class LevelGenerator : MonoBehaviour
         {
             offsetMap[i] = Mathf.Round(offsetMap[i] / blockSettings.thresholdValue) * blockSettings.thresholdValue;
 
-            InstantiateBlockPair(new Vector3(i * blockSettings.blockLength, offsetMap[i]), i);
+            InstantiateBlockPair(new Vector3(i * blockSettings.blockLength, offsetMap[i]), landscapeData.caveHeightRange, i);
         }
 
         blockSettings.blocksContainer.position = new Vector3(-blockSettings.blockLength * 3f, -offsetMap[3], 0);
@@ -190,9 +190,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void PlaceCollectibles(LevelStepData startStep, LevelStepData[] cycleSteps, int cyclesCount)
     {
-        CollectibleType[] collectibleMap = new CollectibleType[blockPairs.Count];
-
-        int previousCollectiblePlacementIndex = 0;
+        collectibleMap = new CollectibleType[blockPairs.Count];
 
         collectibleMap[previousCollectiblePlacementIndex = startStep.blocksCount] = startStep.collectiblePointType;
 
@@ -206,24 +204,9 @@ public class LevelGenerator : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < blockPairs.Count; i++)
-        {
-            progressValue = i / (float)blockPairs.Count;
+        PlaceHumanCollectibles();
 
-            if (collectibleMap[i] != CollectibleType.None)
-            {
-                switch (collectibleMap[i])
-                {
-                    case CollectibleType.Human: PlaceHumanCollectible(blockPairs[i], Random.Range((int)Mathf.Lerp(1, 16, progressValue), (int)Mathf.Lerp(5, 26, progressValue))); break;
-                    case CollectibleType.Weapon: PlaceWeaponCollectible(blockPairs[i], 10, Random.Range((int)Mathf.Lerp(3, 8, progressValue), (int)Mathf.Lerp(5, 15, progressValue))); break;
-                }
-
-                if (multicollectibleInstance.RangeNumber > 0)
-                {
-                    AlignBlocksForCollectible(multicollectibleInstance, i);
-                }
-            }
-        }
+        PlaceWeaponCollectibles();
     }
 
     private void GenerateBattlePath(int stagesCount, int cryticalStageIndex)
@@ -250,6 +233,81 @@ public class LevelGenerator : MonoBehaviour
         }
 
         battlePath.SetActive(false);
+    }
+
+    private void PlaceHumanCollectibles()
+    {
+        int populationValue = GameManager.PopulationValue;
+
+        List<float> humanCollectiblePortionFactors = new List<float>();
+
+        float humanCollectiblePortionSum = 0;
+
+        for (int i = 0; i < collectibleMap.Length; i++)
+        {
+            if (collectibleMap[i] == CollectibleType.Human)
+            {
+                humanCollectiblePortionFactors.Add(collectibleSettings.populationCurve.Evaluate(i / (float)collectibleMap.Length));
+
+                humanCollectiblePortionSum += humanCollectiblePortionFactors.GetLast();
+            }
+        }
+
+        int actualHumansSum = 0;
+
+        int[] humanCollectibleCountMap = new int[humanCollectiblePortionFactors.Count];
+
+        for (int i = 0; i < humanCollectibleCountMap.Length; i++)
+        {
+            humanCollectibleCountMap[i] = Mathf.CeilToInt(populationValue * humanCollectiblePortionFactors[i] / humanCollectiblePortionSum);
+
+            actualHumansSum += humanCollectibleCountMap[i];
+        }
+
+        if (actualHumansSum > populationValue)
+        {
+            humanCollectibleCountMap[humanCollectibleCountMap.GetIndexOfMax()] -= actualHumansSum - populationValue;
+        }
+
+        Queue<int> humanPortionQueue = new Queue<int>(humanCollectibleCountMap);
+
+        for (int i = 0; i < blockPairs.Count; i++)
+        {
+            if (collectibleMap[i] == CollectibleType.Human)
+            {
+                PlaceHumanCollectible(blockPairs[i], humanPortionQueue.Dequeue());
+
+                if (multicollectibleInstance.RangeNumber > 0)
+                {
+                    AlignBlocksForCollectible(multicollectibleInstance, i);
+                }
+            }
+        }
+    }
+
+    private void PlaceWeaponCollectibles()
+    {
+        float topWeaponPower = GameManager.TopWeaponPower;
+
+        int topWeaponID = WorldManager.GetWeaponID(topWeaponPower);
+
+        if (topWeaponID > 0)
+        {
+            // TODO Define weapons assortment and count 
+
+            for (int i = 0; i < blockPairs.Count; i++)
+            {
+                if (collectibleMap[i] == CollectibleType.Weapon)
+                {
+                    PlaceWeaponCollectible(blockPairs[i], 1, 12);
+
+                    if (multicollectibleInstance.RangeNumber > 0)
+                    {
+                        AlignBlocksForCollectible(multicollectibleInstance, i);
+                    }
+                }
+            }
+        }
     }
 
     private void PlaceHumanCollectible(BlockPair blockPair, int humansCount)
@@ -281,7 +339,7 @@ public class LevelGenerator : MonoBehaviour
         multicollectibleInstance = weaponCollectibleInstance;
     }
 
-    private BlockPair InstantiateBlockPair(Vector3 origin, int orderIndex)
+    private BlockPair InstantiateBlockPair(Vector3 origin, Vector2 heightRange, int orderIndex)
     {
         newBlockPairContainer = new GameObject("BlockPair");
 
@@ -290,7 +348,7 @@ public class LevelGenerator : MonoBehaviour
 
         newBlockPair = new BlockPair(Instantiate(blockSettings.ceilBlockPrefabs.GetRandom()), Instantiate(blockSettings.floorBlockPrefabs.GetRandom()), newBlockPairContainer, orderIndex, blockSettings.thresholdValue);
 
-        newBlockPair.SetHeight(Random.Range(blockSettings.caveHeightRange.x, blockSettings.caveHeightRange.y));
+        newBlockPair.SetHeight(Random.Range(heightRange.x, heightRange.y));
 
         blockPairs.Add(newBlockPair);
 
@@ -314,6 +372,8 @@ public class LevelGenerator : MonoBehaviour
         CameraController.Instance.SetView(LevelGenerator.Instance.battlePathSettings.battleView);
 
         UIManager.Instance.ChangeState(UIState.BattlePath);
+
+        print($" Battle started ({Time.timeSinceLevelLoad - LevelManager.LevelStartTime} sec)");
     }
 
     private void SetBlocksHeightIncrement(int startOrderIndex, HeightIncrementData incrementData)

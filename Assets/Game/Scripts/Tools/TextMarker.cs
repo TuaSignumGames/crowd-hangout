@@ -32,8 +32,6 @@ public class TextMarker
         markerContainer = pivotContainer.GetChild(0);
 
         textMesh = markerContainer.GetComponentInChildren<TextMeshPro>();
-
-        Debug.Log($" - TextMarker created (Pivot: {pivotContainer} / Marker: {markerContainer} / TextMesh: {textMesh})");
     }
 
     public void Initialize()

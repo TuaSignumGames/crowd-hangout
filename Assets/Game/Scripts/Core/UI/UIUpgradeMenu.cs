@@ -28,7 +28,7 @@ public class UIUpgradeMenu : UIElement
     {
         actualUpgradeInfo = WorldManager.weaponUpgradeSettings.upgradeTable[GameManager.WeaponUpgradeIndex++];
 
-        Weapon.TopWeaponPower = actualUpgradeInfo.value;
+        GameManager.TopWeaponPower = actualUpgradeInfo.value;
 
         GameManager.Instance.ChangeCurrency(-actualUpgradeInfo.price, true);
 
@@ -38,6 +38,8 @@ public class UIUpgradeMenu : UIElement
     public void UpgradePopulation()
     {
         actualUpgradeInfo = WorldManager.populationUpgradeSettings.upgradeTable[GameManager.PopulationUpgradeIndex++];
+
+        GameManager.PopulationValue = (int)actualUpgradeInfo.value;
 
         GameManager.Instance.ChangeCurrency(-actualUpgradeInfo.price, true);
 
@@ -52,9 +54,9 @@ public class UIUpgradeMenu : UIElement
 
     private void UpdateWeaponCard(UpgradeInfo upgradeInfo)
     {
-        weaponInfo = WorldManager.weaponAssortment[WorldManager.GetWeaponID(Weapon.TopWeaponPower)];
+        weaponInfo = WorldManager.weaponAssortment[WorldManager.GetWeaponID(GameManager.TopWeaponPower)];
 
-        weaponCard.SetSliderValue(Mathf.InverseLerp(weaponInfo.Power, WorldManager.weaponAssortment[weaponInfo.WeaponID + 1].Power, Weapon.TopWeaponPower));
+        weaponCard.SetSliderValue(Mathf.InverseLerp(weaponInfo.Power, WorldManager.weaponAssortment[weaponInfo.WeaponID + 1].Power, GameManager.TopWeaponPower));
 
         weaponCard.valueText.text = weaponInfo.weaponContainer.name.ToUpper();
         weaponCard.priceText.text = "$" + upgradeInfo.price.ToString("N0");

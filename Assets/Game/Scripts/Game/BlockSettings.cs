@@ -10,7 +10,6 @@ public class BlockSettings
     public GameObject[] floorBlockPrefabs;
     public float blockLength;
     [Space]
-    public Vector2 caveHeightRange;
     public float thresholdValue;
     [Space]
     public HeightIncrementData heightIncrementSettings;

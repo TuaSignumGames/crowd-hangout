@@ -5,8 +5,6 @@ using UnityEngine;
 [System.Serializable]
 public class Weapon
 {
-    public static float TopWeaponPower { get { return PlayerPrefs.GetFloat("WPN.TP", WorldManager.GetWeaponPower(0)); } set { PlayerPrefs.SetFloat("WPN.TP", value); } }
-
     [HideInInspector]
     public string title;
 

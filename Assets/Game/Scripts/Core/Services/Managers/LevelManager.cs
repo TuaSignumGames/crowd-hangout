@@ -12,6 +12,9 @@ public class LevelManager : Service<LevelManager>
 
     private static float _rewardAmount;
 
+    private static float _levelStartTime;
+    private static float _levelFinishTime;
+
     private static bool _isLevelStarted;
     private static bool _isLevelFinished;
     private static bool _isLevelPassed;
@@ -19,6 +22,9 @@ public class LevelManager : Service<LevelManager>
     private static bool _isTutorialLevel;
 
     private static bool _isTutorialLaunched;
+
+    public static float LevelStartTime => _levelStartTime;
+    public static float LevelFinishTime => _levelFinishTime;
 
     public static int LevelIndex { get { return PlayerPrefs.GetInt("LVL_ID"); } private set { PlayerPrefs.SetInt("LVL_ID", value); } }
     public static int LevelNumber { get { return PlayerPrefs.GetInt("LVL_NUM", 1); } private set { PlayerPrefs.SetInt("LVL_NUM", value); } }
@@ -67,6 +73,8 @@ public class LevelManager : Service<LevelManager>
             _isLevelFinished = true;
             _isLevelPassed = success;
 
+            _levelFinishTime = Time.timeSinceLevelLoad;
+
             SwitchLevelEntities(false);
 
             if (_isLevelPassed)
@@ -87,6 +95,8 @@ public class LevelManager : Service<LevelManager>
             //UIManager.Instance.SetBackgroundTriggerEvent(UnityEngine.EventSystems.EventTriggerType.PointerDown, GameManager.Instance.ReloadGameScene);
 
             UIManager.Instance.ChangeState(success ? UIState.Success : UIState.Fail);
+
+            print($" - Level Finished [Duration: {(_levelFinishTime - _levelStartTime)} sec]");
         }
     }
 
@@ -169,6 +179,8 @@ public class LevelManager : Service<LevelManager>
         // TODO Pre-start code
 
         _isLevelStarted = true;
+
+        _levelStartTime = Time.timeSinceLevelLoad;
 
         SwitchLevelEntities(true);
 

@@ -594,6 +594,82 @@ public static class ExtensionMethods
         return list.CutAt(UnityEngine.Random.Range(0, list.Count));
     }
 
+    public static int GetIndexOfMax(this IList<int> list)
+    {
+        int max = int.MinValue;
+
+        int index = 0;
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i] > max)
+            {
+                max = list[i];
+
+                index = i;
+            }
+        }
+
+        return index;
+    }
+
+    public static int GetIndexOfMin(this IList<int> list)
+    {
+        int min = int.MaxValue;
+
+        int index = 0;
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i] < min)
+            {
+                min = list[i];
+
+                index = i;
+            }
+        }
+
+        return index;
+    }
+
+    public static int GetIndexOfMax(this IList<float> list)
+    {
+        float max = float.MinValue;
+
+        int index = 0;
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i] > max)
+            {
+                max = list[i];
+
+                index = i;
+            }
+        }
+
+        return index;
+    }
+
+    public static int GetIndexOfMin(this IList<float> list)
+    {
+        float min = float.MaxValue;
+
+        int index = 0;
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i] < min)
+            {
+                min = list[i];
+
+                index = i;
+            }
+        }
+
+        return index;
+    }
+
     public static string Colorize(this string text, Color color)
     {
         return $"<color=#{(byte)(color.r * 255f):X2}{(byte)(color.g * 255f):X2}{(byte)(color.b * 255f):X2}>{text}</color>";

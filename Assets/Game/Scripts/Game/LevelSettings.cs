@@ -25,7 +25,8 @@ public struct LevelData
 {
     public LevelStepData startStep;
     public LevelStepData[] cycleSteps;
-    public WavePatternData[] landscapePatterns;
+
+    public LandscapeData landscapeData;
 
     public int cyclesCount;
     public int blocksCount;
@@ -34,7 +35,8 @@ public struct LevelData
     {
         startStep = structureData.startStep;
         cycleSteps = structureData.cycle.ToArray();
-        landscapePatterns = landscapeData.patterns.ToArray();
+
+        this.landscapeData = landscapeData;
 
         cyclesCount = structureData.cyclesCount;
         blocksCount = 0;
@@ -56,6 +58,26 @@ public struct LevelCycleData
     public LevelStepData startStep;
     public List<LevelStepData> cycle;
     public int cyclesCount;
+
+    private int blocksCounter;
+
+    public int GetLength()
+    {
+        blocksCounter = 0;
+
+        for (int i = 0; i < cycle.Count; i++)
+        {
+            blocksCounter += cycle[i].blocksCount + 1;
+        }
+
+        blocksCounter *= cyclesCount;
+
+        blocksCounter = startStep.blocksCount + 1;
+
+        title = "A";
+
+        return blocksCounter;
+    }
 }
 
 [System.Serializable]
@@ -70,6 +92,8 @@ public struct LandscapeData
 {
     public string title;
     public List<WavePatternData> patterns;
+    [Space]
+    public Vector2 caveHeightRange;
 }
 
 [System.Serializable]

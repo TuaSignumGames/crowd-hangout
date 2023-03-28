@@ -22,6 +22,9 @@ public class GameManager : Service<GameManager>
     public static int WeaponUpgradeIndex { get { return PlayerPrefs.GetInt("UPG.WPN", 0); } set { PlayerPrefs.SetInt("UPG.WPN", value); } }
     public static int PopulationUpgradeIndex { get { return PlayerPrefs.GetInt("UPG.PPL", 0); } set { PlayerPrefs.SetInt("UPG.PPL", value); } }
 
+    public static float TopWeaponPower { get { return PlayerPrefs.GetFloat("WPN.TP", WorldManager.GetWeaponPower(0)); } set { PlayerPrefs.SetFloat("WPN.TP", value); } }
+    public static int PopulationValue { get { return PlayerPrefs.GetInt("PPL.V", 3); } set { PlayerPrefs.SetInt("PPL.V", value); } }
+
     protected override void Awake()
     {
         base.Awake();
