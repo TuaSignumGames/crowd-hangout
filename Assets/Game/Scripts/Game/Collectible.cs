@@ -16,7 +16,7 @@ public class Collectible : MonoBehaviour
 
     public CollectiblePlacementType Placement => collectibleSettings.placement;
 
-    public int RangeNumber => collectibleSettings.rangeNumber;
+    public int RangeNumber => collectibleSettings.fittingRangeNumber;
 
     public bool IsCollected => isCollected;
 
@@ -74,7 +74,9 @@ public class Collectible : MonoBehaviour
     public class CollectibleSettings
     {
         public CollectiblePlacementType placement;
-        public int rangeNumber;
+        public FloatRange placementRange;
+        [Space]
+        public int fittingRangeNumber;
         [Space]
         public Collider collider;
     }

@@ -627,7 +627,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collectibleSettings:
     placement: 0
-    rangeNumber: 0
+    placementRange:
+      min: 0.4
+      max: 0.7
+    fittingRangeNumber: 0
     collider: {fileID: 1540288154617946510}
   multicollectibleSettings:
     elementCountMarker:
@@ -657,7 +660,6 @@ MonoBehaviour:
         max: 720
       externalImpulseFactor: 2.5
   iconFrame: {fileID: 1540288153252409335}
-  countText: {fileID: 6009840477889801766}
   assortment:
   - {fileID: 1540288153566351769}
   - {fileID: 1540288154743626008}

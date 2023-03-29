@@ -453,7 +453,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collectibleSettings:
     placement: 0
-    rangeNumber: 0
+    placementRange:
+      min: 0.4
+      max: 0.7
+    fittingRangeNumber: 0
     collider: {fileID: 84780433877696194}
   multicollectibleSettings:
     elementCountMarker:

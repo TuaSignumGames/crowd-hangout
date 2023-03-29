@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [ MAR 26 - POLISHING DAY, but not only ] <- LOL 
+// -> [ Finish progression setup ] <- 
 //
 //  Upgrades
 //  -
@@ -12,11 +12,10 @@ using UnityEngine;
 //
 //  Scope
 //  -
-//  - Difficulty progression (10-20 levels, Cave height, Landscape complexity, Collectible radius) -- WorldManager -> progressionSettings
+//  - Difficulty progression (10-20 levels, Cave height, Landscape complexity, Collectible radius) -- finish setup 
 //
 //  - DropToBattle() actually present humans (Check 'usedCells')
 //  - Multicollectible blocks fitting (Building)
-//  - Hide rope on touch not present
 //  - Building colors (+2)
 //
 //  Polishing
@@ -108,8 +107,8 @@ public class LevelGenerator : MonoBehaviour
     {
         stageInfo = WorldManager.progressionSettings.GetStageOf(LevelManager.LevelNumber);
 
-        int structureIndex = stageInfo.availableStructureIndices.GetRandom();
-        int landscapeIndex = stageInfo.availableLandscapeIndices.GetRandom();
+        int structureIndex = 3; //stageInfo.availableStructureIndices.GetRandom();
+        int landscapeIndex = 0; //stageInfo.availableLandscapeIndices.GetRandom();
 
         levelData = levelSettings.GetConfiguration(structureIndex, landscapeIndex);
 
@@ -117,12 +116,12 @@ public class LevelGenerator : MonoBehaviour
         levelPower = humanPower;
 
         GenerateBlocks(levelData.landscapeData, levelData.blocksCount);
-        PlaceCollectibles(levelData.startStep, levelData.cycleSteps, levelData.cyclesCount);
+        PlaceCollectibles(levelData.startStep, levelData.endStep, levelData.cycleSteps, levelData.cyclesCount);
         GenerateBattlePath(3, 1);
 
         levelLength = blockPairs.GetLast().Position.x - blockPairs[3].Position.x;
 
-        print($" -- Level {LevelManager.LevelNumber} Generated: \n\n - Stage: {stageInfo.title} (structure: '{levelSettings.structures[structureIndex].title}', landscape: '{levelSettings.landscapes[landscapeIndex].title}') \n - Multicollectibles: {humanCollectiblesCount + weaponCollectiblesCount} (Human: {humanCollectiblesCount}[{totalHumansCount}], Weapon: {weaponCollectiblesCount}[{totalWeaponsCount}]) \n - Level power: {levelPower}");
+        print($" -- Level {LevelManager.LevelNumber} Generated: \n Population: {GameManager.PopulationValue} / Top weapon ID: {WorldManager.GetWeaponID(GameManager.TopWeaponPower)} \n\n - Stage: {stageInfo.title} (structure: '{levelSettings.structures[structureIndex].title}', landscape: '{levelSettings.landscapes[landscapeIndex].title}') \n - Multicollectibles: {humanCollectiblesCount + weaponCollectiblesCount} (Human: {humanCollectiblesCount}[{totalHumansCount}], Weapon: {weaponCollectiblesCount}[{totalWeaponsCount}]) \n - Level power: {levelPower}");
 
         isLevelGenerated = true;
     }
@@ -135,7 +134,7 @@ public class LevelGenerator : MonoBehaviour
 
         if (collectibles)
         {
-            PlaceCollectibles(levelData.startStep, levelData.cycleSteps, levelData.cyclesCount);
+            PlaceCollectibles(levelData.startStep, levelData.endStep, levelData.cycleSteps, levelData.cyclesCount);
         }
 
         if (battlePath)
@@ -195,10 +194,10 @@ public class LevelGenerator : MonoBehaviour
             InstantiateBlockPair(new Vector3(i * blockSettings.blockLength, offsetMap[i]), landscapeData.caveHeightRange, i);
         }
 
-        blockSettings.blocksContainer.position = new Vector3(-blockSettings.blockLength * 3f, -offsetMap[3], 0);
+        blockSettings.blocksContainer.position = new Vector3(-blockSettings.blockLength * 3, -offsetMap[3], 0);
     }
 
-    private void PlaceCollectibles(LevelStepData startStep, LevelStepData[] cycleSteps, int cyclesCount)
+    private void PlaceCollectibles(LevelStepData startStep, LevelStepData endStep, LevelStepData[] cycleSteps, int cyclesCount)
     {
         collectibleMap = new CollectibleType[blockPairs.Count];
 
@@ -213,6 +212,8 @@ public class LevelGenerator : MonoBehaviour
                 previousCollectiblePlacementIndex += cycleSteps[j].blocksCount;
             }
         }
+
+        collectibleMap[previousCollectiblePlacementIndex + endStep.blocksCount] = endStep.collectiblePointType;
 
         for (int i = 0; i < collectibleMap.Length; i++)
         {
@@ -370,12 +371,12 @@ public class LevelGenerator : MonoBehaviour
 
     private void PlaceHumanCollectible(BlockPair blockPair, int humansCount)
     {
-        humanCollectiblePrefab = collectibleSettings.humanCollectibles.GetRandom().prefab;
+        humanCollectiblePrefab = collectibleSettings.GetAvailableHumanCollectiblePrefabs(GameManager.PopulationValue).GetRandom();
 
         humanCollectibleInstance = Instantiate(humanCollectiblePrefab, blockPair.container.transform);
         humanCollectibleInstance.Initialize(humansCount);
 
-        blockPair.AddCollectible(humanCollectibleInstance);
+        blockPair.AddCollectible(humanCollectibleInstance, humanCollectibleInstance.collectibleSettings.placementRange.Value);
 
         totalHumansCount += humansCount;
         levelPower += humanPower * humansCount;
@@ -390,7 +391,7 @@ public class LevelGenerator : MonoBehaviour
         weaponCollectibleInstance = Instantiate(weaponCollectiblePrefab, blockPair.container.transform);
         weaponCollectibleInstance.Initialize(weaponID, weaponsCount);
 
-        blockPair.AddCollectible(weaponCollectibleInstance);
+        blockPair.AddCollectible(weaponCollectibleInstance, weaponCollectibleInstance.collectibleSettings.placementRange.Value);
 
         totalWeaponsCount += weaponsCount;
         levelPower += (WorldManager.GetWeaponPower(weaponID) - humanPower) * weaponsCount;
