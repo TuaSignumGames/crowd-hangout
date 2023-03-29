@@ -26,6 +26,7 @@ public class RopeProcessor
 
     public float Length => actualRopeLenght;
 
+    public bool IsLaunched => isLaunched;
     public bool IsConnected => isConnected;
 
     public RopeProcessor(RopeSettings settings)

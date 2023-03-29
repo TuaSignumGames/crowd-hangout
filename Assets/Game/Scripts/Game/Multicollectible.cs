@@ -34,11 +34,7 @@ public class Multicollectible : Collectible
                 }
             }
         }
-    }
-
-    public virtual void LateUpdate()
-    {
-        if (!isCollected)
+        else
         {
             multicollectibleSettings.elementCountMarker.Update();
         }

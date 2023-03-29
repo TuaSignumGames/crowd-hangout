@@ -169,7 +169,7 @@ public class Humanball
 
                 if (humansCount <= 0)
                 {
-                    LevelManager.Instance.OnLevelFinished(false);
+                    PlayerController.Instance.Fail();
                 }
 
                 return;

@@ -28,9 +28,9 @@ public class BuildingMulticollectible : HumanMulticollectible
         GenerateBuilding(elementsCount);
     }
 
-    public override void LateUpdate()
+    public override void FixedUpdate()
     {
-        base.LateUpdate();
+        base.FixedUpdate();
 
         for (int i = 0; i < stages.Length; i++)
         {

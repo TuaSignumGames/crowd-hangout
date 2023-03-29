@@ -3033,7 +3033,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _humanPrefab: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
   _progressionSettings:
-    progressionStages: []
+    progressionStages:
+    - title: Level 1-3
+      initialLevelNumber: 1
+      availableStructureIndices: 00000000
+      availableLandscapeIndices: 00000000
+    - title: Level 4-9
+      initialLevelNumber: 4
+      availableStructureIndices: 01000000
+      availableLandscapeIndices: 0000000001000000
+    - title: Level 10-19
+      initialLevelNumber: 10
+      availableStructureIndices: 0100000002000000
+      availableLandscapeIndices: 01000000
+    - title: Level 20+
+      initialLevelNumber: 20
+      availableStructureIndices: 0200000003000000
+      availableLandscapeIndices: 0100000002000000
   _weaponUpgradeSettings:
     upgradeTable:
     - title: 
@@ -5389,7 +5405,25 @@ MonoBehaviour:
     - {fileID: 1540288154617946511, guid: 7c44b3fb66f6d4ebc9aa6aa1ae11dec5, type: 3}
     populationCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -5415,14 +5449,36 @@ MonoBehaviour:
     visibilityDistance: 35
   levelSettings:
     structures:
-    - title: Easy
+    - title: Onboarding
       startStep:
-        blocksCount: 3
+        blocksCount: 4
         collectiblePointType: 0
       cycle:
       - blocksCount: 5
         collectiblePointType: 1
-      cyclesCount: 3
+      cyclesCount: 2
+    - title: Easy
+      startStep:
+        blocksCount: 4
+        collectiblePointType: 0
+      cycle:
+      - blocksCount: 5
+        collectiblePointType: 1
+      - blocksCount: 6
+        collectiblePointType: 2
+      cyclesCount: 2
+    - title: Medium
+      startStep:
+        blocksCount: 3
+        collectiblePointType: 0
+      cycle: []
+      cyclesCount: 1
+    - title: Advanced
+      startStep:
+        blocksCount: 3
+        collectiblePointType: 0
+      cycle: []
+      cyclesCount: 1
     landscapes:
     - title: Plain
       patterns:

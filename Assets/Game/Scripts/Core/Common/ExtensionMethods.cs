@@ -594,6 +594,11 @@ public static class ExtensionMethods
         return list.CutAt(UnityEngine.Random.Range(0, list.Count));
     }
 
+    public static T CutRandom<T>(this List<T> list, int from, int to)
+    {
+        return CutAt(list, UnityEngine.Random.Range(from, to + 1));
+    }
+
     public static int GetIndexOfMax(this IList<int> list)
     {
         int max = int.MinValue;

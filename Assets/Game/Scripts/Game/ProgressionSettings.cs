@@ -5,9 +5,9 @@ using UnityEngine;
 [System.Serializable]
 public class ProgressionSettings
 {
-    public List<ProgressionStageData> progressionStages;
+    public List<ProgressionStageInfo> progressionStages;
 
-    public ProgressionStageData GetStageOf(int levelNumber)
+    public ProgressionStageInfo GetStageOf(int levelNumber)
     {
         for (int i = 0; i < progressionStages.Count; i++)
         {
@@ -22,8 +22,11 @@ public class ProgressionSettings
 }
 
 [System.Serializable]
-public struct ProgressionStageData
+public class ProgressionStageInfo
 {
+    [HideInInspector]
+    public string title;
+
     public int initialLevelNumber;
     [Space]
     public List<int> availableStructureIndices;

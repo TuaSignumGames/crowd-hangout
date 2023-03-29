@@ -36,19 +36,13 @@ public class SuspendedHumanMulticollectible : HumanMulticollectible
     {
         base.FixedUpdate();
 
-        if (!suspensionSettings.rope.IsConnected)
-        {
-            rope.UpdateBouncing();
-        }
-    }
-
-    public override void LateUpdate()
-    {
-        base.LateUpdate();
-
         if (rope.IsConnected)
         {
             rope.swingContainer.localEulerAngles = new Vector3(0, 0, Mathf.Sin(6.28f * (swingPeriodOffset + Time.timeSinceLevelLoad) / swingPeriod) * rope.swingAmplitude);
+        }
+        else
+        {
+            rope.UpdateBouncing();
         }
     }
 

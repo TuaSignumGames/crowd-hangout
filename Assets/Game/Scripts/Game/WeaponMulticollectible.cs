@@ -91,3 +91,15 @@ public class WeaponMulticollectible : Multicollectible
         yield return base.CollectingCoroutine();
     }
 }
+
+public class WeaponMulticollectibleInfo
+{
+    public int id;
+    public int count;
+
+    public WeaponMulticollectibleInfo(int id, int count)
+    {
+        this.id = id;
+        this.count = count;
+    }
+}

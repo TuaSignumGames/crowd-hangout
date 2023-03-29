@@ -33,6 +33,8 @@ public class LevelGenerator : MonoBehaviour
 
     private LevelData levelData;
 
+    private ProgressionStageInfo stageInfo;
+
     private List<BlockPair> blockPairs;
 
     private BattlePath battlePath;
@@ -70,10 +72,13 @@ public class LevelGenerator : MonoBehaviour
 
     private int availableBlockPairIndex;
 
-    private int localHumansCount;
-    private int totalHumansCount;
+    private int humanCollectiblesCount;
+    private int weaponCollectiblesCount;
 
     private int previousCollectiblePlacementIndex;
+
+    private int totalHumansCount;
+    private int totalWeaponsCount;
 
     private bool isCavePassed;
 
@@ -101,7 +106,12 @@ public class LevelGenerator : MonoBehaviour
 
     public void Generate()
     {
-        levelData = levelSettings.GetConfiguration(0, 0);
+        stageInfo = WorldManager.progressionSettings.GetStageOf(LevelManager.LevelNumber);
+
+        int structureIndex = stageInfo.availableStructureIndices.GetRandom();
+        int landscapeIndex = stageInfo.availableLandscapeIndices.GetRandom();
+
+        levelData = levelSettings.GetConfiguration(structureIndex, landscapeIndex);
 
         humanPower = WorldManager.GetWeaponPower(0);
         levelPower = humanPower;
@@ -112,7 +122,7 @@ public class LevelGenerator : MonoBehaviour
 
         levelLength = blockPairs.GetLast().Position.x - blockPairs[3].Position.x;
 
-        print($" -- Level Power: {levelPower}");
+        print($" -- Level {LevelManager.LevelNumber} Generated: \n\n - Stage: {stageInfo.title} (structure: '{levelSettings.structures[structureIndex].title}', landscape: '{levelSettings.landscapes[landscapeIndex].title}') \n - Multicollectibles: {humanCollectiblesCount + weaponCollectiblesCount} (Human: {humanCollectiblesCount}[{totalHumansCount}], Weapon: {weaponCollectiblesCount}[{totalWeaponsCount}]) \n - Level power: {levelPower}");
 
         isLevelGenerated = true;
     }
@@ -204,6 +214,21 @@ public class LevelGenerator : MonoBehaviour
             }
         }
 
+        for (int i = 0; i < collectibleMap.Length; i++)
+        {
+            if (collectibleMap[i] != CollectibleType.None)
+            {
+                if (collectibleMap[i] == CollectibleType.Human)
+                {
+                    humanCollectiblesCount++;
+                }
+                if (collectibleMap[i] == CollectibleType.Weapon)
+                {
+                    weaponCollectiblesCount++;
+                }
+            }
+        }
+
         PlaceHumanCollectibles();
 
         PlaceWeaponCollectibles();
@@ -237,7 +262,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void PlaceHumanCollectibles()
     {
-        int populationValue = GameManager.PopulationValue;
+        int populationValue = 10; //GameManager.PopulationValue;
 
         List<float> humanCollectiblePortionFactors = new List<float>();
 
@@ -287,19 +312,52 @@ public class LevelGenerator : MonoBehaviour
 
     private void PlaceWeaponCollectibles()
     {
-        float topWeaponPower = GameManager.TopWeaponPower;
-
-        int topWeaponID = WorldManager.GetWeaponID(topWeaponPower);
+        int topWeaponID = 6; //WorldManager.GetWeaponID(GameManager.TopWeaponPower);
 
         if (topWeaponID > 0)
         {
-            // TODO Define weapons assortment and count 
+            int targetWeaponCount = Random.Range(totalHumansCount / 2, totalHumansCount + 1);
+
+            Dictionary<int, float> weaponPortionFactorTable = new Dictionary<int, float>();
+
+            float weaponPortionFactorSum = 0;
+
+            int weaponPortionFactorKey = 0;
+
+            for (int i = 0; i < weaponCollectiblesCount; i++)
+            {
+                weaponPortionFactorKey = i - weaponCollectiblesCount + topWeaponID + 1;
+
+                weaponPortionFactorTable.Add(weaponPortionFactorKey, ((float)(weaponCollectiblesCount / (i + 1))) * Random.Range(0.9f, 1.1f));
+
+                weaponPortionFactorSum += weaponPortionFactorTable.GetValueOrDefault(weaponPortionFactorKey);
+            }
+
+            int actualWeaponSum = 0;
+
+            List<WeaponMulticollectibleInfo> weaponPlacementTable = new List<WeaponMulticollectibleInfo>();
+
+            foreach (int key in weaponPortionFactorTable.Keys)
+            {
+                weaponPlacementTable.Add(new WeaponMulticollectibleInfo(Mathf.Clamp(key, 1, topWeaponID), Mathf.CeilToInt(targetWeaponCount * weaponPortionFactorTable.GetValueOrDefault(key) / weaponPortionFactorSum)));
+
+                actualWeaponSum += weaponPlacementTable.GetLast().count;
+            }
+
+            if (actualWeaponSum > targetWeaponCount)
+            {
+                weaponPlacementTable[0].count -= actualWeaponSum - targetWeaponCount;
+            }
+
+            WeaponMulticollectibleInfo placementInfo;
 
             for (int i = 0; i < blockPairs.Count; i++)
             {
                 if (collectibleMap[i] == CollectibleType.Weapon)
                 {
-                    PlaceWeaponCollectible(blockPairs[i], 1, 12);
+                    placementInfo = weaponPlacementTable.CutRandom(); //weaponPlacementTable.Count > 1 ? weaponPlacementTable.CutRandom(0, weaponPlacementTable.Count - 2) : weaponPlacementTable.CutAt(0);
+
+                    PlaceWeaponCollectible(blockPairs[i], placementInfo.id, placementInfo.count);
 
                     if (multicollectibleInstance.RangeNumber > 0)
                     {
@@ -334,6 +392,7 @@ public class LevelGenerator : MonoBehaviour
 
         blockPair.AddCollectible(weaponCollectibleInstance);
 
+        totalWeaponsCount += weaponsCount;
         levelPower += (WorldManager.GetWeaponPower(weaponID) - humanPower) * weaponsCount;
 
         multicollectibleInstance = weaponCollectibleInstance;

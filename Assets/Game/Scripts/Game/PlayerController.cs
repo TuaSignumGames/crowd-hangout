@@ -54,7 +54,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (LevelManager.IsLevelStarted)
+        if (LevelManager.IsLevelStarted && !LevelManager.IsLevelFinished)
         {
             if (isBattleMode)
             {
@@ -77,7 +77,7 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
-                    if (rope.IsConnected)
+                    if (rope.IsLaunched)
                     {
                         targetBlockTransform = null;
 
@@ -85,8 +85,6 @@ public class PlayerController : MonoBehaviour
                         rope.Disconnect();
                     }
                 }
-
-                //ball.Update();
             }
         }
 
@@ -130,7 +128,10 @@ public class PlayerController : MonoBehaviour
 
     public void SwitchToBattleMode()
     {
-        ball.Data.rigidbody.isKinematic = true;
+        ball.Rigidbody.isKinematic = true;
+
+        rope.Disconnect();
+        rope.Update();
 
         humanCountMarker.SetActive(false);
 
@@ -139,6 +140,15 @@ public class PlayerController : MonoBehaviour
         LevelGenerator.Instance.BattlePath.Enter(humanballCrowd);
 
         isBattleMode = true;
+    }
+
+    public void Fail()
+    {
+        ball.Rigidbody.gameObject.SetActive(false);
+
+        rope.Disconnect();
+
+        LevelManager.Instance.OnLevelFinished(false);
     }
 
     private void DropHumansToBattle()

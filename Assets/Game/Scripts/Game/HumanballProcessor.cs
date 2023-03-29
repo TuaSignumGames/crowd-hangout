@@ -37,9 +37,10 @@ public class HumanballProcessor
     private float tensionValue;
 
     private bool isLaunched;
-    //private bool isGrounded;
 
     public bool isAccidented;
+
+    public bool isActive = true;
 
     public BallSettings Data => ballData;
 
@@ -115,40 +116,43 @@ public class HumanballProcessor
 
     public void Update()
     {
-        if (assignedRope.IsConnected)
+        if (isActive)
         {
-            Transform.up = Vector3.Lerp(Transform.up, assignedRope.Direction, 0.1f);
-
-            if (isLaunched)
+            if (assignedRope.IsConnected)
             {
-                tensionValue = Mathf.Lerp(tensionValue, 1f, 0.1f);
+                Transform.up = Vector3.Lerp(Transform.up, assignedRope.Direction, 0.1f);
 
-                springEvaluator.SetValue(tensionValue);
+                if (isLaunched)
+                {
+                    tensionValue = Mathf.Lerp(tensionValue, 1f, 0.1f);
+
+                    springEvaluator.SetValue(tensionValue);
+                }
+                else
+                {
+                    assignedRope.Data.swingContainer.localEulerAngles = new Vector3(0, 0, Mathf.Sin(6.28f * Time.timeSinceLevelLoad / 4f) * 6f);
+                }
             }
             else
             {
-                assignedRope.Data.swingContainer.localEulerAngles = new Vector3(0, 0, Mathf.Sin(6.28f * Time.timeSinceLevelLoad / 4f) * 6f);
-            }
-        }
-        else
-        {
-            if (structure.FilledLayersCount < 2)
-            {
-                ballData.rigidbody.angularVelocity = new Vector3();
+                if (structure.FilledLayersCount < 2)
+                {
+                    ballData.rigidbody.angularVelocity = new Vector3();
 
-                Transform.eulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Transform.eulerAngles.z, ropeThrowingAngle, 0.1f));
+                    Transform.eulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Transform.eulerAngles.z, ropeThrowingAngle, 0.1f));
+                }
+
+                tensionValue = 0;
             }
 
-            tensionValue = 0;
+            speedLimit = Mathf.Lerp(speedLimit, ballData.speed, ballData.bumpDampingFactor);
+
+            Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, speedLimit);
+
+            springEvaluator.Update(ref springValue);
+
+            ballData.suspensionContainer.localScale = new Vector3(1f + tensionDeformation.x * springValue, 1f + tensionDeformation.y * springValue, 1f);
         }
-
-        speedLimit = Mathf.Lerp(speedLimit, ballData.speed, ballData.bumpDampingFactor);
-
-        Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, speedLimit);
-
-        springEvaluator.Update(ref springValue);
-
-        ballData.suspensionContainer.localScale = new Vector3(1f + tensionDeformation.x * springValue, 1f + tensionDeformation.y * springValue, 1f);
     }
 
     public void LateUpdate()

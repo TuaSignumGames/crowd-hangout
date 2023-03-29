@@ -115,6 +115,8 @@ public class HumanController : MonoBehaviour
 
         defaultContainer = LevelGenerator.Instance.transform;
 
+        targetFacingAngle = -90f;
+
         isInitialized = true;
     }
 
