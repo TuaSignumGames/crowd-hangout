@@ -8,14 +8,13 @@ using UnityEngine;
 //
 //  Upgrades
 //  -
-//  - Implement upgrading (Upgrade tables, BattlePath) 
+//  - Configurate upgrading (BattlePath progression, Upgrading progression) 
 //
 //  Scope
 //  -
-//  - Difficulty progression (10-20 levels, Cave height, Landscape complexity, Collectible radius) -- finish setup 
-//
-//  - DropToBattle() actually present humans (Check 'usedCells')
 //  - Multicollectible blocks fitting (Building)
+//  -
+//  - DropToBattle() actually present humans (Check 'usedCells')
 //  - Building colors (+2)
 //
 //  Polishing
@@ -105,10 +104,10 @@ public class LevelGenerator : MonoBehaviour
 
     public void Generate()
     {
-        stageInfo = WorldManager.progressionSettings.GetStageOf(LevelManager.LevelNumber);
+        stageInfo = WorldManager.gameProgressionSettings.GetStageOf(LevelManager.LevelNumber);
 
-        int structureIndex = 3; //stageInfo.availableStructureIndices.GetRandom();
-        int landscapeIndex = 0; //stageInfo.availableLandscapeIndices.GetRandom();
+        int structureIndex = stageInfo.availableStructureIndices.GetRandom();
+        int landscapeIndex = stageInfo.availableLandscapeIndices.GetRandom();
 
         levelData = levelSettings.GetConfiguration(structureIndex, landscapeIndex);
 

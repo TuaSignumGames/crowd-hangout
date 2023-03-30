@@ -8,14 +8,16 @@ public class WorldManager : MonoBehaviour
 
     public static List<Weapon> weaponAssortment;
 
-    public static ProgressionSettings progressionSettings;
+    public static ProgressionSettings gameProgressionSettings;
+    public static RewardProgressionSettings rewardProgressionSettings;
 
     public static UpgradeSettings weaponUpgradeSettings;
     public static UpgradeSettings populationUpgradeSettings;
 
     public HumanController _humanPrefab;
     [Space]
-    public ProgressionSettings _progressionSettings;
+    public ProgressionSettings _gameProgressionSettings;
+    public RewardProgressionSettings _rewardProgressionSettings;
     [Space]
     public UpgradeSettings _weaponUpgradeSettings;
     public UpgradeSettings _populationUpgradeSettings;
@@ -26,7 +28,8 @@ public class WorldManager : MonoBehaviour
 
         weaponAssortment = new List<Weapon>(humanPrefab.weaponSettings);
 
-        progressionSettings = _progressionSettings;
+        gameProgressionSettings = _gameProgressionSettings;
+        rewardProgressionSettings = _rewardProgressionSettings;
 
         weaponUpgradeSettings = _weaponUpgradeSettings;
         populationUpgradeSettings = _populationUpgradeSettings;
@@ -54,22 +57,22 @@ public class WorldManager : MonoBehaviour
 
     private void OnValidate()
     {
-        if (_progressionSettings.progressionStages.Count > 0)
+        if (_gameProgressionSettings.progressionStages.Count > 0)
         {
-            for (int i = 0; i < _progressionSettings.progressionStages.Count; i++)
+            for (int i = 0; i < _gameProgressionSettings.progressionStages.Count; i++)
             {
                 if (i > 0)
                 {
-                    _progressionSettings.progressionStages[i].initialLevelNumber = Mathf.Clamp(_progressionSettings.progressionStages[i].initialLevelNumber, _progressionSettings.progressionStages[i - 1].initialLevelNumber + 1, int.MaxValue);
+                    _gameProgressionSettings.progressionStages[i].initialLevelNumber = Mathf.Clamp(_gameProgressionSettings.progressionStages[i].initialLevelNumber, _gameProgressionSettings.progressionStages[i - 1].initialLevelNumber + 1, int.MaxValue);
                 }
 
-                if (i < _progressionSettings.progressionStages.Count - 1)
+                if (i < _gameProgressionSettings.progressionStages.Count - 1)
                 {
-                    _progressionSettings.progressionStages[i].title = $"Level {_progressionSettings.progressionStages[i].initialLevelNumber}-{_progressionSettings.progressionStages[i + 1].initialLevelNumber - 1}";
+                    _gameProgressionSettings.progressionStages[i].title = $"Level {_gameProgressionSettings.progressionStages[i].initialLevelNumber}-{_gameProgressionSettings.progressionStages[i + 1].initialLevelNumber - 1}";
                 }
                 else
                 {
-                    _progressionSettings.progressionStages[i].title = $"Level {_progressionSettings.progressionStages[i].initialLevelNumber}+";
+                    _gameProgressionSettings.progressionStages[i].title = $"Level {_gameProgressionSettings.progressionStages[i].initialLevelNumber}+";
                 }
             }
         }
