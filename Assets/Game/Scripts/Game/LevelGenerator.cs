@@ -116,7 +116,7 @@ public class LevelGenerator : MonoBehaviour
 
         GenerateBlocks(levelData.landscapeData, levelData.blocksCount);
         PlaceCollectibles(levelData.startStep, levelData.endStep, levelData.cycleSteps, levelData.cyclesCount);
-        GenerateBattlePath(3, 1);
+        GenerateBattlePath(50, 1);
 
         levelLength = blockPairs.GetLast().Position.x - blockPairs[3].Position.x;
 
@@ -154,7 +154,7 @@ public class LevelGenerator : MonoBehaviour
             {
                 CheckForBattlePath();
 
-                UpdateVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
+                //UpdateVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
 
                 UIProgressBar.Instance.SetProgressValue(Mathf.Clamp01(PlayerController.Humanball.Transform.position.x / levelLength));
             }
@@ -236,6 +236,8 @@ public class LevelGenerator : MonoBehaviour
 
     private void GenerateBattlePath(int stagesCount, int cryticalStageIndex)
     {
+        BattlePathStageInfo battleBathStageInfo = null;
+
         battlePathSettings.pathContainer.gameObject.SetActive(true);
 
         if (battlePathSettings.stagesContainer.childCount > 0)
@@ -249,12 +251,16 @@ public class LevelGenerator : MonoBehaviour
 
         for (int i = 0; i < stagesCount; i++)
         {
+            battleBathStageInfo = WorldManager.battlePathProgressionSettings.GetStageInfo(i);
+
             newBattlePathStage = new BattlePathStage(Instantiate(battlePathSettings.stagePrefab, battlePathSettings.stagesContainer), i % 2 == 0);
 
-            newBattlePathStage.Initialize(battlePath.Position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.Size.x, 0, 0), 100f + i * 100f);
-            newBattlePathStage.GenerateGuard(6 * (i + 1), levelPower * ((i + 1) / (float)(cryticalStageIndex + 1)));
+            newBattlePathStage.Initialize(battlePath.Position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.Size.x, 0, 0), battleBathStageInfo.reward);
+            newBattlePathStage.GenerateGuard(battleBathStageInfo.guardiansCount, levelPower * ((i + 1) / (float)(cryticalStageIndex + 1)));
 
             battlePath.stages.Add(newBattlePathStage);
+
+            print($" BPStage generated - guard: {newBattlePathStage.GuardCrew.MembersCount} / reward: {newBattlePathStage.Reward}");
         }
 
         battlePath.SetActive(false);

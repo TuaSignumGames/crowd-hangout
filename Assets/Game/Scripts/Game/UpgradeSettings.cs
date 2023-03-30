@@ -6,7 +6,20 @@ using UnityEngine;
 public class UpgradeSettings
 {
     public List<UpgradeInfo> upgradeTable;
-    public UpgradeInfo upgradeMultipliers;
+    [Space]
+    public Vector2 valueIncrementationFactors;
+    public Vector2 priceIncrementationFactors;
+    [Space]
+    public float valueRoundingOrder = 1f;
+    public float priceRoundingOrder = 1f;
+
+    private int outrangeUpgradeIndex;
+
+    private float upgradeValue;
+    private float upgradePrice;
+
+    private float upgradeValueIncrement;
+    private float upgradePriceIncrement;
 
     public UpgradeInfo GetUpgradeInfo(int upgradeIndex)
     {
@@ -16,7 +29,27 @@ public class UpgradeSettings
         }
         else
         {
-            return new UpgradeInfo(upgradeTable.GetLast().value * Mathf.Pow(upgradeMultipliers.value, upgradeIndex - upgradeTable.Count + 1), upgradeTable.GetLast().price * Mathf.Pow(upgradeMultipliers.price, upgradeIndex - upgradeTable.Count + 1));
+            outrangeUpgradeIndex = upgradeIndex - upgradeTable.Count;
+
+            upgradeValueIncrement = upgradeTable.GetLast().value * valueIncrementationFactors.x - upgradeTable.GetLast().value;
+            upgradePriceIncrement = upgradeTable.GetLast().price * priceIncrementationFactors.x - upgradeTable.GetLast().price;
+
+            upgradeValue = upgradeTable.GetLast().value + upgradeValueIncrement * (outrangeUpgradeIndex + 1) * (1f + valueIncrementationFactors.y * outrangeUpgradeIndex);
+            upgradePrice = upgradeTable.GetLast().price + upgradePriceIncrement * (outrangeUpgradeIndex + 1) * (1f + priceIncrementationFactors.y * outrangeUpgradeIndex);
+
+            return new UpgradeInfo(Mathf.Round(upgradeValue / valueRoundingOrder) * valueRoundingOrder, Mathf.Round(upgradePrice / priceRoundingOrder) * priceRoundingOrder);
+        }
+    }
+
+    public void SimulateUpgradeCycle(int iterations)
+    {
+        UpgradeInfo upgradeInfo = null;
+
+        for (int i = 0; i < iterations; i++)
+        {
+            upgradeInfo = GetUpgradeInfo(i);
+
+            Debug.Log($" Upgrade[{i}] - value: {upgradeInfo.value} / price: {upgradeInfo.price}");
         }
     }
 }

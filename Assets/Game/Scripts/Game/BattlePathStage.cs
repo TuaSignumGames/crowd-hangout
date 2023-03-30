@@ -154,3 +154,16 @@ public class BattlePathStage
         return guardianInstance;
     }
 }
+
+[System.Serializable]
+public class BattlePathStageInfo
+{
+    public int guardiansCount;
+    public float reward;
+
+    public BattlePathStageInfo(int guardiansCount, float reward)
+    {
+        this.guardiansCount = guardiansCount;
+        this.reward = reward;
+    }
+}

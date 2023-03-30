@@ -2238,44 +2238,74 @@ MonoBehaviour:
       initialLevelNumber: 20
       availableStructureIndices: 0200000003000000
       availableLandscapeIndices: 0100000002000000
-  _rewardProgressionSettings:
-    stageRewards:
-    - 5
-    - 10
-    - 20
-    - 50
-    - 100
-    rewardMultipier: 1.2
+  _battlePathProgressionSettings:
+    stages:
+    - guardiansCount: 3
+      reward: 10
+    - guardiansCount: 4
+      reward: 20
+    - guardiansCount: 6
+      reward: 50
+    - guardiansCount: 10
+      reward: 100
+    guardIncrementationFactors: {x: 1.5, y: 0}
+    rewardIncrementationFactors: {x: 2, y: 0.05}
+    guardiansCountLimit: 50
+    rewardRoundingOrder: 100
   _weaponUpgradeSettings:
     upgradeTable:
     - title: 
-      value: 6
+      value: 8
       price: 10
     - title: 
-      value: 7
-      price: 15
+      value: 12
+      price: 25
     - title: 
-      value: 9
-      price: 30
-    upgradeMultipliers:
-      title: 
-      value: 0
-      price: 0
+      value: 15
+      price: 50
+    - title: 
+      value: 18
+      price: 100
+    - title: 
+      value: 20
+      price: 200
+    - title: 
+      value: 25
+      price: 350
+    - title: 
+      value: 30
+      price: 525
+    - title: 
+      value: 50
+      price: 850
+    - title: 
+      value: 60
+      price: 1250
+    - title: 
+      value: 80
+      price: 2600
+    - title: 
+      value: 100
+      price: 5200
+    valueIncrementationFactors: {x: 1.2, y: 0}
+    priceIncrementationFactors: {x: 1.8, y: 0.075}
+    valueRoundingOrder: 1
+    priceRoundingOrder: 1
   _populationUpgradeSettings:
     upgradeTable:
     - title: 
-      value: 5
+      value: 3
       price: 10
     - title: 
-      value: 8
+      value: 5
       price: 15
     - title: 
-      value: 12
-      price: 20
-    upgradeMultipliers:
-      title: 
-      value: 0
-      price: 0
+      value: 8
+      price: 25
+    valueIncrementationFactors: {x: 1.2, y: 0.1}
+    priceIncrementationFactors: {x: 1.5, y: 0.05}
+    valueRoundingOrder: 1
+    priceRoundingOrder: 10
 --- !u!4 &566636409
 Transform:
   m_ObjectHideFlags: 0

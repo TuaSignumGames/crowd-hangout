@@ -9,7 +9,7 @@ public class WorldManager : MonoBehaviour
     public static List<Weapon> weaponAssortment;
 
     public static ProgressionSettings gameProgressionSettings;
-    public static RewardProgressionSettings rewardProgressionSettings;
+    public static BattlePathProgressionSettings battlePathProgressionSettings;
 
     public static UpgradeSettings weaponUpgradeSettings;
     public static UpgradeSettings populationUpgradeSettings;
@@ -17,7 +17,7 @@ public class WorldManager : MonoBehaviour
     public HumanController _humanPrefab;
     [Space]
     public ProgressionSettings _gameProgressionSettings;
-    public RewardProgressionSettings _rewardProgressionSettings;
+    public BattlePathProgressionSettings _battlePathProgressionSettings;
     [Space]
     public UpgradeSettings _weaponUpgradeSettings;
     public UpgradeSettings _populationUpgradeSettings;
@@ -29,10 +29,16 @@ public class WorldManager : MonoBehaviour
         weaponAssortment = new List<Weapon>(humanPrefab.weaponSettings);
 
         gameProgressionSettings = _gameProgressionSettings;
-        rewardProgressionSettings = _rewardProgressionSettings;
+        battlePathProgressionSettings = _battlePathProgressionSettings;
 
         weaponUpgradeSettings = _weaponUpgradeSettings;
         populationUpgradeSettings = _populationUpgradeSettings;
+
+        int iterations = 20;
+
+        print($" - Population upgrade cycle for [{iterations}] iterations");
+
+        //populationUpgradeSettings.SimulateUpgradeCycle(iterations);
     }
 
     public static float GetWeaponPower(int weaponID)
