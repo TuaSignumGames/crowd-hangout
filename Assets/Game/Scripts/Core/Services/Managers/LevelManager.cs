@@ -163,9 +163,17 @@ public class LevelManager : Service<LevelManager>
 
         }
         */
-        //_isTutorialLevel = false;
 
-        UIManager.Instance.ChangeState(GameManager.Instance.creativeMode ? UIState.Empty : UIState.Start);
+        _isTutorialLevel = LevelNumber == 1;
+
+        if (GameManager.Instance.creativeMode)
+        {
+            UIManager.Instance.ChangeState(UIState.Empty);
+        }
+        else
+        {
+            UIManager.Instance.ChangeState(_isTutorialLevel ? UIState.Tutorial : UIState.Start);
+        }
 
         UILevelTitle.Instance.SetLevelNumber(LevelNumber);
 
@@ -191,6 +199,11 @@ public class LevelManager : Service<LevelManager>
         else
         {
             UIManager.Instance.ChangeState(UIState.ActionPhase);
+        }
+
+        if (_isTutorialLevel)
+        {
+            UIManager.Instance.tutorialElement.HideImmediate();
         }
 
         yield return null;

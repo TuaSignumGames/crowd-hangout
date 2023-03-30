@@ -41,7 +41,7 @@ public class UpgradeSettings
             return new UpgradeInfo(Mathf.Round(upgradeValue / valueRoundingOrder) * valueRoundingOrder, Mathf.Round(upgradePrice / priceRoundingOrder) * priceRoundingOrder);
         }
 
-        return null;
+        return upgradeTable.GetLast();
     }
 
     public void SimulateUpgradeCycle(int iterations)

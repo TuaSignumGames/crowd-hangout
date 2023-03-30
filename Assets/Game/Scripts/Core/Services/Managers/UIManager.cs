@@ -15,6 +15,8 @@ public class UIManager : Service<UIManager>
     [Space]
     [SerializeField] private List<UIStateView> _stateViews;
     [Space]
+    [SerializeField] public UIElement tutorialElement;
+    [Space]
     [SerializeField] private GameObject _cursor;
     [SerializeField] private bool _isCursorVisible = true;
 

@@ -16,11 +16,15 @@ public class WorldManager : MonoBehaviour
 
     public HumanController _humanPrefab;
     [Space]
+    public EnvironmentSettings _environmentSettings;
+    [Space]
     public ProgressionSettings _gameProgressionSettings;
     public BattlePathProgressionSettings _battlePathProgressionSettings;
     [Space]
     public UpgradeSettings _weaponUpgradeSettings;
     public UpgradeSettings _populationUpgradeSettings;
+
+    private static UpgradeInfo actualUpgradeInfo;
 
     private void Awake()
     {
@@ -61,6 +65,35 @@ public class WorldManager : MonoBehaviour
         }
 
         return humanPrefab.weaponSettings.Count - 1;
+    }
+
+    public static void Upgrade(CollectibleType upgradeTarget)
+    {
+        if (upgradeTarget == CollectibleType.Weapon)
+        {
+            actualUpgradeInfo = weaponUpgradeSettings.GetUpgradeInfo(GameManager.WeaponUpgradeIndex++);
+
+            GameManager.TopWeaponPower = actualUpgradeInfo.value;
+
+            HumanController.selectedHuman.SetWeapon(GetWeaponID(actualUpgradeInfo.value));
+        }
+
+        if (upgradeTarget == CollectibleType.Human)
+        {
+            actualUpgradeInfo = populationUpgradeSettings.GetUpgradeInfo(GameManager.PopulationUpgradeIndex++);
+
+            GameManager.PopulationValue = (int)actualUpgradeInfo.value;
+
+            LevelGenerator.Instance.GenerateComposition();
+        }
+
+        GameManager.Instance.ChangeCurrency(-actualUpgradeInfo.price, true);
+
+        GameManager.CryticalStageIndex = (GameManager.WeaponUpgradeIndex + GameManager.PopulationUpgradeIndex) / 2;
+
+        print($" - Crytical stage: {GameManager.CryticalStageIndex}");
+
+        LevelGenerator.Instance.GenerateComposition();
     }
 
     private void OnValidate()

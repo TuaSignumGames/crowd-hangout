@@ -13,10 +13,6 @@ public class UIUpgradeMenu : UIElement
 
     private Weapon weaponInfo;
 
-    private UpgradeInfo actualUpgradeInfo;
-
-    private int upgradeIndex;
-
     public override void Awake()
     {
         base.Awake();
@@ -26,39 +22,31 @@ public class UIUpgradeMenu : UIElement
 
     public void UpgradeWeapon()
     {
-        actualUpgradeInfo = WorldManager.weaponUpgradeSettings.GetUpgradeInfo(GameManager.WeaponUpgradeIndex++);
+        WorldManager.Upgrade(CollectibleType.Weapon);
 
-        GameManager.TopWeaponPower = actualUpgradeInfo.value;
-
-        GameManager.Instance.ChangeCurrency(-actualUpgradeInfo.price, true);
-
-        UpdateWeaponCard(WorldManager.weaponUpgradeSettings.upgradeTable[GameManager.WeaponUpgradeIndex]);
+        UpdateCards();
     }
 
     public void UpgradePopulation()
     {
-        actualUpgradeInfo = WorldManager.populationUpgradeSettings.GetUpgradeInfo(GameManager.PopulationUpgradeIndex++);
+        WorldManager.Upgrade(CollectibleType.Human);
 
-        GameManager.PopulationValue = (int)actualUpgradeInfo.value;
-
-        GameManager.Instance.ChangeCurrency(-actualUpgradeInfo.price, true);
-
-        UpdatePopulationCard(WorldManager.populationUpgradeSettings.upgradeTable[GameManager.PopulationUpgradeIndex]);
+        UpdateCards();
     }
 
     public void UpdateCards()
     {
-        UpdateWeaponCard(WorldManager.weaponUpgradeSettings.upgradeTable[GameManager.WeaponUpgradeIndex]);
-        UpdatePopulationCard(WorldManager.populationUpgradeSettings.upgradeTable[GameManager.PopulationUpgradeIndex]);
+        UpdateWeaponCard(WorldManager.weaponUpgradeSettings.GetUpgradeInfo(GameManager.WeaponUpgradeIndex));
+        UpdatePopulationCard(WorldManager.populationUpgradeSettings.GetUpgradeInfo(GameManager.PopulationUpgradeIndex));
     }
 
     private void UpdateWeaponCard(UpgradeInfo upgradeInfo)
     {
         weaponInfo = WorldManager.weaponAssortment[WorldManager.GetWeaponID(GameManager.TopWeaponPower)];
 
-        weaponCard.SetSliderValue(Mathf.InverseLerp(weaponInfo.Power, WorldManager.weaponAssortment[weaponInfo.WeaponID + 1].Power, GameManager.TopWeaponPower));
+        //weaponCard.SetSliderValue(Mathf.InverseLerp(weaponInfo.Power, WorldManager.weaponAssortment[weaponInfo.WeaponID + 1].Power, GameManager.TopWeaponPower));
 
-        weaponCard.valueText.text = weaponInfo.weaponContainer.name.ToUpper();
+        weaponCard.valueText.text = $"{weaponInfo.weaponContainer.name.ToUpper()}";
         weaponCard.priceText.text = "$" + upgradeInfo.price.ToString("N0");
 
         weaponCard.buttonComponent.Interactable = GameManager.Currency >= upgradeInfo.price;
@@ -66,7 +54,7 @@ public class UIUpgradeMenu : UIElement
 
     private void UpdatePopulationCard(UpgradeInfo upgradeInfo)
     {
-        populationCard.valueText.text = upgradeInfo.value.ToString();
+        populationCard.valueText.text = $"{GameManager.PopulationValue + 1}";
         populationCard.priceText.text = "$" + upgradeInfo.price.ToString("N0");
 
         populationCard.buttonComponent.Interactable = GameManager.Currency >= upgradeInfo.price;

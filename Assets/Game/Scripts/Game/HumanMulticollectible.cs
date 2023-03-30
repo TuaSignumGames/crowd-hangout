@@ -36,7 +36,7 @@ public class HumanMulticollectible : Multicollectible
             humanCollectibles.Add(new MulticollectibleEntity<HumanController>(humanInstance, elements[i]));
         }
 
-        humanCollectiblesPool = new Pool<MulticollectibleEntity<HumanController>>(humanCollectibles);
+        humanCollectiblesPool = new Pool<MulticollectibleEntity<HumanController>>(humanCollectibles, true);
     }
 
     protected override void ProcessCollecting()

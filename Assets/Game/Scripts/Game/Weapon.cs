@@ -58,7 +58,7 @@ public class Weapon
 
     public int WeaponID => WorldManager.GetWeaponID(Power);
 
-    public Weapon Apply(HumanController ownerHuman)
+    public Weapon Arm(HumanController ownerHuman)
     {
         this.ownerHuman = ownerHuman;
 
@@ -86,6 +86,11 @@ public class Weapon
         }
 
         return this;
+    }
+
+    public void Hide()
+    {
+        weaponContainer.SetActive(false);
     }
 
     public void Update()
@@ -291,7 +296,9 @@ public class Weapon
                 if (impactVFX)
                 {
                     impactVFX.transform.SetParent(null);
+
                     impactVFX.transform.position = gameObject.transform.position;
+                    impactVFX.transform.localScale = Vector3.one;
 
                     impactVFX.Play(true);
                 }

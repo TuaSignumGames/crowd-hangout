@@ -52,6 +52,11 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(InitialRopeConnectionCoroutine());
     }
 
+    private void Start()
+    {
+        HumanController.selectedHuman.SetWeapon(WorldManager.GetWeaponID(GameManager.TopWeaponPower));
+    }
+
     private void FixedUpdate()
     {
         if (LevelManager.IsLevelStarted && !LevelManager.IsLevelFinished)

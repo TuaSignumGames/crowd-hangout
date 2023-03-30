@@ -428,12 +428,22 @@ public class HumanController : MonoBehaviour
 
     public void SetWeapon(Weapon weapon)
     {
-        currentWeapon = weapon.Apply(this);
+        for (int i = 0; i < weaponSettings.Count; i++)
+        {
+            weaponSettings[i].Hide();
+        }
+
+        currentWeapon = weapon.Arm(this);
     }
 
     public void SetWeapon(int index)
     {
-        currentWeapon = weaponSettings[index].Apply(this);
+        for (int i = 0; i < weaponSettings.Count; i++)
+        {
+            weaponSettings[i].Hide();
+        }
+
+        currentWeapon = weaponSettings[index].Arm(this);
     }
 
     public void SetWeapon(int index, float damageRate)

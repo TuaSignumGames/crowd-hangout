@@ -6,13 +6,7 @@ using UnityEngine;
 //
 // -> [ Reminder ] <- 
 //
-//  Upgrades
-//  -
-//  - Regenerate level compositions on upgrade 
-//
 //  Scope
-//  -
-//  - Multicollectible blocks fitting (Building)
 //  -
 //  - DropToBattle() actually present humans (Check 'usedCells')
 //  - Building colors (+2)
@@ -53,23 +47,18 @@ public class LevelGenerator : MonoBehaviour
     private WeaponMulticollectible weaponCollectiblePrefab;
     private WeaponMulticollectible weaponCollectibleInstance;
 
-    private WeaponMulticollectible weaponCollectible;
-
     private GameObject newBlockPairContainer;
 
     private Vector2 perlinNoiseOrigin;
 
     private List<float> offsetMap;
 
-    private float progressValue;
     private float perlinValue;
 
     private float humanPower;
     private float levelPower;
 
     private float levelLength;
-
-    private int availableBlockPairIndex;
 
     private int humanCollectiblesCount;
     private int weaponCollectiblesCount;
@@ -121,7 +110,7 @@ public class LevelGenerator : MonoBehaviour
 
         levelLength = blockPairs.GetLast().Position.x - blockPairs[3].Position.x;
 
-        print($" -- Level {LevelManager.LevelNumber} Generated: \n Population: {GameManager.PopulationValue} / Top weapon ID: {WorldManager.GetWeaponID(GameManager.TopWeaponPower)} \n\n - Stage: {stageInfo.title} (structure: '{levelSettings.structures[structureIndex].title}', landscape: '{levelSettings.landscapes[landscapeIndex].title}') \n - Multicollectibles: {humanCollectiblesCount + weaponCollectiblesCount} (Human: {humanCollectiblesCount}[{totalHumansCount}], Weapon: {weaponCollectiblesCount}[{totalWeaponsCount}]) \n - Level power: {levelPower}");
+        print($" -- Level {LevelManager.LevelNumber} Generated: \n\n - Stage: {stageInfo.title} (structure: '{levelSettings.structures[structureIndex].title}', landscape: '{levelSettings.landscapes[landscapeIndex].title}')");
 
         isLevelGenerated = true;
     }
@@ -136,6 +125,8 @@ public class LevelGenerator : MonoBehaviour
 
         PlaceCollectibles(levelData.startStep, levelData.endStep, levelData.cycleSteps, levelData.cyclesCount);
         GenerateBattlePath(Mathf.Clamp(GameManager.CryticalStageIndex + 6, 10, int.MaxValue), GameManager.CryticalStageIndex);
+
+        print($" -- Compositions Generated: \n Population: {GameManager.PopulationValue} / Top weapon ID: {WorldManager.GetWeaponID(GameManager.TopWeaponPower)} \n\n - Multicollectibles: {humanCollectiblesCount + weaponCollectiblesCount} (Human: {humanCollectiblesCount}[{totalHumansCount}], Weapon: {weaponCollectiblesCount}[{totalWeaponsCount}]) \n - Level power: {levelPower}");
     }
 
     public void GenerateFromEditor(bool collectibles, bool battlePath)
@@ -276,7 +267,7 @@ public class LevelGenerator : MonoBehaviour
 
             battlePath.stages.Add(newBattlePathStage);
 
-            print($" BPStage generated - guard: {newBattlePathStage.GuardCrew.MembersCount} / reward: {newBattlePathStage.Reward}");
+            //print($" BPStage generated - guard: {newBattlePathStage.GuardCrew.MembersCount} / reward: {newBattlePathStage.Reward}");
         }
 
         battlePath.SetActive(false);
@@ -290,6 +281,11 @@ public class LevelGenerator : MonoBehaviour
 
             Destroy(collectibles[i].gameObject);
         }
+
+        totalHumansCount = 0;
+        totalWeaponsCount = 0;
+
+        levelPower = 0;
     }
 
     private void RemoveBattlePath()
@@ -372,33 +368,36 @@ public class LevelGenerator : MonoBehaviour
 
             int actualWeaponSum = 0;
 
-            List<WeaponMulticollectibleInfo> weaponPlacementTable = new List<WeaponMulticollectibleInfo>();
-
-            foreach (int key in weaponPortionFactorTable.Keys)
+            if (weaponPortionFactorSum > 0)
             {
-                weaponPlacementTable.Add(new WeaponMulticollectibleInfo(Mathf.Clamp(key, 1, topWeaponID), Mathf.CeilToInt(targetWeaponCount * weaponPortionFactorTable.GetValueOrDefault(key) / weaponPortionFactorSum)));
+                List<WeaponMulticollectibleInfo> weaponPlacementTable = new List<WeaponMulticollectibleInfo>();
 
-                actualWeaponSum += weaponPlacementTable.GetLast().count;
-            }
-
-            if (actualWeaponSum > targetWeaponCount)
-            {
-                weaponPlacementTable[0].count -= actualWeaponSum - targetWeaponCount;
-            }
-
-            WeaponMulticollectibleInfo placementInfo;
-
-            for (int i = 0; i < blockPairs.Count; i++)
-            {
-                if (collectibleMap[i] == CollectibleType.Weapon)
+                foreach (int key in weaponPortionFactorTable.Keys)
                 {
-                    placementInfo = weaponPlacementTable.CutRandom(); //weaponPlacementTable.Count > 1 ? weaponPlacementTable.CutRandom(0, weaponPlacementTable.Count - 2) : weaponPlacementTable.CutAt(0);
+                    weaponPlacementTable.Add(new WeaponMulticollectibleInfo(Mathf.Clamp(key, 1, topWeaponID), Mathf.CeilToInt(targetWeaponCount * weaponPortionFactorTable.GetValueOrDefault(key) / weaponPortionFactorSum)));
 
-                    PlaceWeaponCollectible(blockPairs[i], placementInfo.id, placementInfo.count);
+                    actualWeaponSum += weaponPlacementTable.GetLast().count;
+                }
 
-                    if (multicollectibleInstance.RangeNumber > 0)
+                if (actualWeaponSum > targetWeaponCount)
+                {
+                    weaponPlacementTable[0].count -= actualWeaponSum - targetWeaponCount;
+                }
+
+                WeaponMulticollectibleInfo placementInfo;
+
+                for (int i = 0; i < blockPairs.Count; i++)
+                {
+                    if (collectibleMap[i] == CollectibleType.Weapon)
                     {
-                        AlignBlocksForCollectible(multicollectibleInstance, i);
+                        placementInfo = weaponPlacementTable.Count > 1 ? weaponPlacementTable.CutRandom(0, weaponPlacementTable.Count - 2) : weaponPlacementTable.CutAt(0);
+
+                        PlaceWeaponCollectible(blockPairs[i], placementInfo.id, placementInfo.count);
+
+                        if (multicollectibleInstance.RangeNumber > 0)
+                        {
+                            AlignBlocksForCollectible(multicollectibleInstance, i);
+                        }
                     }
                 }
             }

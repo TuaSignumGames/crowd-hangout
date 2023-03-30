@@ -117,11 +117,11 @@ MonoBehaviour:
     turnLerpingFactor: 0.2
     targetPointRadius: 0.2
   weaponSettings:
-  - title: Fist  [P:5]
+  - title: Fist  [P:8]
     weaponContainer: {fileID: 6196655106733567505}
     weaponModel: {fileID: 0}
     ammoContainer: {fileID: 0}
-    damageRate: 5
+    damageRate: 8
     reloadingTime: 1
     attackDistance: 1.2
     parabolaHeight: 0
@@ -133,11 +133,11 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 0}
-  - title: Bat  [P:8]
+  - title: Bat  [P:10]
     weaponContainer: {fileID: 5002936460844173615}
     weaponModel: {fileID: 4373479425591376124}
     ammoContainer: {fileID: 0}
-    damageRate: 8
+    damageRate: 10
     reloadingTime: 0.567
     attackDistance: 1.4
     parabolaHeight: 0
@@ -245,7 +245,7 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 1858966421438232894}
-  - title: Machinegun  [P:50]
+  - title: MG  [P:50]
     weaponContainer: {fileID: 2010242087336658420}
     weaponModel: {fileID: 3124975935779912704}
     ammoContainer: {fileID: 2498501284245186146}
@@ -261,7 +261,7 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 6768503558947413412}
-  - title: SniperRifle  [P:60]
+  - title: Snipe  [P:60]
     weaponContainer: {fileID: 5144247701632660959}
     weaponModel: {fileID: 4211186143169583184}
     ammoContainer: {fileID: 8069652107406077708}
@@ -293,7 +293,7 @@ MonoBehaviour:
     animationName: Shot-Throw
     keyframeTime: 0.54
     attackVFX: {fileID: 3364544254698358871}
-  - title: Flamethrower  [P:100]
+  - title: Fire Gun  [P:100]
     weaponContainer: {fileID: 8613084343064516235}
     weaponModel: {fileID: 8799029970763752760}
     ammoContainer: {fileID: 7909030947818995549}
@@ -10797,7 +10797,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5015193146048103411}
   m_Layer: 0
-  m_Name: Machinegun
+  m_Name: MG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45841,7 +45841,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5205877346445543286}
   m_Layer: 0
-  m_Name: SniperRifle
+  m_Name: Snipe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66403,7 +66403,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7936086867190011016}
   m_Layer: 0
-  m_Name: Flamethrower
+  m_Name: Fire Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

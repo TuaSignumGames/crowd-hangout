@@ -15,6 +15,8 @@ public class Pool<T>
 
     protected bool consumable;
 
+    public int Count => elementsQueue.Count;
+
     public Pool(IList<T> elements, bool consumable = false, bool shuffle = false)
     {
         if (shuffle)
