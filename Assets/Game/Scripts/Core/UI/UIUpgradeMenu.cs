@@ -26,7 +26,7 @@ public class UIUpgradeMenu : UIElement
 
     public void UpgradeWeapon()
     {
-        actualUpgradeInfo = WorldManager.weaponUpgradeSettings.upgradeTable[GameManager.WeaponUpgradeIndex++];
+        actualUpgradeInfo = WorldManager.weaponUpgradeSettings.GetUpgradeInfo(GameManager.WeaponUpgradeIndex++);
 
         GameManager.TopWeaponPower = actualUpgradeInfo.value;
 
@@ -37,7 +37,7 @@ public class UIUpgradeMenu : UIElement
 
     public void UpgradePopulation()
     {
-        actualUpgradeInfo = WorldManager.populationUpgradeSettings.upgradeTable[GameManager.PopulationUpgradeIndex++];
+        actualUpgradeInfo = WorldManager.populationUpgradeSettings.GetUpgradeInfo(GameManager.PopulationUpgradeIndex++);
 
         GameManager.PopulationValue = (int)actualUpgradeInfo.value;
 

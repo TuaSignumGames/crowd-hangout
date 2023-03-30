@@ -7,6 +7,7 @@ public class BattlePathProgressionSettings
 {
     public List<BattlePathStageInfo> stages;
     [Space]
+    public bool infiniteProgression;
     public Vector2 guardIncrementationFactors;
     public Vector2 rewardIncrementationFactors;
     [Space]
@@ -28,7 +29,7 @@ public class BattlePathProgressionSettings
         {
             return stages[stageIndex];
         }
-        else
+        else if (infiniteProgression)
         {
             outrangeStageIndex = stageIndex - stages.Count;
 
@@ -40,5 +41,7 @@ public class BattlePathProgressionSettings
 
             return new BattlePathStageInfo(Mathf.Clamp(stageGuardiansCount, 1, guardiansCountLimit), Mathf.Round(stageReward / rewardRoundingOrder) * rewardRoundingOrder);
         }
+
+        return null;
     }
 }

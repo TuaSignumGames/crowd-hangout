@@ -7,6 +7,7 @@ public class UpgradeSettings
 {
     public List<UpgradeInfo> upgradeTable;
     [Space]
+    public bool infiniteProgression;
     public Vector2 valueIncrementationFactors;
     public Vector2 priceIncrementationFactors;
     [Space]
@@ -27,7 +28,7 @@ public class UpgradeSettings
         {
             return upgradeTable[upgradeIndex];
         }
-        else
+        else if (infiniteProgression)
         {
             outrangeUpgradeIndex = upgradeIndex - upgradeTable.Count;
 
@@ -39,6 +40,8 @@ public class UpgradeSettings
 
             return new UpgradeInfo(Mathf.Round(upgradeValue / valueRoundingOrder) * valueRoundingOrder, Mathf.Round(upgradePrice / priceRoundingOrder) * priceRoundingOrder);
         }
+
+        return null;
     }
 
     public void SimulateUpgradeCycle(int iterations)
@@ -48,6 +51,11 @@ public class UpgradeSettings
         for (int i = 0; i < iterations; i++)
         {
             upgradeInfo = GetUpgradeInfo(i);
+
+            if (upgradeInfo == null)
+            {
+                return;
+            }
 
             Debug.Log($" Upgrade[{i}] - value: {upgradeInfo.value} / price: {upgradeInfo.price}");
         }

@@ -91,9 +91,30 @@ public class BattlePath
         isBattleActive = true;
     }
 
+    public BattlePathStage DefineStage(Vector3 position)
+    {
+        for (int i = 0; i < stages.Count; i++)
+        {
+            if (position.x < stages[i].Position.x)
+            {
+                return stages[Mathf.Clamp(i - 1, 0, stages.Count - 1)];
+            }
+        }
+
+        return null;
+    }
+
     public void SetActive(bool isActive)
     {
         gameObject.SetActive(isActive);
+    }
+
+    public void Clear()
+    {
+        for (int i = 0; i < stages.Count; i++)
+        {
+            GameObject.Destroy(stages[i].gameObject);
+        }
     }
 
     private void StartBattleOnActiveStage()
@@ -110,18 +131,5 @@ public class BattlePath
         isBattleActive = false;
 
         LevelGenerator.Instance.FinishBattle();
-    }
-
-    private BattlePathStage DefineStage(Vector3 position)
-    {
-        for (int i = 0; i < stages.Count; i++)
-        {
-            if (position.x < stages[i].Position.x)
-            {
-                return stages[Mathf.Clamp(i - 1, 0, stages.Count - 1)];
-            }
-        }
-
-        return null;
     }
 }

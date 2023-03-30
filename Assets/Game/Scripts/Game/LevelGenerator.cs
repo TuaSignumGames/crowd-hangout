@@ -4,11 +4,11 @@ using UnityEngine;
 
 // TODO
 //
-// -> [ Finish progression setup ] <- 
+// -> [ Reminder ] <- 
 //
 //  Upgrades
 //  -
-//  - Configurate upgrading (BattlePath progression, Upgrading progression) 
+//  - Regenerate level compositions on upgrade 
 //
 //  Scope
 //  -
@@ -34,6 +34,7 @@ public class LevelGenerator : MonoBehaviour
     private ProgressionStageInfo stageInfo;
 
     private List<BlockPair> blockPairs;
+    private List<Collectible> collectibles;
 
     private BattlePath battlePath;
 
@@ -115,14 +116,26 @@ public class LevelGenerator : MonoBehaviour
         levelPower = humanPower;
 
         GenerateBlocks(levelData.landscapeData, levelData.blocksCount);
-        PlaceCollectibles(levelData.startStep, levelData.endStep, levelData.cycleSteps, levelData.cyclesCount);
-        GenerateBattlePath(50, 1);
+
+        GenerateComposition();
 
         levelLength = blockPairs.GetLast().Position.x - blockPairs[3].Position.x;
 
         print($" -- Level {LevelManager.LevelNumber} Generated: \n Population: {GameManager.PopulationValue} / Top weapon ID: {WorldManager.GetWeaponID(GameManager.TopWeaponPower)} \n\n - Stage: {stageInfo.title} (structure: '{levelSettings.structures[structureIndex].title}', landscape: '{levelSettings.landscapes[landscapeIndex].title}') \n - Multicollectibles: {humanCollectiblesCount + weaponCollectiblesCount} (Human: {humanCollectiblesCount}[{totalHumansCount}], Weapon: {weaponCollectiblesCount}[{totalWeaponsCount}]) \n - Level power: {levelPower}");
 
         isLevelGenerated = true;
+    }
+
+    public void GenerateComposition()
+    {
+        if (isLevelGenerated)
+        {
+            RemoveCollectibles();
+            RemoveBattlePath();
+        }
+
+        PlaceCollectibles(levelData.startStep, levelData.endStep, levelData.cycleSteps, levelData.cyclesCount);
+        GenerateBattlePath(Mathf.Clamp(GameManager.CryticalStageIndex + 6, 10, int.MaxValue), GameManager.CryticalStageIndex);
     }
 
     public void GenerateFromEditor(bool collectibles, bool battlePath)
@@ -149,12 +162,14 @@ public class LevelGenerator : MonoBehaviour
             if (isCavePassed)
             {
                 battlePath.Update();
+
+                UpdateBattlePathVisibility(battlePath.DefineStage(PlayerController.Humanball.Transform.position).OrderIndex);
             }
             else
             {
                 CheckForBattlePath();
 
-                //UpdateVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
+                UpdateLevelVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
 
                 UIProgressBar.Instance.SetProgressValue(Mathf.Clamp01(PlayerController.Humanball.Transform.position.x / levelLength));
             }
@@ -198,6 +213,8 @@ public class LevelGenerator : MonoBehaviour
 
     private void PlaceCollectibles(LevelStepData startStep, LevelStepData endStep, LevelStepData[] cycleSteps, int cyclesCount)
     {
+        collectibles = new List<Collectible>();
+
         collectibleMap = new CollectibleType[blockPairs.Count];
 
         collectibleMap[previousCollectiblePlacementIndex = startStep.blocksCount] = startStep.collectiblePointType;
@@ -230,7 +247,6 @@ public class LevelGenerator : MonoBehaviour
         }
 
         PlaceHumanCollectibles();
-
         PlaceWeaponCollectibles();
     }
 
@@ -255,7 +271,7 @@ public class LevelGenerator : MonoBehaviour
 
             newBattlePathStage = new BattlePathStage(Instantiate(battlePathSettings.stagePrefab, battlePathSettings.stagesContainer), i % 2 == 0);
 
-            newBattlePathStage.Initialize(battlePath.Position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.Size.x, 0, 0), battleBathStageInfo.reward);
+            newBattlePathStage.Initialize(battlePath.Position + new Vector3(battlePathSettings.baseStageTransform.localScale.x + i * newBattlePathStage.Size.x, 0, 0), battleBathStageInfo.reward, i);
             newBattlePathStage.GenerateGuard(battleBathStageInfo.guardiansCount, levelPower * ((i + 1) / (float)(cryticalStageIndex + 1)));
 
             battlePath.stages.Add(newBattlePathStage);
@@ -266,9 +282,24 @@ public class LevelGenerator : MonoBehaviour
         battlePath.SetActive(false);
     }
 
+    private void RemoveCollectibles()
+    {
+        for (int i = 0; i < collectibles.Count; i++)
+        {
+            collectibles[i].SetVisible(false);
+
+            Destroy(collectibles[i].gameObject);
+        }
+    }
+
+    private void RemoveBattlePath()
+    {
+        battlePath.Clear();
+    }
+
     private void PlaceHumanCollectibles()
     {
-        int populationValue = 10; //GameManager.PopulationValue;
+        int populationValue = GameManager.PopulationValue;
 
         List<float> humanCollectiblePortionFactors = new List<float>();
 
@@ -318,7 +349,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void PlaceWeaponCollectibles()
     {
-        int topWeaponID = 6; //WorldManager.GetWeaponID(GameManager.TopWeaponPower);
+        int topWeaponID = WorldManager.GetWeaponID(GameManager.TopWeaponPower);
 
         if (topWeaponID > 0)
         {
@@ -387,6 +418,8 @@ public class LevelGenerator : MonoBehaviour
         levelPower += humanPower * humansCount;
 
         multicollectibleInstance = humanCollectibleInstance;
+
+        collectibles.Add(multicollectibleInstance);
     }
 
     private void PlaceWeaponCollectible(BlockPair blockPair, int weaponID, int weaponsCount)
@@ -402,6 +435,8 @@ public class LevelGenerator : MonoBehaviour
         levelPower += (WorldManager.GetWeaponPower(weaponID) - humanPower) * weaponsCount;
 
         multicollectibleInstance = weaponCollectibleInstance;
+
+        collectibles.Add(multicollectibleInstance);
     }
 
     private BlockPair InstantiateBlockPair(Vector3 origin, Vector2 heightRange, int orderIndex)
@@ -496,16 +531,24 @@ public class LevelGenerator : MonoBehaviour
         StartCoroutine(BattleFinishingCoroutine());
     }
 
-    public void UpdateVisibility(int pivotBlockIndex)
+    public void UpdateLevelVisibility(int pivotBlockIndex)
     {
         for (int i = 0; i < blockPairs.Count; i++)
         {
             blockPairs[i].SetVisible(i >= pivotBlockIndex + levelSettings.visibilityRange.x && i <= pivotBlockIndex + levelSettings.visibilityRange.y);
         }
 
-        if (!battlePath.gameObject.activeSelf && blockPairs[pivotBlockIndex].Position.x > battlePath.Position.x - battlePathSettings.visibilityDistance)
+        if (!battlePath.gameObject.activeSelf && blockPairs[pivotBlockIndex].Position.x > battlePath.Position.x - battlePathSettings.activationDistance)
         {
             battlePath.SetActive(true);
+        }
+    }
+
+    public void UpdateBattlePathVisibility(int pivotStageIndex)
+    {
+        for (int i = 0; i < battlePath.stages.Count; i++)
+        {
+            battlePath.stages[i].SetVisible(i >= Mathf.Clamp(pivotStageIndex + battlePathSettings.visibilityRange.x, 0, battlePath.stages.Count - 1) && i <= Mathf.Clamp(pivotStageIndex + battlePathSettings.visibilityRange.y, 0, battlePath.stages.Count - 1));
         }
     }
 

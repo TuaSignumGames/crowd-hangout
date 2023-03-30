@@ -5,7 +5,7 @@ using TMPro;
 
 public class BattlePathStage
 {
-    private GameObject gameObject;
+    public GameObject gameObject;
 
     private List<Transform> stageContent;
     private List<Transform> platformContent;
@@ -28,12 +28,20 @@ public class BattlePathStage
 
     private int guardLineCapacity = 10;
 
+    private int orderIndex;
+
+    private bool isVisible;
+
     public Crowd GuardCrew => guardCrew;
 
     public Vector3 Position => gameObject.transform.position;
     public Vector3 Size => stageContent[0].localScale;
 
     public float Reward => reward;
+
+    public int OrderIndex => orderIndex;
+
+    public bool IsVisible => isVisible;
 
     public BattlePathStage(GameObject stageGameObject, bool isEven)
     {
@@ -50,10 +58,14 @@ public class BattlePathStage
 
         rewardText = rewardTextContent[0].GetComponent<TextMeshPro>();
         rewardUndertext = rewardTextContent[1].GetComponent<TextMeshPro>();
+
+        isVisible = true;
     }
 
-    public void Initialize(Vector3 position, float rewardValue)
+    public void Initialize(Vector3 position, float rewardValue, int orderIndex)
     {
+        this.orderIndex = orderIndex;
+
         gameObject.transform.position = position;
 
         reward = rewardValue;
@@ -138,6 +150,16 @@ public class BattlePathStage
         rewardUndertext.gameObject.SetActive(true);
 
         rewardTextEvaluator.Translate(new Vector3(rewardText.transform.position.x, rewardText.transform.position.y + 1f, rewardText.transform.position.z), 0.5f, EvaluationType.Smooth);
+    }
+
+    public void SetVisible(bool isVisible)
+    {
+        if (this.isVisible != isVisible)
+        {
+            gameObject.SetActive(isVisible);
+
+            this.isVisible = isVisible;
+        }
     }
 
     private HumanController InstantiateGuardian(Vector3 position)

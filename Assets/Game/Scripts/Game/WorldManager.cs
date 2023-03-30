@@ -34,10 +34,12 @@ public class WorldManager : MonoBehaviour
         weaponUpgradeSettings = _weaponUpgradeSettings;
         populationUpgradeSettings = _populationUpgradeSettings;
 
-        int iterations = 20;
+        //int iterations = 50;
 
-        print($" - Population upgrade cycle for [{iterations}] iterations");
+        //print($" - Weapon upgrade cycle for [{iterations}] iterations");
+        //weaponUpgradeSettings.SimulateUpgradeCycle(iterations);
 
+        //print($" - Population upgrade cycle for [{iterations}] iterations");
         //populationUpgradeSettings.SimulateUpgradeCycle(iterations);
     }
 

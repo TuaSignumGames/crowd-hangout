@@ -15,5 +15,6 @@ public class BattlePathSettings
     public CameraViewData battleView;
     public CameraViewData finishView;
     [Space]
-    public float visibilityDistance; 
+    public float activationDistance;
+    public Vector2Int visibilityRange;
 }
