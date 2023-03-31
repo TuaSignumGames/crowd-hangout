@@ -7050,7 +7050,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ballSettings:
     rigidbody: {fileID: 1779204876}
-    speed: 11
+    speed: 10
     acceleration: 50
     bumpImpulse: 20
     bumpDampingFactor: 0.15

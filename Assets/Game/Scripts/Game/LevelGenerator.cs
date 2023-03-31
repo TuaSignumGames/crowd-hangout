@@ -4,11 +4,15 @@ using UnityEngine;
 
 // TODO
 //
-// -> [ Reminder ] <- 
+// -> [ 'Frozen human' are still happens (check 'isActive' and position before add to crowd) ] <- 
+// -> [ 'RequestBackup' - is it best solution? ] <- 
+// -> [ Process upgrades immediately or on new level? ] <- 
 //
 //  Scope
 //  -
-//  - Building colors (+2)
+//  - Weapon icons 
+//  -
+//  - Building colors (+2) 
 //
 //  Polishing
 
@@ -396,7 +400,7 @@ public class LevelGenerator : MonoBehaviour
                 {
                     placementInfo = weaponPlacementTable.Count > 1 ? weaponPlacementTable.CutRandom(0, weaponPlacementTable.Count - 2) : weaponPlacementTable.CutAt(0);
 
-                    PlaceWeaponCollectible(blockPairs[i], placementInfo.id, placementInfo.count);
+                    PlaceWeaponCollectible(blockPairs[i], placementInfo.id, Mathf.Clamp(placementInfo.count, 1, totalHumansCount));
 
                     if (multicollectibleInstance.RangeNumber > 0)
                     {
@@ -581,7 +585,7 @@ public class LevelGenerator : MonoBehaviour
         //BattlePath.Instance.PlayerCrew.Members[0].FocusOn(activeStageCenter);
         //BattlePath.Instance.PlayerCrew.Members[0].PlayAnimation(HumanAnimationType.Win);
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.1f);
 
         CameraController.Instance.FocusOn(activeStageCenter, battlePathSettings.finishView);
 

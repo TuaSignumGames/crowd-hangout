@@ -96,7 +96,7 @@ public class HumanController : MonoBehaviour
 
         if (weaponIndex > 0)
         {
-            SetWeapon(weaponSettings[weaponIndex]);
+            SetWeapon(weaponIndex, false);
         }
         else
         {
@@ -104,7 +104,7 @@ public class HumanController : MonoBehaviour
             {
                 if (weaponSettings[i].weaponContainer.gameObject.activeSelf)
                 {
-                    SetWeapon(i);
+                    SetWeapon(i, false);
 
                     break;
                 }
@@ -288,6 +288,14 @@ public class HumanController : MonoBehaviour
         components.animator.SetBool(animatorAttackingHash, false);
     }
 
+    public void RequestBackup()
+    {
+        for (int i = 0; i < actualCrowd.Members.Length; i++)
+        {
+            actualCrowd.Members[i].AI.Assault();
+        }
+    }
+
     public void PlaceInCell(HumanballCell cell, bool playVFX = true)
     {
         isFree = false;
@@ -392,6 +400,8 @@ public class HumanController : MonoBehaviour
             {
                 ai.SetEnemy(agressor);
                 ai.Assault();
+
+                RequestBackup();
             }
         }
 
@@ -436,7 +446,7 @@ public class HumanController : MonoBehaviour
         currentWeapon = weapon.Arm(this);
     }
 
-    public void SetWeapon(int index)
+    public void SetWeapon(int index, bool playVFX = true)
     {
         for (int i = 0; i < weaponSettings.Count; i++)
         {
@@ -444,11 +454,17 @@ public class HumanController : MonoBehaviour
         }
 
         currentWeapon = weaponSettings[index].Arm(this);
+
+        if (playVFX)
+        {
+            (index == 3 ? components.leftHandVFX : components.rightHandVFX).gameObject.SetActive(true);
+            (index == 3 ? components.leftHandVFX : components.rightHandVFX).Play();
+        }
     }
 
-    public void SetWeapon(int index, float damageRate)
+    public void SetWeapon(int index, float damageRate, bool playVFX = false)
     {
-        SetWeapon(index);
+        SetWeapon(index, playVFX);
 
         currentWeapon.Power = damageRate;
     }
@@ -575,6 +591,9 @@ public struct HumanControllerComponents
     [Space]
     public Animator animator;
     public SkinnedMeshRenderer skinRenderer;
+    [Space]
+    public ParticleSystem leftHandVFX;
+    public ParticleSystem rightHandVFX;
 }
 
 [System.Serializable]

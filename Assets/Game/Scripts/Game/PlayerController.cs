@@ -54,7 +54,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        HumanController.selectedHuman.SetWeapon(WorldManager.GetWeaponID(GameManager.TopWeaponPower));
+        HumanController.selectedHuman.SetWeapon(WorldManager.GetWeaponID(GameManager.TopWeaponPower), false);
     }
 
     private void FixedUpdate()

@@ -83,8 +83,6 @@ public class WorldManager : MonoBehaviour
             actualUpgradeInfo = populationUpgradeSettings.GetUpgradeInfo(GameManager.PopulationUpgradeIndex++);
 
             GameManager.PopulationValue = (int)actualUpgradeInfo.value;
-
-            LevelGenerator.Instance.GenerateComposition();
         }
 
         GameManager.Instance.ChangeCurrency(-actualUpgradeInfo.price, true);
@@ -93,7 +91,7 @@ public class WorldManager : MonoBehaviour
 
         print($" - Crytical stage: {GameManager.CryticalStageIndex}");
 
-        LevelGenerator.Instance.GenerateComposition();
+        //LevelGenerator.Instance.GenerateComposition();
     }
 
     private void OnValidate()
