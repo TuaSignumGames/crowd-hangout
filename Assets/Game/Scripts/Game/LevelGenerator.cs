@@ -569,7 +569,7 @@ public class LevelGenerator : MonoBehaviour
 
     private IEnumerator BattleFinishingCoroutine()
     {
-        BattlePath.Instance.PlayerCrew.Members[0].isImmortal = true;
+        //BattlePath.Instance.PlayerCrew.Members[0].isImmortal = true;
 
         //CameraController.Instance.FocusOn(BattlePath.Instance.PlayerCrew.Members[0].transform, LevelGenerator.Instance.battlePathSettings.finishView);
 
@@ -578,8 +578,8 @@ public class LevelGenerator : MonoBehaviour
 
         Vector3 activeStageCenter = BattlePath.Instance.ActiveStage.Position + new Vector3(BattlePath.Instance.StageSize.x / 2f, 0, 0);
 
-        BattlePath.Instance.PlayerCrew.Members[0].FocusOn(activeStageCenter);
-        BattlePath.Instance.PlayerCrew.Members[0].PlayAnimation(HumanAnimationType.Win);
+        //BattlePath.Instance.PlayerCrew.Members[0].FocusOn(activeStageCenter);
+        //BattlePath.Instance.PlayerCrew.Members[0].PlayAnimation(HumanAnimationType.Win);
 
         yield return new WaitForSeconds(1f);
 
