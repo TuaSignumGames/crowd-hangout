@@ -51,10 +51,8 @@ public class BattlePath
                 {
                     if (stages[activeStageIndex].GuardCrew.IsCombatCapable)
                     {
-                        if (playerCrew.MembersCount == 1)
+                        if (playerCrew.MembersCount == 0)
                         {
-                            // TODO Claim stage reward -> Finish level 
-
                             FinishBattle();
                         }
                     }

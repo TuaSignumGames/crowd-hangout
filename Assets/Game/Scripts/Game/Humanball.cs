@@ -59,6 +59,8 @@ public class Humanball
         usedCells = new List<HumanballCell>();
 
         cellsCount = GetAvailableCellsCount();
+
+        usedCells.Add(layers[0].cells[0]);
     }
 
     public void LateUpdate()
@@ -211,6 +213,21 @@ public class Humanball
         }
 
         return emptyCells;
+    }
+
+    public List<HumanController> GetActuallyPresentHumans()
+    {
+        List<HumanController> humans = new List<HumanController>();
+
+        for (int i = 0; i < usedCells.Count; i++)
+        {
+            if (usedCells[i].transform.childCount > 0)
+            {
+                humans.Add(usedCells[i].transform.GetComponentInChildren<HumanController>());
+            }
+        }
+
+        return humans;
     }
 
     public HumanballCell GetPlanarClosestEmptyCell(Vector3 position, Axis planeAxis)

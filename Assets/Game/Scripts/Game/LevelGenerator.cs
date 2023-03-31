@@ -8,7 +8,6 @@ using UnityEngine;
 //
 //  Scope
 //  -
-//  - DropToBattle() actually present humans (Check 'usedCells')
 //  - Building colors (+2)
 //
 //  Polishing
@@ -349,28 +348,28 @@ public class LevelGenerator : MonoBehaviour
 
         if (topWeaponID > 0)
         {
-            int targetWeaponCount = Random.Range(totalHumansCount / 2, totalHumansCount + 1);
+            int targetWeaponCount = Random.Range(Mathf.CeilToInt(totalHumansCount / 2f), totalHumansCount + 1);
 
-            Dictionary<int, float> weaponPortionFactorTable = new Dictionary<int, float>();
+            List<WeaponMulticollectibleInfo> weaponPlacementTable = new List<WeaponMulticollectibleInfo>();
 
-            float weaponPortionFactorSum = 0;
-
-            int weaponPortionFactorKey = 0;
-
-            for (int i = 0; i < weaponCollectiblesCount; i++)
+            if (targetWeaponCount > 1)
             {
-                weaponPortionFactorKey = i - weaponCollectiblesCount + topWeaponID + 1;
+                Dictionary<int, float> weaponPortionFactorTable = new Dictionary<int, float>();
 
-                weaponPortionFactorTable.Add(weaponPortionFactorKey, ((float)(weaponCollectiblesCount / (i + 1))) * Random.Range(0.9f, 1.1f));
+                float weaponPortionFactorSum = 0;
 
-                weaponPortionFactorSum += weaponPortionFactorTable.GetValueOrDefault(weaponPortionFactorKey);
-            }
+                int weaponPortionFactorKey = 0;
 
-            int actualWeaponSum = 0;
+                for (int i = 0; i < weaponCollectiblesCount; i++)
+                {
+                    weaponPortionFactorKey = i - weaponCollectiblesCount + topWeaponID + 1;
 
-            if (weaponPortionFactorSum > 0)
-            {
-                List<WeaponMulticollectibleInfo> weaponPlacementTable = new List<WeaponMulticollectibleInfo>();
+                    weaponPortionFactorTable.Add(weaponPortionFactorKey, ((float)(weaponCollectiblesCount / (i + 1))) * Random.Range(0.9f, 1.1f));
+
+                    weaponPortionFactorSum += weaponPortionFactorTable.GetValueOrDefault(weaponPortionFactorKey);
+                }
+
+                int actualWeaponSum = 0;
 
                 foreach (int key in weaponPortionFactorTable.Keys)
                 {
@@ -383,21 +382,25 @@ public class LevelGenerator : MonoBehaviour
                 {
                     weaponPlacementTable[0].count -= actualWeaponSum - targetWeaponCount;
                 }
+            }
+            else
+            {
+                weaponPlacementTable.Add(new WeaponMulticollectibleInfo(topWeaponID, 1));
+            }
 
-                WeaponMulticollectibleInfo placementInfo;
+            WeaponMulticollectibleInfo placementInfo;
 
-                for (int i = 0; i < blockPairs.Count; i++)
+            for (int i = 0; i < blockPairs.Count; i++)
+            {
+                if (collectibleMap[i] == CollectibleType.Weapon)
                 {
-                    if (collectibleMap[i] == CollectibleType.Weapon)
+                    placementInfo = weaponPlacementTable.Count > 1 ? weaponPlacementTable.CutRandom(0, weaponPlacementTable.Count - 2) : weaponPlacementTable.CutAt(0);
+
+                    PlaceWeaponCollectible(blockPairs[i], placementInfo.id, placementInfo.count);
+
+                    if (multicollectibleInstance.RangeNumber > 0)
                     {
-                        placementInfo = weaponPlacementTable.Count > 1 ? weaponPlacementTable.CutRandom(0, weaponPlacementTable.Count - 2) : weaponPlacementTable.CutAt(0);
-
-                        PlaceWeaponCollectible(blockPairs[i], placementInfo.id, placementInfo.count);
-
-                        if (multicollectibleInstance.RangeNumber > 0)
-                        {
-                            AlignBlocksForCollectible(multicollectibleInstance, i);
-                        }
+                        AlignBlocksForCollectible(multicollectibleInstance, i);
                     }
                 }
             }

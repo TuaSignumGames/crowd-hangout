@@ -160,11 +160,11 @@ public class PlayerController : MonoBehaviour
     {
         humanballCrowd = new Crowd();
 
-        foreach (HumanballCell cell in ball.Structure.GetFilledCells())
+        foreach (HumanController human in ball.Structure.GetActuallyPresentHumans())
         {
-            humanballCrowd.AddMember(cell.Human);
+            humanballCrowd.AddMember(human);
 
-            cell.Human.DropToBattle(ball.Velocity + Random.insideUnitSphere, Vector3.right);
+            human.DropToBattle(ball.Velocity + Random.insideUnitSphere, Vector3.right);
         }
     }
 
