@@ -103,14 +103,17 @@ MonoBehaviour:
   teamSettings:
   - title: Neutral
     teamType: 0
+    backupRequestRadius: 0
     skinMaterial: {fileID: 2100000, guid: 581f7f558fb484f4ebf0b39146387c33, type: 2}
     impactVFX: {fileID: 0}
   - title: Yellow
     teamType: 1
+    backupRequestRadius: 1.5
     skinMaterial: {fileID: 2100000, guid: dfd8c93f61be44fed93840e9344d7b4d, type: 2}
     impactVFX: {fileID: 5657776267413645355}
   - title: Red
     teamType: 2
+    backupRequestRadius: 1.5
     skinMaterial: {fileID: 2100000, guid: a1557c96280594424ba225b39ab49919, type: 2}
     impactVFX: {fileID: 2288019555575076631}
   motionSettings:
@@ -268,7 +271,7 @@ MonoBehaviour:
     weaponModel: {fileID: 4211186143169583184}
     ammoContainer: {fileID: 8069652107406077708}
     damageRate: 60
-    reloadingTime: 2
+    reloadingTime: 1.2
     attackDistance: 18
     parabolaHeight: 0
     projectileSpeed: 40
@@ -295,14 +298,14 @@ MonoBehaviour:
     animationName: Shot-Throw
     keyframeTime: 0.54
     attackVFX: {fileID: 3364544254698358871}
-  - title: Fire Gun  [P:100]
+  - title: Firegun  [P:100]
     weaponContainer: {fileID: 8613084343064516235}
     weaponModel: {fileID: 8799029970763752760}
     ammoContainer: {fileID: 7909030947818995549}
     damageRate: 100
     reloadingTime: 0.1
     attackDistance: 15
-    parabolaHeight: 0
+    parabolaHeight: 1
     projectileSpeed: 15
     disableOnImpact: 0
     directionAngularOffset: 40
@@ -45548,7 +45551,7 @@ GameObject:
   - component: {fileID: 5864560331474060490}
   - component: {fileID: 429530928290637138}
   m_Layer: 0
-  m_Name: VFX[Explosion]
+  m_Name: VFX[Impact]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76149,7 +76152,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7936086867190011016}
   m_Layer: 0
-  m_Name: Fire Gun
+  m_Name: Firegun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

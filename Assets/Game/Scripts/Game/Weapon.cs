@@ -54,6 +54,8 @@ public class Weapon
     private bool isAttackRequested;
     private bool isTargetReachable;
 
+    public float Damage => damageRate * reloadingTime;
+
     public float Power { get { return damageRate; } set { damageRate = value; damage = damageRate * reloadingTime; } }
 
     public int WeaponID => WorldManager.GetWeaponID(Power);
@@ -267,7 +269,16 @@ public class Weapon
 
             trailRenderer = gameObject.GetComponent<TrailRenderer>();
 
-            impactVFX = gameObject.transform.GetComponentInChildren<ParticleSystem>();
+            if (gameObject.transform.childCount > 0)
+            {
+                foreach (Transform child in gameObject.transform.GetChildren())
+                {
+                    if (child.gameObject.name == "VFX[Impact]")
+                    {
+                        impactVFX = child.GetComponent<ParticleSystem>();
+                    }
+                }
+            }
         }
 
         public void Update()

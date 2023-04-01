@@ -77,6 +77,7 @@ public class Collectible : MonoBehaviour
         public FloatRange placementRange;
         [Space]
         public int fittingRangeNumber;
+        public float verticalShift;
         [Space]
         public Collider collider;
     }

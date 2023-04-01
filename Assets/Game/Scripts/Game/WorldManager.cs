@@ -6,6 +6,9 @@ public class WorldManager : MonoBehaviour
 {
     public static HumanController humanPrefab;
 
+    public static List<HumanController> yellowTeamHumans;
+    public static List<HumanController> redTeamHumans;
+
     public static List<Weapon> weaponAssortment;
 
     public static ProgressionSettings gameProgressionSettings;
@@ -29,6 +32,9 @@ public class WorldManager : MonoBehaviour
     private void Awake()
     {
         humanPrefab = _humanPrefab;
+
+        yellowTeamHumans = new List<HumanController>();
+        redTeamHumans = new List<HumanController>();
 
         weaponAssortment = new List<Weapon>(humanPrefab.weaponSettings);
 
@@ -92,6 +98,23 @@ public class WorldManager : MonoBehaviour
         print($" - Crytical stage: {GameManager.CryticalStageIndex}");
 
         //LevelGenerator.Instance.GenerateComposition();
+    }
+
+    public static HumanController[] GetHumansAhead(HumanTeam team, float x)
+    {
+        HumanController[] requestedTeamHumans = team == HumanTeam.Yellow ? yellowTeamHumans.ToArray() : redTeamHumans.ToArray();
+
+        List<HumanController> selectedHumans = new List<HumanController>();
+
+        for (int i = 0; i < requestedTeamHumans.Length; i++)
+        {
+            if (requestedTeamHumans[i].transform.position.x > x)
+            {
+                selectedHumans.Add(requestedTeamHumans[i]);
+            }
+        }
+
+        return selectedHumans.ToArray();
     }
 
     private void OnValidate()

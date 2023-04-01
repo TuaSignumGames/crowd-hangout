@@ -4,13 +4,9 @@ using UnityEngine;
 
 // TODO
 //
-// -> [ 'Frozen human' are still happens (check 'isActive' and position before add to crowd) ] <- 
-// -> [ 'RequestBackup' - is it best solution? ] <- 
 // -> [ Process upgrades immediately or on new level? ] <- 
 //
 //  Scope
-//  -
-//  - Weapon icons 
 //  -
 //  - Building colors (+2) 
 //
@@ -300,48 +296,55 @@ public class LevelGenerator : MonoBehaviour
     {
         int populationValue = GameManager.PopulationValue;
 
-        List<float> humanCollectiblePortionFactors = new List<float>();
+        int[] humanCollectibleCountMap = new int[humanCollectiblesCount];
 
-        float humanCollectiblePortionSum = 0;
-
-        for (int i = 0; i < collectibleMap.Length; i++)
+        if (populationValue > humanCollectiblesCount)
         {
-            if (collectibleMap[i] == CollectibleType.Human)
-            {
-                humanCollectiblePortionFactors.Add(collectibleSettings.populationCurve.Evaluate(i / (float)collectibleMap.Length));
+            List<float> humanCollectiblePortionFactors = new List<float>();
 
-                humanCollectiblePortionSum += humanCollectiblePortionFactors.GetLast();
+            float humanCollectiblePortionSum = 0;
+
+            for (int i = 0; i < collectibleMap.Length; i++)
+            {
+                if (collectibleMap[i] == CollectibleType.Human)
+                {
+                    humanCollectiblePortionFactors.Add(collectibleSettings.populationCurve.Evaluate(i / (float)collectibleMap.Length));
+
+                    humanCollectiblePortionSum += humanCollectiblePortionFactors.GetLast();
+                }
+            }
+
+            int actualHumansSum = 0;
+
+            for (int i = 0; i < humanCollectibleCountMap.Length; i++)
+            {
+                humanCollectibleCountMap[i] = Mathf.CeilToInt(populationValue * humanCollectiblePortionFactors[i] / humanCollectiblePortionSum);
+
+                actualHumansSum += humanCollectibleCountMap[i];
+            }
+
+            if (actualHumansSum > populationValue)
+            {
+                humanCollectibleCountMap[humanCollectibleCountMap.GetIndexOfMax()] -= actualHumansSum - populationValue;
             }
         }
-
-        int actualHumansSum = 0;
-
-        int[] humanCollectibleCountMap = new int[humanCollectiblePortionFactors.Count];
-
-        for (int i = 0; i < humanCollectibleCountMap.Length; i++)
+        else
         {
-            humanCollectibleCountMap[i] = Mathf.CeilToInt(populationValue * humanCollectiblePortionFactors[i] / humanCollectiblePortionSum);
-
-            actualHumansSum += humanCollectibleCountMap[i];
-        }
-
-        if (actualHumansSum > populationValue)
-        {
-            humanCollectibleCountMap[humanCollectibleCountMap.GetIndexOfMax()] -= actualHumansSum - populationValue;
+            for (int i = 0; i < humanCollectibleCountMap.Length; i++)
+            {
+                humanCollectibleCountMap[i] = i == 0 ? populationValue : 0;
+            }
         }
 
         Queue<int> humanPortionQueue = new Queue<int>(humanCollectibleCountMap);
 
         for (int i = 0; i < blockPairs.Count; i++)
         {
-            if (collectibleMap[i] == CollectibleType.Human)
+            if (collectibleMap[i] == CollectibleType.Human && humanPortionQueue.Peek() > 0)
             {
                 PlaceHumanCollectible(blockPairs[i], humanPortionQueue.Dequeue());
 
-                if (multicollectibleInstance.RangeNumber > 0)
-                {
-                    AlignBlocksForCollectible(multicollectibleInstance, i);
-                }
+                AlignBlocksForCollectible(multicollectibleInstance, i);
             }
         }
     }
@@ -392,13 +395,21 @@ public class LevelGenerator : MonoBehaviour
                 weaponPlacementTable.Add(new WeaponMulticollectibleInfo(topWeaponID, 1));
             }
 
+            for (int i = 0; i < weaponPlacementTable.Count; i++)
+            {
+                if (weaponPlacementTable[i].id != topWeaponID)
+                {
+                    weaponPlacementTable[i].id = Random.Range(1, topWeaponID);
+                }
+            }
+
             WeaponMulticollectibleInfo placementInfo;
 
             for (int i = 0; i < blockPairs.Count; i++)
             {
                 if (collectibleMap[i] == CollectibleType.Weapon)
                 {
-                    placementInfo = weaponPlacementTable.Count > 1 ? weaponPlacementTable.CutRandom(0, weaponPlacementTable.Count - 2) : weaponPlacementTable.CutAt(0);
+                    placementInfo = weaponPlacementTable.CutAt(weaponPlacementTable.Count - 1); //weaponPlacementTable.Count > 1 ? weaponPlacementTable.CutRandom(0, weaponPlacementTable.Count - 2) : weaponPlacementTable.CutAt(0);
 
                     PlaceWeaponCollectible(blockPairs[i], placementInfo.id, Mathf.Clamp(placementInfo.count, 1, totalHumansCount));
 
@@ -511,9 +522,19 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private void AlignBlocksForCollectible(Collectible collectible, int pivotBlockPairIndex)
+    private void AlignBlocksForCollectible(Multicollectible collectible, int pivotBlockPairIndex)
     {
-        AlignBlocks(blockPairs[pivotBlockPairIndex], collectible.Placement == CollectiblePlacementType.Any ? 0 : (collectible.Placement == CollectiblePlacementType.Ceiling ? 1 : -1), pivotBlockPairIndex - collectible.RangeNumber, pivotBlockPairIndex + collectible.RangeNumber);
+        if (collectible.RangeNumber > 0)
+        {
+            AlignBlocks(blockPairs[pivotBlockPairIndex], collectible.Placement == CollectiblePlacementType.Any ? 0 : (collectible.Placement == CollectiblePlacementType.Ceiling ? 1 : -1), pivotBlockPairIndex - collectible.RangeNumber, pivotBlockPairIndex + collectible.RangeNumber);
+        }
+
+        if (collectible.collectibleSettings.verticalShift != 0)
+        {
+            blockPairs[pivotBlockPairIndex].floorBlock.transform.position += new Vector3(0, collectible.collectibleSettings.verticalShift, 0);
+        }
+
+        blockPairs[pivotBlockPairIndex].FitCollectible();
     }
 
     public void UpdateLevelConfiguration(int humanballLayerIndex)

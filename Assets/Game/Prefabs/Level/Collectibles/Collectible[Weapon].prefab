@@ -611,7 +611,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1
+  m_Radius: 1.5
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1540288154617946511
 MonoBehaviour:
@@ -631,6 +631,7 @@ MonoBehaviour:
       min: 0.4
       max: 0.7
     fittingRangeNumber: 0
+    verticalShift: 0
     collider: {fileID: 1540288154617946510}
   multicollectibleSettings:
     elementCountMarker:

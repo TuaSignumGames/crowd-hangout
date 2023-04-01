@@ -94,6 +94,8 @@ public class HumanController : MonoBehaviour
             SetTeam(this.team = team);
         }
 
+        (this.team == HumanTeam.Yellow ? WorldManager.yellowTeamHumans : WorldManager.redTeamHumans).Add(this);
+
         if (weaponIndex > 0)
         {
             SetWeapon(weaponIndex, false);
@@ -288,11 +290,19 @@ public class HumanController : MonoBehaviour
         components.animator.SetBool(animatorAttackingHash, false);
     }
 
-    public void RequestBackup()
+    public void RequestBackup(float requestRadius)
     {
+        float sqrRequestRadius = requestRadius * requestRadius;
+
         for (int i = 0; i < actualCrowd.Members.Length; i++)
         {
-            actualCrowd.Members[i].AI.Assault();
+            if (actualCrowd.Members[i].AI.BehaviourMode == HumanBehaviourType.Defence)
+            {
+                if ((actualCrowd.Members[i].transform.position - transform.position).GetPlanarSqrMagnitude(Axis.Y) < sqrRequestRadius)
+                {
+                    actualCrowd.Members[i].AI.Assault();
+                }
+            }
         }
     }
 
@@ -401,7 +411,7 @@ public class HumanController : MonoBehaviour
                 ai.SetEnemy(agressor);
                 ai.Assault();
 
-                RequestBackup();
+                RequestBackup(actualTeamInfo.backupRequestRadius);
             }
         }
 
@@ -603,6 +613,9 @@ public class HumanTeamInfo
     public string title;
 
     public HumanTeam teamType;
+    [Space]
+    public float backupRequestRadius;
+    [Space]
     public Material skinMaterial;
     public ParticleSystem impactVFX;
 }

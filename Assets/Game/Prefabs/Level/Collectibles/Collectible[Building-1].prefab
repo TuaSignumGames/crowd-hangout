@@ -2916,6 +2916,7 @@ MonoBehaviour:
       min: 0
       max: 0
     fittingRangeNumber: 1
+    verticalShift: 2
     collider: {fileID: 2771079093471186133}
   multicollectibleSettings:
     elementCountMarker:
@@ -2948,7 +2949,7 @@ MonoBehaviour:
     roof: {fileID: 1947972235802973400}
     stage: {fileID: 8965704848752203926}
     stageHeight: 2.5
-    stageCapacity: 5
+    stageCapacity: 10
     stageDestructionDelay: 0.2
 --- !u!1 &3762160644795272499
 GameObject:

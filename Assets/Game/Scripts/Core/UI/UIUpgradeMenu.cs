@@ -42,11 +42,18 @@ public class UIUpgradeMenu : UIElement
 
     private void UpdateWeaponCard(UpgradeInfo upgradeInfo)
     {
-        weaponInfo = WorldManager.weaponAssortment[WorldManager.GetWeaponID(GameManager.TopWeaponPower)];
+        weaponInfo = WorldManager.weaponAssortment[WorldManager.GetWeaponID(upgradeInfo.value)];
 
         //weaponCard.SetSliderValue(Mathf.InverseLerp(weaponInfo.Power, WorldManager.weaponAssortment[weaponInfo.WeaponID + 1].Power, GameManager.TopWeaponPower));
 
-        weaponCard.valueText.text = $"{weaponInfo.weaponContainer.name.ToUpper()}";
+        int weaponID = weaponInfo.WeaponID;
+
+        for (int i = 0; i < weaponCard.icons.Length; i++)
+        {
+            weaponCard.icons[i].SetActive(i == weaponID);
+        }
+
+        weaponCard.valueText.text = $"Damage:  <b>{upgradeInfo.value}</b>";
         weaponCard.priceText.text = "$" + upgradeInfo.price.ToString("N0");
 
         weaponCard.buttonComponent.Interactable = GameManager.Currency >= upgradeInfo.price;
@@ -54,7 +61,7 @@ public class UIUpgradeMenu : UIElement
 
     private void UpdatePopulationCard(UpgradeInfo upgradeInfo)
     {
-        populationCard.valueText.text = $"{GameManager.PopulationValue + 1}";
+        populationCard.valueText.text = $"Number:  <b>{upgradeInfo.value + 1}</b>";
         populationCard.priceText.text = "$" + upgradeInfo.price.ToString("N0");
 
         populationCard.buttonComponent.Interactable = GameManager.Currency >= upgradeInfo.price;
@@ -66,11 +73,12 @@ public class UpgradeCard
 {
     public QuickButton buttonComponent;
     [Space]
-    public Transform sliderTransform;
+    public GameObject[] icons;
     [Space]
     public Text valueText;
     public Text priceText;
 
+    /*
     public void SetSliderValue(float value)
     {
         if (sliderTransform)
@@ -78,4 +86,5 @@ public class UpgradeCard
             sliderTransform.localScale = new Vector3(Mathf.Clamp01(value), 1f, 1f);
         }
     }
+    */
 }

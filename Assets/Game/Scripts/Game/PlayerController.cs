@@ -160,7 +160,7 @@ public class PlayerController : MonoBehaviour
     {
         humanballCrowd = new Crowd();
 
-        foreach (HumanController human in ball.Structure.GetActuallyPresentHumans())
+        foreach (HumanController human in WorldManager.GetHumansAhead(HumanTeam.Yellow, BattlePath.Instance.Position.x - LevelGenerator.Instance.blockSettings.blockLength * 2f)) //ball.Structure.GetActuallyPresentHumans())
         {
             humanballCrowd.AddMember(human);
 
