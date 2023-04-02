@@ -3,11 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-//using GameAnalyticsSDK;
-//using Facebook.Unity;
 using MoreMountains.NiceVibrations;
+using SupersonicWisdomSDK;
 
-public class AppManager : Service<AppManager>//, IGameAnalyticsATTListener
+public class AppManager : Service<AppManager>
 {
     [SerializeField] private int _targetFramerate;
     [SerializeField] private int _gameEntrySceneIndex;
@@ -36,32 +35,16 @@ public class AppManager : Service<AppManager>//, IGameAnalyticsATTListener
             PlayerPrefs.SetInt("APP_FLF", 1);
         }
 
+#if !UNITY_EDITOR
+
+        SupersonicWisdom.Api.AddOnReadyListener(LoadGameScene);
+        SupersonicWisdom.Api.Initialize();
+
+#endif
+
         _isVibrationActive = IsVibrationActive;
 
         base.Initialize();
-    }
-
-    private void Start()
-    {
-        /*
-        if (Application.platform == RuntimePlatform.IPhonePlayer)
-        {
-            GameAnalytics.RequestTrackingAuthorization(this);
-        }
-        else
-        {
-            GameAnalytics.Initialize();
-        }
-        
-        if (FB.IsInitialized)
-        {
-            FB.ActivateApp();
-        }
-        else
-        {
-            FB.Init(FbInitCallback, (isUnityShown) => { });
-        }
-        */
     }
 
     public void LoadGameScene()
@@ -94,48 +77,4 @@ public class AppManager : Service<AppManager>//, IGameAnalyticsATTListener
 
         IsVibrationActive = _isVibrationActive;
     }
-    /*
-    public void GameAnalyticsATTListenerNotDetermined()
-    {
-        GameAnalytics.Initialize();
-    }
-
-    public void GameAnalyticsATTListenerRestricted()
-    {
-        GameAnalytics.Initialize();
-    }
-
-    public void GameAnalyticsATTListenerDenied()
-    {
-        GameAnalytics.Initialize();
-    }
-
-    public void GameAnalyticsATTListenerAuthorized()
-    {
-        GameAnalytics.Initialize();
-    }
-    
-    private void FbInitCallback()
-    {
-        if (FB.IsInitialized)
-        {
-            FB.ActivateApp();
-        }
-        else
-        {
-            Debug.Log("Failed to Initialize the Facebook SDK");
-        }
-
-        Invoke(nameof(RegisterAppForNetworkAttribution), 1);
-    }
-    
-    private void RegisterAppForNetworkAttribution()
-    {
-        #if UNITY_IOS
-
-        Unity.Advertisement.IosSupport.SkAdNetworkBinding.SkAdNetworkRegisterAppForNetworkAttribution();
-
-        #endif
-    }
-    */
 }

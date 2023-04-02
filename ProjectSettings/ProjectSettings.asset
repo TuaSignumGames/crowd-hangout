@@ -239,10 +239,10 @@ PlayerSettings:
   clonedFromGUID: 9870af204204ab84596f8a656f2f2ce6
   templatePackageId: com.unity.template.universal@10.4.0
   templateDefaultScene: Assets/Scenes/SampleScene.unity
-  useCustomMainManifest: 0
+  useCustomMainManifest: 1
   useCustomLauncherManifest: 0
   useCustomMainGradleTemplate: 0
-  useCustomLauncherGradleManifest: 0
+  useCustomLauncherGradleManifest: 1
   useCustomBaseGradleTemplate: 0
   useCustomGradlePropertiesTemplate: 0
   useCustomProguardFile: 0
@@ -807,7 +807,10 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   webGLPowerPreference: 2
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Android: SW_STAGE_STAGE1;SW_STAGE_STAGE1_OR_ABOVE
+    Standalone: SW_STAGE_STAGE1;SW_STAGE_STAGE1_OR_ABOVE
+    iPhone: SW_STAGE_STAGE1;SW_STAGE_STAGE1_OR_ABOVE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

@@ -25,7 +25,13 @@ public class GameLoader : MonoBehaviour
 
     private void Start()
     {
+
+#if UNITY_EDITOR
+
         AppManager.Instance.LoadGameScene();
+
+#endif
+
     }
 
     private void OnApplicationQuit()

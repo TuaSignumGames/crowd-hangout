@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-//using GameAnalyticsSDK;
+using SupersonicWisdomSDK;
 
 public class LevelManager : Service<LevelManager>
 {
@@ -62,7 +62,12 @@ public class LevelManager : Service<LevelManager>
         {
             StartCoroutine(LevelStartingCoroutine());
 
-            //GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, "level_" + LevelNumber.ToString("D3"));
+#if !UNITY_EDITOR
+
+            SupersonicWisdom.Api.NotifyLevelStarted(LevelNumber, null);
+
+#endif
+
         }
     }
 
@@ -77,18 +82,20 @@ public class LevelManager : Service<LevelManager>
 
             SwitchLevelEntities(false);
 
+#if !UNITY_EDITOR
+
             if (_isLevelPassed)
             {
-                //GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "level_" + LevelNumber.ToString("D3"));
-
-                AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.Success);
+                SupersonicWisdom.Api.NotifyLevelCompleted(LevelNumber, null);
             }
             else
             {
-                //GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "level_" + LevelNumber.ToString("D3"));
-
-                AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.Failure);
+                SupersonicWisdom.Api.NotifyLevelFailed(LevelNumber, null);
             }
+
+#endif
+
+            AppManager.Instance.PlayHaptic(_isLevelPassed ? MoreMountains.NiceVibrations.HapticTypes.Success : MoreMountains.NiceVibrations.HapticTypes.Failure);
 
             //UIRewardPanel.Instance.SetReward(_rewardAmount);
 

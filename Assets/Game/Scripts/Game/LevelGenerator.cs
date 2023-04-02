@@ -159,7 +159,7 @@ public class LevelGenerator : MonoBehaviour
             {
                 CheckForBattlePath();
 
-                UpdateLevelVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
+                //UpdateLevelVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
 
                 UIProgressBar.Instance.SetProgressValue(Mathf.Clamp01(PlayerController.Humanball.Transform.position.x / levelLength));
             }
