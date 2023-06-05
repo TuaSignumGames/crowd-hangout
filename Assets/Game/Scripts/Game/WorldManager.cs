@@ -6,6 +6,8 @@ public class WorldManager : MonoBehaviour
 {
     public static HumanController humanPrefab;
 
+    public static EnvironmentSettings environmentSettings;
+
     public static List<HumanController> yellowTeamHumans;
     public static List<HumanController> redTeamHumans;
 
@@ -32,6 +34,8 @@ public class WorldManager : MonoBehaviour
     private void Awake()
     {
         humanPrefab = _humanPrefab;
+
+        environmentSettings = _environmentSettings;
 
         yellowTeamHumans = new List<HumanController>();
         redTeamHumans = new List<HumanController>();
@@ -73,9 +77,9 @@ public class WorldManager : MonoBehaviour
         return humanPrefab.weaponSettings.Count - 1;
     }
 
-    public static void Upgrade(CollectibleType upgradeTarget)
+    public static void Upgrade(LevelElementType upgradeTarget)
     {
-        if (upgradeTarget == CollectibleType.Weapon)
+        if (upgradeTarget == LevelElementType.CollectibleWeapon)
         {
             actualUpgradeInfo = weaponUpgradeSettings.GetUpgradeInfo(GameManager.WeaponUpgradeIndex++);
 
@@ -84,7 +88,7 @@ public class WorldManager : MonoBehaviour
             HumanController.selectedHuman.SetWeapon(GetWeaponID(actualUpgradeInfo.value));
         }
 
-        if (upgradeTarget == CollectibleType.Human)
+        if (upgradeTarget == LevelElementType.CollectibleHuman)
         {
             actualUpgradeInfo = populationUpgradeSettings.GetUpgradeInfo(GameManager.PopulationUpgradeIndex++);
 

@@ -11,10 +11,10 @@ namespace SupersonicWisdomSDK
         public const int DefaultRequestTimeout = 10;
         public const string Feature = "";
         public const long FeatureVersion = 0;
-        public const string BuildNumber = "5582";
-        public const string GitCommit = "aebe24a";
+        public const string BuildNumber = "5907";
+        public const string GitCommit = "28736d0";
 
-        public const string SdkVersion = "7.2.9";
+        public const string SdkVersion = "7.2.11";
         public const string SettingsResourcePath = "SupersonicWisdom/Settings";
         public const string ExtractedResourcesDirName = "Extracted";
         public const string CrashlyticsDependenciesFilePath = "Firebase/Editor/";

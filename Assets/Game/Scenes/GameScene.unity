@@ -3621,7 +3621,100 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _humanPrefab: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
   _environmentSettings:
-    clouds: {fileID: 0}
+    lakeSegmentData:
+      ceilingProfile:
+        blockPrefab: {fileID: 4793454751304758902, guid: 8e8a11f99cf3c40a99adcaa998ccc3fd, type: 3}
+        profileCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: -2
+            outSlope: -2
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 0.5
+            value: -1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 2
+            outSlope: 2
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        profileAmplitude: 10
+      groundProfile:
+        blockPrefab: {fileID: 2356113001060044322, guid: b4347fedcc1aa40b4ad5027551548e18, type: 3}
+        profileCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: -2
+            outSlope: -2
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 0.5
+            value: -1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 2
+            outSlope: 2
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        profileAmplitude: 10
+      segmentSize: 5
+    lavaSegmentData:
+      ceilingProfile:
+        blockPrefab: {fileID: 0}
+        profileCurve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        profileAmplitude: 0
+      groundProfile:
+        blockPrefab: {fileID: 0}
+        profileCurve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        profileAmplitude: 0
+      segmentSize: 0
   _gameProgressionSettings:
     progressionStages:
     - title: Level 1-3
@@ -6668,10 +6761,10 @@ MonoBehaviour:
         collectiblePointType: 0
       cycle:
       - blocksCount: 6
-        collectiblePointType: 1
+        collectiblePointType: 14
       endStep:
         blocksCount: 5
-        collectiblePointType: 2
+        collectiblePointType: 15
       cyclesCount: 2
     - title: Easy
       startStep:
@@ -6679,10 +6772,10 @@ MonoBehaviour:
         collectiblePointType: 0
       cycle:
       - blocksCount: 6
-        collectiblePointType: 1
+        collectiblePointType: 14
       endStep:
         blocksCount: 6
-        collectiblePointType: 2
+        collectiblePointType: 15
       cyclesCount: 2
     - title: Medium
       startStep:
@@ -6690,11 +6783,11 @@ MonoBehaviour:
         collectiblePointType: 0
       cycle:
       - blocksCount: 5
-        collectiblePointType: 1
+        collectiblePointType: 14
       - blocksCount: 5
-        collectiblePointType: 1
+        collectiblePointType: 14
       - blocksCount: 5
-        collectiblePointType: 2
+        collectiblePointType: 15
       endStep:
         blocksCount: 1
         collectiblePointType: 0
@@ -6705,11 +6798,11 @@ MonoBehaviour:
         collectiblePointType: 0
       cycle:
       - blocksCount: 5
-        collectiblePointType: 1
+        collectiblePointType: 14
       - blocksCount: 3
-        collectiblePointType: 1
+        collectiblePointType: 14
       - blocksCount: 4
-        collectiblePointType: 2
+        collectiblePointType: 15
       endStep:
         blocksCount: 1
         collectiblePointType: 0
@@ -6717,18 +6810,29 @@ MonoBehaviour:
     - title: Advanced
       startStep:
         blocksCount: 5
-        collectiblePointType: 1
+        collectiblePointType: 14
+      cycle:
+      - blocksCount: 5
+        collectiblePointType: 14
+      - blocksCount: 5
+        collectiblePointType: 15
+      - blocksCount: 3
+        collectiblePointType: 14
+      endStep:
+        blocksCount: 4
+        collectiblePointType: 15
+      cyclesCount: 2
+    - title: Lakes
+      startStep:
+        blocksCount: 5
+        collectiblePointType: 0
       cycle:
       - blocksCount: 5
         collectiblePointType: 1
-      - blocksCount: 5
-        collectiblePointType: 2
-      - blocksCount: 3
-        collectiblePointType: 1
       endStep:
-        blocksCount: 4
-        collectiblePointType: 2
-      cyclesCount: 2
+        blocksCount: 5
+        collectiblePointType: 0
+      cyclesCount: 1
     landscapes:
     - title: Plain
       patterns:

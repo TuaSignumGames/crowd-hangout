@@ -62,6 +62,8 @@ public class LevelManager : Service<LevelManager>
         {
             StartCoroutine(LevelStartingCoroutine());
 
+            print($" --- Event: level start [val: {LevelNumber}]");
+
 #if !UNITY_EDITOR
 
             SupersonicWisdom.Api.NotifyLevelStarted(LevelNumber, null);
@@ -81,6 +83,15 @@ public class LevelManager : Service<LevelManager>
             _levelFinishTime = Time.timeSinceLevelLoad;
 
             SwitchLevelEntities(false);
+
+            if (_isLevelPassed)
+            {
+                print($" --- Event: level complete [val: {LevelNumber}]");
+            }
+            else
+            {
+                print($" --- Event: level failed [val: {LevelNumber}]");
+            }
 
 #if !UNITY_EDITOR
 

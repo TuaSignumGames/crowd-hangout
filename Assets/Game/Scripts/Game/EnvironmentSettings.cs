@@ -5,10 +5,6 @@ using UnityEngine;
 [System.Serializable]
 public class EnvironmentSettings
 {
-    public ParticleSystem clouds;
-
-    public void SetupClouds(float length)
-    {
-
-    }
+    public LandscapeSegmentData lakeSegmentData;
+    public LandscapeSegmentData lavaSegmentData;
 }

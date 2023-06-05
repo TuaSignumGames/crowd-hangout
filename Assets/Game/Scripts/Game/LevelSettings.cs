@@ -23,11 +23,7 @@ public class LevelSettings
 
 public struct LevelData
 {
-    public LevelStepData startStep;
-    public LevelStepData endStep;
-
-    public LevelStepData[] cycleSteps;
-
+    public LevelCycleData structureData;
     public LandscapeData landscapeData;
 
     public int cyclesCount;
@@ -35,19 +31,15 @@ public struct LevelData
 
     public LevelData(LevelCycleData structureData, LandscapeData landscapeData)
     {
-        startStep = structureData.startStep;
-        endStep = structureData.endStep;
-
-        cycleSteps = structureData.cycle.ToArray();
-
+        this.structureData = structureData;
         this.landscapeData = landscapeData;
 
         cyclesCount = structureData.cyclesCount;
         blocksCount = 0;
 
-        for (int i = 0; i < cycleSteps.Length; i++)
+        for (int i = 0; i < structureData.cycle.Count; i++)
         {
-            blocksCount += cycleSteps[i].blocksCount + 1;
+            blocksCount += structureData.cycle[i].blocksCount + 1;
         }
 
         blocksCount *= cyclesCount;
@@ -91,7 +83,7 @@ public struct LevelCycleData
 public struct LevelStepData
 {
     public int blocksCount;
-    public CollectibleType collectiblePointType;
+    public LevelElementType collectiblePointType;
 }
 
 [System.Serializable]

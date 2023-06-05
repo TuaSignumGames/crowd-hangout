@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Settings
   m_EditorClassIdentifier: 
   appName: 
-  iosAppId: 
+  iosAppId: 6448892607
   iosChinaAppId: 
-  iosGameId: 
+  iosGameId: 38d33468-abad-4d31-b7d5-420b863fbbd6
   iosChinaGameId: 
   androidGameId: 8f9d80b6-a266-42f7-a6a6-394f8303ff35
   ironSourceAndroidAppKey: 
   ironSourceIosAppKey: 
   ironSourceIosChinaAppKey: 
-  iosGameAnalyticsGameKey: 
-  iosGameAnalyticsSecretKey: 
+  iosGameAnalyticsGameKey: edc37a72f08c3b7896133405867c725e
+  iosGameAnalyticsSecretKey: 55bf6ab5884ba6e4545b1bb1909dbda70dc548f5
   androidGameAnalyticsGameKey: e4221e5058574b8c31e84444c25bbd31
   androidGameAnalyticsSecretKey: 52a964f7729239f2a773d74c6a9f334941bbff71
   adMobIosAppId: 
