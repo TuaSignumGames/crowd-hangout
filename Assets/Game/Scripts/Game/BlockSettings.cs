@@ -6,13 +6,14 @@ using UnityEngine;
 public class BlockSettings
 {
     public Transform blocksContainer;
-    public GameObject[] ceilBlockPrefabs;
-    public GameObject[] floorBlockPrefabs;
     public float blockLength;
     [Space]
     public float thresholdValue;
     [Space]
     public HeightIncrementData heightIncrementSettings;
+    [Space]
+    public GameObject waterBlockPrefab;
+    public GameObject lavaBlockPrefab;
 }
 
 [System.Serializable]

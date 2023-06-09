@@ -439,12 +439,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1540288154087185963}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.029999971, y: -0.089999914, z: 1.14}
-  m_LocalScale: {x: 0.40000004, y: 0.4, z: 0.40000004}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.5}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 4799264169989426052}
+  m_Father: {fileID: 152430788966536446}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1540288154087185961
@@ -488,8 +488,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: cb345b760d15942e984e242e0d31a3bd, type: 3}
-  m_Color: {r: 0.011764705, g: 0.36691508, b: 1, a: 0.6745098}
+  m_Sprite: {fileID: 21300000, guid: 1e655b8b760a74d84a177f40d08caa2f, type: 3}
+  m_Color: {r: 0, g: 0.19188643, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -629,7 +629,7 @@ MonoBehaviour:
     placement: 0
     placementRange:
       min: 0.4
-      max: 0.7
+      max: 0.6
     fittingRangeNumber: 0
     verticalShift: 0
     collider: {fileID: 1540288154617946510}
@@ -648,18 +648,26 @@ MonoBehaviour:
       destructionVFX: {fileID: 5558071369592159015}
     capsuleScatteringSettings:
       impulseRatio: {x: 0, y: 0, z: 0}
+      impulseMagnitudeRange:
+        min: 0
+        max: 0
       angularMomentumRange:
         min: 0
         max: 0
       externalImpulseFactor: 0
+      gravityModifier: 1
     collectiblePullingSpeed: 25
     collectiblePullingDelay: 0.6
     collectibleScatteringSettings:
       impulseRatio: {x: 1, y: 1, z: 1}
+      impulseMagnitudeRange:
+        min: 1
+        max: 1
       angularMomentumRange:
         min: 90
         max: 720
       externalImpulseFactor: 2.5
+      gravityModifier: 1
   iconFrame: {fileID: 1540288153252409335}
   assortment:
   - {fileID: 1540288153566351769}
@@ -750,7 +758,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1540288153252409332}
-  - {fileID: 1540288154087185960}
   m_Father: {fileID: 1540288154021997857}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -987,6 +994,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5206098810802369428}
+  - {fileID: 1540288154087185960}
   m_Father: {fileID: 1540288154617946505}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -6447,7 +6455,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 32a3f249a152b438c9e1d3b98390c8aa, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
-      objectReference: {fileID: 2100000, guid: 56d782aa5096241aabc5082bfb9033ae, type: 2}
+      objectReference: {fileID: 2100000, guid: f1778998d598c42d79b21a1822552a42, type: 2}
     - target: {fileID: -7511558181221131132, guid: 32a3f249a152b438c9e1d3b98390c8aa, type: 3}
       propertyPath: m_Materials.Array.data[2]
       value: 
@@ -6529,7 +6537,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 716fb1d9fe43b44a6acf31cf049cbb7a, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: e64bec3f94a0642f8b36f1e7b176cd09, type: 2}
+      objectReference: {fileID: 2100000, guid: f1778998d598c42d79b21a1822552a42, type: 2}
     - target: {fileID: -7511558181221131132, guid: 716fb1d9fe43b44a6acf31cf049cbb7a, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 

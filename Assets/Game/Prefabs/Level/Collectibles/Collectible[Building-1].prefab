@@ -2930,18 +2930,26 @@ MonoBehaviour:
     capsules: []
     capsuleScatteringSettings:
       impulseRatio: {x: 1, y: 3, z: 1}
+      impulseMagnitudeRange:
+        min: 0
+        max: 0
       angularMomentumRange:
         min: 90
         max: 720
       externalImpulseFactor: 0.3
-    collectiblePullingSpeed: 25
-    collectiblePullingDelay: 0.6
+      gravityModifier: 1
+    collectiblePullingSpeed: 100
+    collectiblePullingDelay: 0
     collectibleScatteringSettings:
       impulseRatio: {x: 1, y: 10, z: 1}
+      impulseMagnitudeRange:
+        min: 0
+        max: 0
       angularMomentumRange:
         min: 90
         max: 720
       externalImpulseFactor: 2.5
+      gravityModifier: 1
   humanContainer: {fileID: 3762160643071450838}
   humanPrefab: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
   buildingSettings:
@@ -2949,7 +2957,7 @@ MonoBehaviour:
     roof: {fileID: 1947972235802973400}
     stage: {fileID: 8965704848752203926}
     stageHeight: 2.5
-    stageCapacity: 10
+    stageCapacity: 100
     stageDestructionDelay: 0.2
 --- !u!1 &3762160644795272499
 GameObject:

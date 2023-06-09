@@ -12,6 +12,8 @@ TagManager:
   - BOSS
   - FIN
   - PROP
+  - WTR
+  - WND
   layers:
   - Default
   - TransparentFX
@@ -23,7 +25,7 @@ TagManager:
   - Block
   - Human
   - Collectible
-  - 
+  - ForceArea
   - 
   - 
   - 

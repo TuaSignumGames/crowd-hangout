@@ -22,14 +22,14 @@ public class UIUpgradeMenu : UIElement
 
     public void UpgradeWeapon()
     {
-        WorldManager.Upgrade(LevelElementType.CollectibleWeapon);
+        WorldManager.Upgrade(CollectibleType.Weapon);
 
         UpdateCards();
     }
 
     public void UpgradePopulation()
     {
-        WorldManager.Upgrade(LevelElementType.CollectibleHuman);
+        WorldManager.Upgrade(CollectibleType.Human);
 
         UpdateCards();
     }

@@ -19,7 +19,7 @@ public class Switcher : MonoBehaviour
     [Space]
     public UnityEvent<int> onValueChanged;
 
-    private Action<int> onValueChangedIndexed;
+    //private Action<int> onValueChangedIndexed;
 
     private TextItemData[] textItems;
     private ColorItemData[] colorItems;

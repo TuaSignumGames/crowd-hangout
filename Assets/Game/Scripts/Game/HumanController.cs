@@ -15,6 +15,7 @@ public class HumanController : MonoBehaviour
     public List<HumanTeamInfo> teamSettings;
     public HumanMotionSettings motionSettings;
     public List<Weapon> weaponSettings;
+    public Vector3 pitchAxis;
     [Space]
     public HumanRig rigSettings;
     public HumanPoseSettings poseSettings;
@@ -69,6 +70,8 @@ public class HumanController : MonoBehaviour
     public bool IsInitialized => isInitialized;
 
     public bool IsAlive => healthPoints > 0;
+    public bool IsFree => isFree;
+    public bool InBattle => inBattle;
 
     public static int animatorFlyHash;
     public static int animatorWinHash;
@@ -119,6 +122,8 @@ public class HumanController : MonoBehaviour
 
         targetFacingAngle = -90f;
 
+        ai = new HumanAI(this);
+
         isInitialized = true;
     }
 
@@ -159,8 +164,12 @@ public class HumanController : MonoBehaviour
                 motionSimulator.Update();
             }
         }
+        else if (!inBattle)
+        {
+            motionSimulator.Update();
+        }
 
-        if (inBattle)
+        //if (inBattle)
         {
             currentWeapon.Update();
         }
@@ -170,11 +179,16 @@ public class HumanController : MonoBehaviour
     {
         if (healthPoints > 0)
         {
+            if (ai != null)
+            {
+                ai.Update();
+            }
+
             if (isFree)
             {
                 if (inBattle)
                 {
-                    ai.Update();
+                    //ai.Update();
 
                     healthBar.Update();
 
@@ -182,7 +196,7 @@ public class HumanController : MonoBehaviour
                 }
                 else
                 {
-                    motionSimulator.SetGround(LevelGenerator.Instance.GetBlockPair(transform.position).floorBlock.transform.position.y);
+                    motionSimulator.SetGround(LevelGenerator.Instance.GetBlockPair(transform.position).groundBlock.transform.position.y);
                 }
 
                 if (motionSimulator.IsGrounded)
@@ -215,12 +229,14 @@ public class HumanController : MonoBehaviour
             facingDirection = (point - transform.position).normalized;
 
             targetFacingAngle = 90f - new Vector3(1, 0, 0).GetPlanarAngleTo(facingDirection, Axis.Y) + angularOffset;
+
+            rigSettings.bones[3].transform.localEulerAngles = -pitchAxis * Vector3.Angle(transform.forward, facingDirection);
         }
     }
 
     public void Attack(HumanController human)
     {
-        if (motionSimulator.IsGrounded)
+        //if (motionSimulator.IsGrounded)
         {
             targetSpeed = 0;
 
@@ -228,7 +244,7 @@ public class HumanController : MonoBehaviour
 
             if (human.IsAlive)
             {
-                FocusOn(human.transform.position, currentWeapon.directionAngularOffset, true);
+                FocusOn(human.transform.position, currentWeapon.directionAngularOffset, components.animator.enabled);
 
                 if (currentWeapon.animationRelated)
                 {
@@ -243,7 +259,10 @@ public class HumanController : MonoBehaviour
                 {
                     if (currentWeapon.Attack(human))
                     {
-                        PlayAnimation(HumanAnimationType.Attacking);
+                        if (components.animator.enabled)
+                        {
+                            PlayAnimation(HumanAnimationType.Attacking);
+                        }
                     }
                 }
             }
@@ -338,7 +357,7 @@ public class HumanController : MonoBehaviour
         motionSimulator.velocityMultiplier = 1f;
         motionSimulator.enabled = true;
 
-        if (playVFX)
+        if (playVFX && actualTeamInfo.impactVFX)
         {
             actualTeamInfo.impactVFX.Play();
         }
@@ -356,11 +375,30 @@ public class HumanController : MonoBehaviour
         motionSimulator.angularVelocity = angularMomentum;
     }
 
+    public void DropOnBlock(BlockPair blockPair, Vector3 direction)
+    {
+        ai = new HumanAI(this);
+
+        motionSimulator.SetGround(blockPair.FloorBlockPosition.y - components.animator.transform.localPosition.y + 0.02f);
+
+        motionSimulator.rotationEnabled = false;
+
+        //Drop(Vector3.zero, Vector3.zero);
+
+        transform.forward = direction;
+
+        targetPointSqrRadius = motionSettings.targetPointRadius * motionSettings.targetPointRadius;
+
+        //PlayAnimation(HumanAnimationType.Flying);
+
+        inBattle = true;
+    }
+
     public void DropToBattle(Vector3 velocity, Vector3 direction)
     {
         ai = new HumanAI(this);
 
-        motionSimulator.SetGround(LevelGenerator.Instance.BattlePath.Position.y - components.animator.transform.localPosition.y);
+        motionSimulator.SetGround(LevelGenerator.Instance.BattlePath.Position.y - components.animator.transform.localPosition.y + 0.05f);
 
         motionSimulator.rotationEnabled = false;
 
@@ -423,15 +461,30 @@ public class HumanController : MonoBehaviour
 
     public void Die(bool disableController = true)
     {
+        if (LevelGenerator.Instance.BattlePath.IsBattleActive)
+        {
+            actualCrowd?.RemoveMember(this);
+        }
+        else
+        {
+            PlayerController.Humanball.UnstickHuman(this);
+
+            motionSimulator.groundFriction = 10f;
+
+            motionSimulator.enabled = true;
+
+            Drop((transform.position - PlayerController.Humanball.Structure.GetActiveCellsMidpoint()).normalized * Random.Range(5f, 10f), Random.insideUnitSphere.normalized * Random.Range(90f, 720f));
+        }
+
         components.animator.SetBool(animatorAttackingHash, false);
 
         PlayAnimation(HumanAnimationType.Dying);
 
         SetTeam(HumanTeam.Neutral);
 
-        //currentWeapon.ClearProjectiles();
+        currentWeapon.Hide();
 
-        actualCrowd?.RemoveMember(this);
+        //currentWeapon.ClearProjectiles();
 
         //enabled = !disableController;
     }
@@ -511,6 +564,18 @@ public class HumanController : MonoBehaviour
         }
     }
 
+    public void SetTeam(HumanTeam teamType)
+    {
+        actualTeamInfo = teamSettings.Find((t) => t.teamType == teamType);
+
+        components.skinRenderer.material = actualTeamInfo.skinMaterial;
+
+        if (actualTeamInfo.impactVFX)
+        {
+            actualTeamInfo.impactVFX.gameObject.SetActive(true);
+        }
+    }
+
     public void SetActive(bool isActive, bool includeCollider)
     {
         enabled = isActive;
@@ -531,18 +596,6 @@ public class HumanController : MonoBehaviour
         components.animator.SetBool(animatorRunningHash, actualSpeed > 0);
     }
 
-    private void SetTeam(HumanTeam teamType)
-    {
-        actualTeamInfo = teamSettings.Find((t) => t.teamType == teamType);
-
-        components.skinRenderer.material = actualTeamInfo.skinMaterial;
-
-        if (actualTeamInfo.impactVFX)
-        {
-            actualTeamInfo.impactVFX.gameObject.SetActive(true);
-        }
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (!isFree)
@@ -553,6 +606,14 @@ public class HumanController : MonoBehaviour
 
                 PlayerController.Humanball.Bump(transform.position);
             }
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.layer == 10)
+        {
+            PlayerController.Humanball.ApplyForce(other.transform.forward * WorldManager.environmentSettings.GetForceMagnitude(other.tag));
         }
     }
 
@@ -574,7 +635,7 @@ public class HumanController : MonoBehaviour
             {
                 if (weaponSettings[i].weaponContainer)
                 {
-                    weaponSettings[i].title = $"{weaponSettings[i].weaponContainer.name}  [P:{weaponSettings[i].Power}]";
+                    weaponSettings[i].title = $"{weaponSettings[i].weaponContainer.name}[P:{weaponSettings[i].Power}]";
                 }
             }
         }

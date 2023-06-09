@@ -48,11 +48,11 @@ public class MulticollectibleCapsule
         {
             debris[i].SetActive(true);
 
-            debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate));
+            debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate, scatterData.gravityModifier));
 
             fractureVector = debrisMotionSimulators[i].Transform.position - capsule.transform.position;
 
-            debrisMotionSimulators[i].velocity = fractureVector.normalized.Multiplied(scatterData.impulseRatio);
+            debrisMotionSimulators[i].velocity = fractureVector.normalized.Multiplied(scatterData.impulseRatio) * scatterData.impulseMagnitudeRange.Value;
             debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * scatterData.angularMomentumRange.Value;
         }
 
@@ -74,11 +74,11 @@ public class MulticollectibleCapsule
         {
             debris[i].SetActive(true);
 
-            debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate));
+            debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate, scatterData.gravityModifier));
 
             fractureVector = debrisMotionSimulators[i].Transform.position - capsule.transform.position;
 
-            debrisMotionSimulators[i].velocity = externalImpulse * scatterData.externalImpulseFactor + fractureVector.normalized.Multiplied(scatterData.impulseRatio);
+            debrisMotionSimulators[i].velocity = externalImpulse * scatterData.externalImpulseFactor + fractureVector.normalized.Multiplied(scatterData.impulseRatio) * scatterData.impulseMagnitudeRange.Value;
             debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * scatterData.angularMomentumRange.Value;
         }
 
@@ -107,11 +107,11 @@ public class MulticollectibleCapsule
 
             if (sqrDistanceToFracture < sqrDestructionRadius && Random.Range(0, 1f) < (1f - (sqrDistanceToFracture / sqrDestructionRadius)))
             {
-                debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate));
+                debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate, scatterData.gravityModifier));
 
                 fractureVector = debrisMotionSimulators.GetLast().Transform.position - capsule.transform.position;
 
-                debrisMotionSimulators.GetLast().velocity = externalImpulse * scatterData.externalImpulseFactor + fractureVector.normalized.Multiplied(scatterData.impulseRatio);
+                debrisMotionSimulators.GetLast().velocity = externalImpulse * scatterData.externalImpulseFactor + fractureVector.normalized.Multiplied(scatterData.impulseRatio) * scatterData.impulseMagnitudeRange.Value;
                 debrisMotionSimulators.GetLast().angularVelocity = Random.insideUnitSphere.normalized * scatterData.angularMomentumRange.Value;
             }
         }

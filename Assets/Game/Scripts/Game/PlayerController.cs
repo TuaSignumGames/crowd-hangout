@@ -118,11 +118,7 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                float targetCoordY = LevelGenerator.Instance.GetBlockPair(Humanball.Transform.position).Position.y;
-
-                print($"Target height: {targetCoordY}");
-
-                Humanball.Jump(targetCoordY - Humanball.Transform.position.y);
+                ball.DropHumans(Mathf.FloorToInt(ball.Structure.humansCount / 2));
             }
 
             rope.Update();
@@ -136,7 +132,9 @@ public class PlayerController : MonoBehaviour
         ball.Rigidbody.isKinematic = true;
 
         rope.Disconnect();
-        rope.Update();
+        //rope.Update();
+
+        ropeSettings.lineTransform.gameObject.SetActive(false);
 
         humanCountMarker.SetActive(false);
 
@@ -151,7 +149,7 @@ public class PlayerController : MonoBehaviour
     {
         ball.Rigidbody.gameObject.SetActive(false);
 
-        rope.Disconnect();
+        rope.SetActive(false);
 
         LevelManager.Instance.OnLevelFinished(false);
     }

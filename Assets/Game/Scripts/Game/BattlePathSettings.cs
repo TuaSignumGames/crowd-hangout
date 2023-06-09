@@ -8,10 +8,6 @@ public class BattlePathSettings
     public Transform pathContainer;
     public Transform stagesContainer;
     [Space]
-    public Transform baseStageTransform;
-    [Space]
-    public GameObject stagePrefab;
-    [Space]
     public CameraViewData battleView;
     public CameraViewData finishView;
     [Space]

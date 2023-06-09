@@ -27,7 +27,7 @@ public class HumanballCell
     {
         this.gameObject = gameObject;
 
-        pulseEvaluator = new PulseEvaluator(transform, 0.2f, 5f);
+        pulseEvaluator = new PulseEvaluator(transform, 0.2f, 1.2f);
         pulseEvaluator.pulseRatio = new Vector3(0, 0, 1f);
 
         if (transform.childCount > 0)

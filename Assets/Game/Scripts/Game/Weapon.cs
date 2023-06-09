@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum WeaponType { Fist, Bat, Brick, Bow, Pistol, Rifle, AK, AR, MG, Snipe, Grenade, Firegun }
+
 [System.Serializable]
 public class Weapon
 {
-    [HideInInspector]
     public string title;
-
+    [Space]
     public GameObject weaponContainer;
     public GameObject weaponModel;
     [Space]

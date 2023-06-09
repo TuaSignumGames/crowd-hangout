@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class BlockPair
 {
-    public GameObject ceilBlock;
-    public GameObject floorBlock;
+    public GameObject ceilingBlock;
+    public GameObject groundBlock;
 
     public GameObject container;
 
@@ -31,8 +31,8 @@ public class BlockPair
 
     public Vector3 Position => container.transform.position;
 
-    public Vector3 CeilBlockPosition => ceilBlock.transform.position;
-    public Vector3 FloorBlockPosition => floorBlock.transform.position;
+    public Vector3 CeilBlockPosition => ceilingBlock.transform.position;
+    public Vector3 FloorBlockPosition => groundBlock.transform.position;
 
     public float Height => height;
 
@@ -40,16 +40,16 @@ public class BlockPair
 
     public BlockPair(GameObject ceilBlock, GameObject floorBlock, GameObject container, int orderIndex, float thresholdValue)
     {
-        this.ceilBlock = ceilBlock;
-        this.floorBlock = floorBlock;
+        this.ceilingBlock = ceilBlock;
+        this.groundBlock = floorBlock;
 
         this.container = container;
 
         ceilBlockContent = ceilBlock.transform.GetChildren();
         floorBlockContent = floorBlock.transform.GetChildren();
 
-        this.ceilBlock.transform.SetParent(container.transform);
-        this.floorBlock.transform.SetParent(container.transform);
+        this.ceilingBlock.transform.SetParent(container.transform);
+        this.groundBlock.transform.SetParent(container.transform);
 
         this.orderIndex = orderIndex;
         this.thresholdValue = thresholdValue;
@@ -65,8 +65,8 @@ public class BlockPair
 
         halfHeight = Mathf.Round(height / 2f / thresholdValue) * thresholdValue;
 
-        ceilBlock.transform.localPosition = new Vector3(0, halfHeight, 0);
-        floorBlock.transform.localPosition = new Vector3(0, -halfHeight, 0);
+        ceilingBlock.transform.localPosition = new Vector3(0, halfHeight, 0);
+        groundBlock.transform.localPosition = new Vector3(0, -halfHeight, 0);
 
         if (collectible)
         {
@@ -90,8 +90,8 @@ public class BlockPair
     {
         if (this.isVisible != isVisible)
         {
-            ceilBlock.SetActive(isVisible);
-            floorBlock.SetActive(isVisible);
+            ceilingBlock.SetActive(isVisible);
+            groundBlock.SetActive(isVisible);
 
             /*
             for (int i = 0; i < ceilBlockContent.Count; i++)
@@ -116,7 +116,7 @@ public class BlockPair
 
     private void DeformLandscape()
     {
-        landscapeContainer = floorBlock.transform.GetChildren().GetLast();
+        landscapeContainer = groundBlock.transform.GetChildren().GetLast();
         landscapeBlocks = landscapeContainer.GetChildren();
 
         for (int i = 0; i < landscapeBlocks.Count; i++)

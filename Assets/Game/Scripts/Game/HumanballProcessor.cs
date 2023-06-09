@@ -39,6 +39,7 @@ public class HumanballProcessor
     private bool isLaunched;
 
     public bool isAccidented;
+    //public bool isUnderWater;
 
     public bool isActive = true;
 
@@ -145,6 +146,13 @@ public class HumanballProcessor
                 tensionValue = 0;
             }
 
+            /*
+            if (isUnderWater)
+            {
+                Rigidbody.AddForce(new Vector3(0, 20f, 0));
+            }
+            */
+
             speedLimit = Mathf.Lerp(speedLimit, ballData.speed, ballData.bumpDampingFactor);
 
             Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, speedLimit);
@@ -200,6 +208,32 @@ public class HumanballProcessor
         }
 
         PlayerController.Instance.humanCountMarker.SetValue(structure.humansCount.ToString());
+    }
+
+    public void DropHumans(int count)
+    {
+        HumanController human = null;
+
+        Vector3 humanballMidpoint = structure.GetActiveCellsMidpoint();
+
+        for (int i = 0; i < count; i++)
+        {
+            human = structure.UsedCells[Random.Range(0, structure.UsedCells.Length)].Human;
+
+            if (human && human != HumanController.selectedHuman)
+            {
+                UnstickHuman(human);
+
+                human.MotionSimulator.groundFriction = 10f;
+
+                human.Drop((human.transform.position - humanballMidpoint).normalized * Random.Range(5f, 10f), Random.insideUnitSphere.normalized * Random.Range(90f, 720f));
+            }
+        }
+    }
+
+    public void DropHumans(float percentage)
+    {
+        DropHumans(Mathf.FloorToInt(structure.humansCount * Mathf.Clamp01(percentage)));
     }
 
     public void StickWeapon(HumanController humanController, int weaponID)
@@ -278,6 +312,11 @@ public class HumanballProcessor
         Rigidbody.velocity += (Transform.position - contactPoint).normalized * ballData.bumpImpulse;
 
         AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
+    }
+
+    public void ApplyForce(Vector3 force)
+    {
+        Rigidbody.AddForce(force);
     }
 
     public void UpdateContainerOrientation(Vector3 connectionPoint)

@@ -66,6 +66,8 @@ public class RopeProcessor
         {
             isLaunched = true;
 
+            SetActive(true);
+
             if (assignedBall.Structure.FilledLayersCount > 1)
             {
                 assignedBall.UpdateContainerOrientation(point);
@@ -120,5 +122,13 @@ public class RopeProcessor
 
         targetRopeLenght = 0;
         actualRopeLenght = 0;
+
+        SetActive(false);
+    }
+
+    public void SetActive(bool isActive)
+    {
+        ropeData.endTransform.gameObject.SetActive(isActive);
+        ropeData.lineTransform.gameObject.SetActive(isActive);
     }
 }

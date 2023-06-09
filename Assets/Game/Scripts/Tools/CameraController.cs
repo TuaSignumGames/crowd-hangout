@@ -8,6 +8,7 @@ public class CameraController : MonoBehaviour
     public static CameraController Instance;
 
     public new Camera camera;
+    public Transform displacementContainer;
     [Space]
     public Transform targetTransform;
     public float motionLerpingFactor;
@@ -27,6 +28,8 @@ public class CameraController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        enabled = false;
 
         targetOffset = transform.position;
 

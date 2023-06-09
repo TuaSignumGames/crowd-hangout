@@ -23,5 +23,10 @@ public class GridGeneratorEditor : Editor
         {
             _generator.Generate();
         }
+
+        if (_drawer.DrawButton("Clear"))
+        {
+            _generator.Clear();
+        }
     }
 }

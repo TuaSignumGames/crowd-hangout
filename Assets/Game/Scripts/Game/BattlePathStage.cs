@@ -113,7 +113,7 @@ public class BattlePathStage
         List<float> damageRatePortions = new List<float>();
         List<int> selectedWeaponIndices = new List<int>();
 
-        int topWeaponID = Mathf.Clamp(WorldManager.GetWeaponID(GameManager.TopWeaponPower), 0, OrderIndex);
+        int topWeaponID = LevelGenerator.topWeaponID; //Mathf.Clamp(WorldManager.GetWeaponID(GameManager.TopWeaponPower), 0, OrderIndex);
 
         for (int i = 0; i < guardiansCount; i++)
         {

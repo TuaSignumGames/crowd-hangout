@@ -14,6 +14,7 @@ public class LevelGeneratorEditor : Editor
     {
         base.OnInspectorGUI();
 
+        /*
         generator = (LevelGenerator)target;
 
         EditorGUILayout.Space();
@@ -22,6 +23,7 @@ public class LevelGeneratorEditor : Editor
         {
             GenerateLevel();
         }
+        */
     }
 
     private void GenerateLevel()

@@ -41,7 +41,7 @@ public class SuspendedCollectible : Collectible
 
         base.SetPlacement(blockPair, placementFactor);
 
-        rope.Connect(transform, blockPair.ceilBlock.transform.position);
+        rope.Connect(transform, blockPair.ceilingBlock.transform.position);
     }
 
     public override void UpdatePlacement(BlockPair blockPair)

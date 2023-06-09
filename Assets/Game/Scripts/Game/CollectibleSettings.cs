@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum CollectibleType { Human, Weapon }
+
 [System.Serializable]
 public class CollectibleSettings
 {

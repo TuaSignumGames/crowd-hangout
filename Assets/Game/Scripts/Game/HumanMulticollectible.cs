@@ -55,6 +55,7 @@ public class HumanMulticollectible : Multicollectible
 
     protected override IEnumerator CollectingCoroutine()
     {
+        /*
         for (int i = 0; i < humanCollectibles.Count; i++)
         {
             humanMidpoint += humanCollectibles[i].Entity.transform.position;
@@ -68,6 +69,12 @@ public class HumanMulticollectible : Multicollectible
         }
 
         DropElements(humanMidpoint, PlayerController.Humanball.Velocity);
+        */
+
+        for (int i = 0; i < humanCollectibles.Count; i++)
+        {
+            PlayerController.Humanball.StickHuman(humanCollectibles[i].Entity);
+        }
 
         yield return base.CollectingCoroutine();
     }

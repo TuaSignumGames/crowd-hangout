@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CreativeManager : Service<CreativeManager>
 {
     public GameObject creativeMenu;
     [Space]
     public CreativeMenuSwitchers switchers;
+    public CreativeMenuInputFields fields;
     public CreativeMenuSliders sliders;
     [Space]
     public CreativeModeSettings creativeModeSettings;
@@ -15,9 +17,14 @@ public class CreativeManager : Service<CreativeManager>
 
     private Transform displacementContainer;
 
-    public int SkyboxIndex { get { return PlayerPrefs.GetInt("CM.SB.ID"); } set { PlayerPrefs.SetInt("CM.SB.ID", value); } }
-    public int BackgroundIndex { get { return PlayerPrefs.GetInt("CM.BG.ID"); } set { PlayerPrefs.SetInt("CM.BG.ID", value); } }
-    public int TrackBorderIndex { get { return PlayerPrefs.GetInt("CM.TB.ID"); } set { PlayerPrefs.SetInt("CM.TB.ID", value); } }
+    public int LevelPatternIndex { get { return PlayerPrefs.GetInt("CM.LP.ID"); } set { PlayerPrefs.SetInt("CM.LP.ID", value); } }
+    public int LevelLandscapeIndex { get { return PlayerPrefs.GetInt("CM.LL.ID"); } set { PlayerPrefs.SetInt("CM.LL.ID", value); } }
+    public int HumanSkinSetIndex { get { return PlayerPrefs.GetInt("CM.HSS.ID"); } set { PlayerPrefs.SetInt("CM.HSS.ID", value); } }
+    public int WeaponSetIndex { get { return PlayerPrefs.GetInt("CM.WS.ID"); } set { PlayerPrefs.SetInt("CM.WS.ID", value); } }
+    public int ThemeIndex { get { return PlayerPrefs.GetInt("CM.T.ID"); } set { PlayerPrefs.SetInt("CM.T.ID", value); } }
+
+    public int PopulationBase { get { return PlayerPrefs.GetInt("PLN.B", 1); } set { PlayerPrefs.SetInt("PLN.B", value); } }
+    public int PopulationIncrement { get { return PlayerPrefs.GetInt("PLN.I", 1); } set { PlayerPrefs.SetInt("PLN.I", value); } }
 
     public float CameraYawOffset { get { return PlayerPrefs.GetFloat("CM.CAM.Y"); } set { PlayerPrefs.SetFloat("CM.CAM.Y", value); } }
     public float CameraPitchOffset { get { return PlayerPrefs.GetFloat("CM.CAM.P"); } set { PlayerPrefs.SetFloat("CM.CAM.P", value); } }
@@ -25,7 +32,7 @@ public class CreativeManager : Service<CreativeManager>
     public float CameraHorizontalOffset { get { return PlayerPrefs.GetFloat("CM.CAM.H"); } set { PlayerPrefs.SetFloat("CM.CAM.H", value); } }
     public float CameraVerticalOffset { get { return PlayerPrefs.GetFloat("CM.CAM.V"); } set { PlayerPrefs.SetFloat("CM.CAM.V", value); } }
     public float CameraDistanceOffset { get { return PlayerPrefs.GetFloat("CM.CAM.DST"); } set { PlayerPrefs.SetFloat("CM.CAM.DST", value); } }
-    //public float CameraFOV { get { return PlayerPrefs.GetFloat("CM.CAM.FOV", CameraController.Instance.MainCamera.fieldOfView); } set { PlayerPrefs.SetFloat("CM.CAM.FOV", value); } }
+    public float CameraFOV { get { return PlayerPrefs.GetFloat("CM.CAM.FOV", CameraController.Instance.camera.fieldOfView); } set { PlayerPrefs.SetFloat("CM.CAM.FOV", value); } }
 
     public float CameraDefaultFOV { get { return PlayerPrefs.GetFloat("CM.CAM.FOV_D"); } set { PlayerPrefs.SetFloat("CM.CAM.FOV_D", value); } }
 
@@ -43,94 +50,102 @@ public class CreativeManager : Service<CreativeManager>
         creativeMenu.SetActive(isActive);
     }
 
-    public void SwitchUniqueLevel(int index)
+    public void SwitchLevelPattern(int index)
     {
-        LevelManager.Instance.LoadLevel(index);
+        LevelPatternIndex = index;
+
+        GameManager.Instance.ReloadGameScene();
     }
 
-    public void SwitchSkybox(int index)
+    public void SwitchLevelLandscape(int index)
     {
-        SkyboxIndex = index;
+        LevelLandscapeIndex = index;
 
-        //WorldManager.Instance.ApplySkybox(index);
+        GameManager.Instance.ReloadGameScene();
     }
 
-    public void SwitchBackground(int index)
+    public void SwitchTheme(int index)
     {
-        BackgroundIndex = index;
+        ThemeIndex = index;
 
-        //WorldManager.Instance.ApplyBackground(index);
+        GameManager.Instance.ReloadGameScene();
     }
 
-    public void SwitchTrackBorder(int index)
+    public void SwitchHumanSkinSet(int index)
     {
-        TrackBorderIndex = index;
+        HumanSkinSetIndex = index;
 
-        //WorldManager.Instance.ApplyTrackBorder(index);
+        GameManager.Instance.ReloadGameScene();
     }
 
-    public void SwitchSkinColor(int index)
+    public void SwitchWeaponSet(int index)
     {
-        //WorldManager.Instance.ApplySkinColor(index);
+        WeaponSetIndex = index;
+
+        GameManager.Instance.ReloadGameScene();
     }
 
-    public void SwitchScooterUpgrade(int index)
+    public void SetPopulationBase(string value)
     {
-        //WorldManager.Instance.ApplyScooterUpgrade(index);
+        PopulationBase = int.Parse(value);
+
+        GameManager.Instance.ReloadGameScene();
     }
 
-    public void SwitchGraphicsTheme(int index)
+    public void SetPopulationIncrement(string value)
     {
-        //WorldManager.Instance.ApplyGraphicsTheme(index);
+        PopulationIncrement = int.Parse(value);
+
+        GameManager.Instance.ReloadGameScene();
     }
 
     public void SetCameraYawOffset(float value)
     {
         CameraYawOffset = value;
 
-        //displacementContainer.localEulerAngles = new Vector3(cameraController.DisplacementContainer.localEulerAngles.x, value, cameraController.DisplacementContainer.localEulerAngles.z);
+        CameraController.Instance.displacementContainer.localEulerAngles = new Vector3(CameraController.Instance.displacementContainer.localEulerAngles.x, value, CameraController.Instance.displacementContainer.localEulerAngles.z);
     }
 
     public void SetCameraPitchOffset(float value)
     {
         CameraPitchOffset = value;
 
-        //displacementContainer.localEulerAngles = new Vector3(value, cameraController.DisplacementContainer.localEulerAngles.y, cameraController.DisplacementContainer.localEulerAngles.z);
+        CameraController.Instance.displacementContainer.localEulerAngles = new Vector3(value, CameraController.Instance.displacementContainer.localEulerAngles.y, CameraController.Instance.displacementContainer.localEulerAngles.z);
     }
 
     public void SetCameraRollOffset(float value)
     {
         CameraRollOffset = value;
 
-        //displacementContainer.localEulerAngles = new Vector3(cameraController.DisplacementContainer.localEulerAngles.x, cameraController.DisplacementContainer.localEulerAngles.y, value);
+        CameraController.Instance.displacementContainer.localEulerAngles = new Vector3(CameraController.Instance.displacementContainer.localEulerAngles.x, CameraController.Instance.displacementContainer.localEulerAngles.y, value);
     }
 
     public void SetCameraHorizontalOffset(float value)
     {
         CameraHorizontalOffset = value;
 
-        displacementContainer.localPosition = new Vector3(value, displacementContainer.localPosition.y, displacementContainer.localPosition.z);
+        CameraController.Instance.displacementContainer.localPosition = new Vector3(value, CameraController.Instance.displacementContainer.localPosition.y, CameraController.Instance.displacementContainer.localPosition.z);
     }
 
     public void SetCameraVerticalOffset(float value)
     {
         CameraVerticalOffset = value;
 
-        displacementContainer.localPosition = new Vector3(displacementContainer.localPosition.x, value, displacementContainer.localPosition.z);
+        CameraController.Instance.displacementContainer.localPosition = new Vector3(CameraController.Instance.displacementContainer.localPosition.x, value, CameraController.Instance.displacementContainer.localPosition.z);
     }
 
     public void SetCameraDistance(float value)
     {
         CameraDistanceOffset = value;
 
-        displacementContainer.localPosition = new Vector3(displacementContainer.localPosition.x, displacementContainer.localPosition.y, -value);
+        CameraController.Instance.displacementContainer.localPosition = new Vector3(CameraController.Instance.displacementContainer.localPosition.x, CameraController.Instance.displacementContainer.localPosition.y, -value);
     }
 
     public void SetCameraFOV(float value)
     {
-        //CameraFOV = value;
+        CameraFOV = value;
 
-        //cameraController.ResetFOV(value);
+        CameraController.Instance.camera.fieldOfView = value;
     }
 
     public void ClearAllSaves()
@@ -142,20 +157,13 @@ public class CreativeManager : Service<CreativeManager>
 
     private void SaveDefaultValues()
     {
-        //CameraDefaultFOV = CameraFOV;
+        CameraDefaultFOV = CameraController.Instance.camera.fieldOfView;
     }
 
     private void ApplyCreativeSettings()
     {
-        /*
         cameraController = CameraController.Instance;
-        displacementContainer = cameraController.DisplacementContainer;
-
-        SwitchSkybox(SkyboxIndex);
-        SwitchBackground(BackgroundIndex);
-        SwitchTrackBorder(TrackBorderIndex);
-        SwitchSkinColor(PlayerController.SkinColorIndex);
-        SwitchScooterUpgrade(PlayerController.UpgradeIndex);
+        displacementContainer = cameraController.displacementContainer;
 
         SetCameraYawOffset(CameraYawOffset);
         SetCameraPitchOffset(CameraPitchOffset);
@@ -164,18 +172,18 @@ public class CreativeManager : Service<CreativeManager>
         SetCameraVerticalOffset(CameraVerticalOffset);
         SetCameraDistance(CameraDistanceOffset);
         SetCameraFOV(CameraFOV);
-        */
     }
 
     private void InitializeMenu()
     {
-        /*
-        switchers.uniqueLevelSwitcher.Initialize(LevelGenerator.Instance.GetLevelTitles(), LevelManager.Instance.LevelIndex);
-        switchers.skyboxSwitcher.Initialize(WorldManager.Instance.GetSkyboxTitles(), SkyboxIndex);
-        switchers.backgroundSwitcher.Initialize(WorldManager.Instance.GetBackgroundTitles(), BackgroundIndex);
-        switchers.trackBorderSwitcher.Initialize(WorldManager.Instance.GetTrackBorderTitles(), TrackBorderIndex);
-        switchers.skinColorSwitcher.Initialize(WorldManager.Instance.GetScooterColors(), PlayerController.SkinColorIndex);
-        switchers.upgradeSwitcher.Initialize(WorldManager.Instance.GetScooterUpgradeTitles(), PlayerController.UpgradeIndex);
+        switchers.levelPatternSwitcher.Initialize(LevelGenerator.Instance.levelSettings.GetStructureTitles(), LevelPatternIndex);
+        switchers.levelLandscapeSwitcher.Initialize(LevelGenerator.Instance.levelSettings.GetLandscapeTitles(), LevelLandscapeIndex);
+        switchers.humanSkinSetSwitcher.Initialize(WorldManager.GetHumanSkinSetTitles(), HumanSkinSetIndex);
+        switchers.weaponSetSwitcher.Initialize(WorldManager.GetWeaponSetTitles(), WeaponSetIndex);
+        switchers.themeSwitcher.Initialize(WorldManager.environmentSettings.GetThemeTitles(), ThemeIndex);
+
+        fields.populationBaseField.text = PopulationBase.ToString();
+        fields.populationIncrementField.text = PopulationIncrement.ToString();
 
         sliders.cameraYawOffsetSlider.Initialize(CameraYawOffset);
         sliders.cameraPitchOffsetSlider.Initialize(CameraPitchOffset);
@@ -184,12 +192,10 @@ public class CreativeManager : Service<CreativeManager>
         sliders.cameraVerticalOffsetSlider.Initialize(CameraVerticalOffset);
         sliders.cameraDistanceSlider.Initialize(CameraDistanceOffset);
         sliders.cameraFOVSlider.Initialize(CameraFOV, CameraDefaultFOV);
-        */
     }
 
     private IEnumerator InitializationCoroutine()
     {
-        /*
         while (!LevelGenerator.Instance && !WorldManager.Instance) { yield return null; }
 
         if (AppManager.Instance.IsFirstLaunch)
@@ -200,18 +206,15 @@ public class CreativeManager : Service<CreativeManager>
         ApplyCreativeSettings();
 
         InitializeMenu();
-        */
 
         yield return null;
     }
 
     private IEnumerator SettingsApplyingCoroutine()
     {
-        /*
         while (!LevelGenerator.Instance && !WorldManager.Instance) { yield return null; }
 
         ApplyCreativeSettings();
-        */
 
         yield return null;
     }
@@ -219,12 +222,18 @@ public class CreativeManager : Service<CreativeManager>
     [System.Serializable]
     public struct CreativeMenuSwitchers
     {
-        public Switcher uniqueLevelSwitcher;
-        public Switcher skyboxSwitcher;
-        public Switcher backgroundSwitcher;
-        public Switcher trackBorderSwitcher;
-        public Switcher skinColorSwitcher;
-        public Switcher upgradeSwitcher;
+        public Switcher levelPatternSwitcher;
+        public Switcher levelLandscapeSwitcher;
+        public Switcher themeSwitcher;
+        public Switcher humanSkinSetSwitcher;
+        public Switcher weaponSetSwitcher;
+    }
+
+    [System.Serializable]
+    public struct CreativeMenuInputFields
+    {
+        public InputField populationBaseField;
+        public InputField populationIncrementField;
     }
 
     [System.Serializable]

@@ -22,6 +22,14 @@ public class Collectible : MonoBehaviour
 
     public virtual void Initialize() { }
 
+    private void LateUpdate()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            collectibleSettings.collider.enabled = !collectibleSettings.collider.enabled;
+        }
+    }
+
     public void Collect()
     {
         collectibleSettings.collider.enabled = false;
@@ -42,7 +50,7 @@ public class Collectible : MonoBehaviour
             case CollectiblePlacementType.Ceiling: this.placementFactor = 1f; break;
         }
 
-        transform.position = new Vector3(blockPair.floorBlock.transform.position.x, Mathf.Lerp(blockPair.floorBlock.transform.position.y, blockPair.ceilBlock.transform.position.y, this.placementFactor));
+        transform.position = new Vector3(blockPair.groundBlock.transform.position.x, Mathf.Lerp(blockPair.groundBlock.transform.position.y, blockPair.ceilingBlock.transform.position.y, this.placementFactor));
     }
 
     public virtual void UpdatePlacement(BlockPair blockPair)
@@ -60,7 +68,7 @@ public class Collectible : MonoBehaviour
         return null;
     }
 
-    private void OnTriggerEnter(Collider other)
+    protected virtual void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == 8)
         {

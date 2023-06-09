@@ -11,6 +11,8 @@ public class HumanPoseSettings
     [Space]
     public HumanPose frontConfusePose;
     public HumanPose backConfusePose;
+    [Space]
+    public List<HumanPose> additionalPoses;
     //[Range(-1f, 1f)]
     //public float confuseFactor;
     //public bool updateLerping;

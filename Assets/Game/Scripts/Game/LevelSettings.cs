@@ -19,6 +19,30 @@ public class LevelSettings
     {
         return new LevelData(structures[structureIndex], landscapes[landscapeIndex]);
     }
+
+    public string[] GetStructureTitles()
+    {
+        string[] titles = new string[structures.Count];
+
+        for (int i = 0; i < titles.Length; i++)
+        {
+            titles[i] = structures[i].title;
+        }
+
+        return titles;
+    }
+
+    public string[] GetLandscapeTitles()
+    {
+        string[] titles = new string[landscapes.Count];
+
+        for (int i = 0; i < titles.Length; i++)
+        {
+            titles[i] = landscapes[i].title;
+        }
+
+        return titles;
+    }
 }
 
 public struct LevelData
@@ -83,7 +107,7 @@ public struct LevelCycleData
 public struct LevelStepData
 {
     public int blocksCount;
-    public LevelElementType collectiblePointType;
+    public LevelElementType elementType;
 }
 
 [System.Serializable]
