@@ -21,10 +21,6 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - Texture2D_57A06963:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _BaseMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 3, y: 0.5}
@@ -69,10 +65,6 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Tex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -87,12 +79,6 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - Vector1_10AFAE56: 0.95
-    - Vector1_2A8F2CB8: 2
-    - Vector1_5C5ACEFA: 1
-    - Vector1_BE346A89: 0.1
-    - Vector1_C02227C3: 3
-    - Vector1_FDBEB098: 5
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -104,7 +90,6 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EnvironmentReflections: 1
-    - _FresnelPower: 2
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossinessSource: 0
@@ -112,7 +97,6 @@ Material:
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
-    - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Shininess: 0
@@ -126,16 +110,9 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_82B0DC3A: {r: 1, g: 1, b: 1, a: 0}
-    - Color_AE9A1482: {r: 1, g: 1, b: 1, a: 0}
-    - Color_B147B801: {r: 0, g: 0.8322332, b: 1, a: 0}
-    - Color_E1739EFD: {r: 1, g: 1, b: 1, a: 0}
-    - Color_F5D706B2: {r: 0.3892287, g: 0.6132076, b: 0, a: 0}
-    - Vector2_3792FC54: {r: 1, g: 1, b: 0, a: 0}
-    - _BaseColor: {r: 0.4238035, g: 0.7924528, b: 0, a: 1}
-    - _Color: {r: 0.42380348, g: 0.7924528, b: 0, a: 1}
+    - _BaseColor: {r: 0.37001345, g: 0.5377358, b: 0.20545568, a: 1}
+    - _Color: {r: 0.37001342, g: 0.53773576, b: 0.20545563, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &4350664618269074750

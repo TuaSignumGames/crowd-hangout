@@ -13,7 +13,7 @@ public struct LandscapeSegmentData
 [System.Serializable]
 public struct LandscapeProfileData
 {
-    public GameObject blockPrefab;
+    public BlockType blockType;
     public AnimationCurve profileCurve;
     public float profileAmplitude;
 }

@@ -5,15 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - GND
-  - PRGR
-  - BDR
-  - PRJ
-  - FLPR
-  - BOSS
-  - FIN
   - PROP
   - WTR
   - WND
+  - LAV
+  - DNG
   layers:
   - Default
   - TransparentFX

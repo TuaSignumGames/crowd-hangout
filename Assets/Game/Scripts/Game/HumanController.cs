@@ -440,6 +440,7 @@ public class HumanController : MonoBehaviour
             }
         }
 
+        healthBar.Update();
         healthBar.SetValue(healthPoints / healthCapacity);
 
         if (BattlePath.Instance.IsBattleActive)
@@ -602,9 +603,14 @@ public class HumanController : MonoBehaviour
         {
             if (other.gameObject.layer == 7)
             {
-                PlayerController.Humanball.UnstickHuman(this);
-
-                PlayerController.Humanball.Bump(transform.position);
+                if (other.tag == "DNG")
+                {
+                    PlayerController.Humanball.UnstickHuman(this);
+                }
+                else
+                {
+                    PlayerController.Humanball.Bump(transform.position);
+                }
             }
         }
     }
@@ -614,6 +620,11 @@ public class HumanController : MonoBehaviour
         if (other.gameObject.layer == 10)
         {
             PlayerController.Humanball.ApplyForce(other.transform.forward * WorldManager.environmentSettings.GetForceMagnitude(other.tag));
+
+            if (other.tag == "LAV")
+            {
+                Damage(1f);
+            }
         }
     }
 

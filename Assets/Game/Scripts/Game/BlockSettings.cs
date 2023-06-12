@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum BlockType { None, Ceiling, Ground, Sand, Lava }
+
 [System.Serializable]
 public class BlockSettings
 {

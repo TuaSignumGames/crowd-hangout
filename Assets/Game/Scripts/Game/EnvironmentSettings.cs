@@ -35,4 +35,5 @@ public class EnvironmentSegmentsInfo
 {
     public LandscapeSegmentData lakeSegmentData;
     public LandscapeSegmentData lavaSegmentData;
+    public LandscapeSegmentData confusionSegmentData;
 }

@@ -2,25 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// V3 creative scope 
-//
-// V3-C1 - Remake for V1-C1 +
-//  - Start video 2 sec earlier to show few swings 
-//  - Add outline for yellow humans 
-//  - Compose building with voxels to get BucketCrusher-like demolition effect 
-//  - Show building as obstacle - lose few humans on impact 
-//
-// V3-C2 - Remake for V3-C1 in Minecraft-like setting +
-//
-// V3-C3 - Remake for V2-C5 in Minecraft-like setting +
-//
-// V3-C4 - Remake for V2-C5 +
-//  - Add enemies on the level shooting humanball 
-//  - Scenario: collect 4 humans -> collect guns -> face to enemies and shoot them -> original finishing with battlepath 
-//
-// V3-C5 - Remake for V3-C4 in Minecraft-like setting +
-//
-
 public enum LevelElementType
 {
     None, EnvironmentLake, EnvironmentWind, ObstacleBumperStatic, ObstacleBumperDynamic, ObstacleConfusion, DangerLava, DangerUpperSpikes, DangerPendulumBlade, DangerPatrol,
@@ -32,6 +13,7 @@ public class LevelGenerator : MonoBehaviour
     public static LevelGenerator Instance;
 
     public BlockSettings blockSettings;
+    public DangerSettings dangerSettings;
     public CollectibleSettings collectibleSettings;
     public BattlePathSettings battlePathSettings;
     [Space]
@@ -44,6 +26,7 @@ public class LevelGenerator : MonoBehaviour
     private ProgressionStageInfo stageInfo;
 
     private List<BlockPair> blockPairs;
+    private List<LandscapeSegment> segments;
     private List<Collectible> collectibles;
 
     private BattlePath battlePath;
@@ -84,8 +67,8 @@ public class LevelGenerator : MonoBehaviour
     private int totalHumansCount;
     private int totalWeaponsCount;
 
-    private int structureIndex = 5;
-    private int landscapeIndex = 3;
+    private int structureIndex = 1;
+    private int landscapeIndex = 1;
     private int cryticalStageIndex = 1;
 
     private int populationValue = 3;
@@ -146,6 +129,8 @@ public class LevelGenerator : MonoBehaviour
         humanPower = WorldManager.GetWeaponPower(0);
         levelPower = humanPower;
 
+        segments = new List<LandscapeSegment>();
+
         /*
         WeaponSetInfo weaponSet = WorldManager.weaponSets[CreativeManager.Instance.WeaponSetIndex];
 
@@ -161,9 +146,15 @@ public class LevelGenerator : MonoBehaviour
 
         GenerateBlocks();
 
-        GenerateAreas();
+        GenerateEnvironments();
 
-        PlaceCollectibles();
+        GenerateObstacles();
+
+        GenerateDangers();
+
+        GeneratePowerUps();
+
+        GenerateCollectibles();
 
         GenerateBattlePath(Mathf.Clamp(GameManager.CryticalStageIndex + 6, 10, int.MaxValue), GameManager.CryticalStageIndex);
 
@@ -200,18 +191,13 @@ public class LevelGenerator : MonoBehaviour
         elementMap[previousCollectiblePlacementIndex + levelData.structureData.endStep.blocksCount] = levelData.structureData.endStep.elementType;
     }
 
-    public void GenerateFromEditor(bool collectibles, bool battlePath)
+    public void GenerateFromEditor()
     {
-        /*
-        levelData = levelSettings.GetConfiguration(structureIndex, landscapeIndex);
+        levelData = levelSettings.GetConfiguration(1, 1);
 
-        GenerateBlocks(levelData.landscapeData, levelData.blocksCount, null);
+        currentTheme = UnityEditor.SceneAsset.FindObjectOfType<WorldManager>()._environmentSettings.themes[0];
 
-        if (collectibles)
-        {
-            PlaceCollectibles(levelData.startStep, levelData.endStep, levelData.cycleSteps, levelData.cyclesCount);
-        }
-        */
+        GenerateBlocks();
     }
 
     private void LateUpdate()
@@ -222,13 +208,13 @@ public class LevelGenerator : MonoBehaviour
             {
                 battlePath.Update();
 
-                //UpdateBattlePathVisibility(battlePath.DefineStage(PlayerController.Humanball.Transform.position).OrderIndex);
+                UpdateBattlePathVisibility(battlePath.DefineStage(PlayerController.Humanball.Transform.position).OrderIndex);
             }
             else
             {
                 CheckForBattlePath();
 
-                //UpdateLevelVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
+                UpdateLevelVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
 
                 UIProgressBar.Instance.SetProgressValue(Mathf.Clamp01(PlayerController.Humanball.Transform.position.x / levelLength));
             }
@@ -272,34 +258,144 @@ public class LevelGenerator : MonoBehaviour
         blockSettings.blocksContainer.position = new Vector3(-blockSettings.blockLength * 3, -offsetMap[3], 0);
     }
 
-    private void GenerateAreas()
+    private void GenerateEnvironments()
     {
         for (int i = 0; i < blockPairs.Count; i++)
         {
-            if (elementMap[i] == LevelElementType.EnvironmentWind)
+            if (elementMap[i] != LevelElementType.None)
             {
-                PlaceWind(blockPairs[i]);
-            }
-            if (elementMap[i] == LevelElementType.EnvironmentLake)
-            {
-                GenerateLake(i);
+                if (elementMap[i] == LevelElementType.EnvironmentWind)
+                {
+                    PlaceWind(blockPairs[i]);
+                }
+                if (elementMap[i] == LevelElementType.EnvironmentLake)
+                {
+                    GenerateLake(i);
+                }
             }
         }
     }
 
+    private void GenerateObstacles()
+    {
+        for (int i = 0; i < blockPairs.Count; i++)
+        {
+            if (elementMap[i] != LevelElementType.None)
+            {
+                if (elementMap[i] == LevelElementType.ObstacleBumperDynamic)
+                {
+                    PlaceDynamicBumper(blockPairs[i]);
+                }
+                if (elementMap[i] == LevelElementType.ObstacleBumperStatic)
+                {
+                    PlaceStaticBumper(blockPairs[i]);
+                }
+                if (elementMap[i] == LevelElementType.ObstacleConfusion)
+                {
+                    GenerateConfusion(i);
+                }
+            }
+        }
+    }
+
+    private void GenerateDangers()
+    {
+        for (int i = 0; i < blockPairs.Count; i++)
+        {
+            if (elementMap[i] != LevelElementType.None)
+            {
+                if (elementMap[i] == LevelElementType.DangerLava)
+                {
+                    GenerateLava(i);
+                }
+                if (elementMap[i] == LevelElementType.DangerPatrol)
+                {
+                    PlaceEnemyOnBlock(blockPairs[i], 6);
+                }
+                if (elementMap[i] == LevelElementType.DangerPendulumBlade)
+                {
+                    PlacePendulumBlade(blockPairs[i]);
+                }
+                if (elementMap[i] == LevelElementType.DangerUpperSpikes)
+                {
+                    PlaceSpikes(blockPairs[i]);
+                }
+            }
+        }
+    }
+
+    private void GeneratePowerUps()
+    {
+        for (int i = 0; i < blockPairs.Count; i++)
+        {
+            if (elementMap[i] != LevelElementType.None)
+            {
+                if (elementMap[i] == LevelElementType.PowerUpMagnet)
+                {
+                    PlaceMagnet(blockPairs[i]);
+                }
+                if (elementMap[i] == LevelElementType.PowerUpMultiplier)
+                {
+                    PlaceHumanMultiplier(blockPairs[i], 2f);
+                }
+                if (elementMap[i] == LevelElementType.PowerUpPropeller)
+                {
+                    PlacePropeller(blockPairs[i]);
+                }
+            }
+        }
+    }
+
+    private void GenerateCollectibles()
+    {
+        collectibles = new List<Collectible>();
+
+        for (int i = 0; i < elementMap.Length; i++)
+        {
+            if (elementMap[i] != LevelElementType.None)
+            {
+                if (elementMap[i] == LevelElementType.CollectibleCoins)
+                {
+                    GenerateCoins();
+                }
+                if (elementMap[i] == LevelElementType.CollectibleHuman)
+                {
+                    humanCollectiblesCount++;
+                }
+                if (elementMap[i] == LevelElementType.CollectibleWeapon)
+                {
+                    weaponCollectiblesCount++;
+                }
+            }
+        }
+
+        PlaceHumanCollectibles();
+        PlaceWeaponCollectibles();
+    }
+
     private LandscapeSegment GenerateSegment(int startBlockIndex, LandscapeSegmentData segmentData)
     {
-        BlockPair[] segmentBlockPairs = new BlockPair[segmentData.segmentSize]; 
+        BlockPair[] segmentBlockPairs = new BlockPair[segmentData.segmentSize];
 
         float placementFactor = 0;
+        //float previousSegmentsLength = 0;
 
         float segmentLength = segmentData.segmentSize * blockSettings.blockLength;
 
+        /*
+        for (int i = 0; i < segments.Count; i++)
+        {
+            previousSegmentsLength += segments[i].blockPairs.Count * blockSettings.blockLength;
+        }
+
+        print(previousSegmentsLength);
+        */
+
         for (int i = 0; i < segmentData.segmentSize; i++)
         {
-            placementFactor = i / (float)segmentData.segmentSize;
+            placementFactor = i / (segmentData.segmentSize - 1f);
 
-            newBlockPair = InstantiateBlockPair(segmentData.ceilingProfile.blockPrefab, segmentData.groundProfile.blockPrefab, blockPairs[startBlockIndex].Position + new Vector3((i + 1) * blockSettings.blockLength, 0, 0), levelData.landscapeData.caveHeightRange, i);
+            newBlockPair = InstantiateBlockPair(currentTheme.GetBlockPrefab(segmentData.ceilingProfile.blockType), currentTheme.GetBlockPrefab(segmentData.groundProfile.blockType), blockPairs[startBlockIndex].Position + new Vector3((i + 1) * blockSettings.blockLength, 0, 0), levelData.landscapeData.caveHeightRange, i);
 
             newBlockPair.ceilingBlock.transform.position += new Vector3(0, segmentData.ceilingProfile.profileCurve.Evaluate(placementFactor) * segmentData.ceilingProfile.profileAmplitude, 0);
             newBlockPair.groundBlock.transform.position += new Vector3(0, segmentData.groundProfile.profileCurve.Evaluate(placementFactor) * segmentData.groundProfile.profileAmplitude, 0);
@@ -312,19 +408,21 @@ public class LevelGenerator : MonoBehaviour
             blockPairs[i].container.transform.position += new Vector3(segmentLength, 0, 0);
         }
 
+        for (int i = 0; i < segments.Count; i++)
+        {
+            if (segments[i].blockPairs[0].Position.x > segmentBlockPairs[0].Position.x)
+            {
+                for (int j = 0; j < segments[i].blockPairs.Count; j++)
+                {
+                    segments[i].blockPairs[j].container.transform.position += new Vector3(segmentLength, 0, 0);
+                }
+            }
+        }
+
         float ceilingBaseHeight = Mathf.Max(blockPairs[startBlockIndex].ceilingBlock.transform.position.y, blockPairs[startBlockIndex + 1].ceilingBlock.transform.position.y);
         float groundBaseHeight = Mathf.Min(blockPairs[startBlockIndex].groundBlock.transform.position.y, blockPairs[startBlockIndex + 1].groundBlock.transform.position.y);
 
         return new LandscapeSegment(segmentBlockPairs, ceilingBaseHeight, groundBaseHeight);
-    }
-
-    private void PlaceWind(BlockPair blockPair)
-    {
-        Transform windAreaTransform = Instantiate(currentTheme.forceAreaPrefabs.windAreaPrefab, blockPair.container.transform).transform;
-
-        windAreaTransform.position = blockPair.groundBlock.transform.position;
-
-        windAreaTransform.forward = new Vector3(0, 1, 0);
     }
 
     private void GenerateLake(int startBlockIndex)
@@ -356,9 +454,72 @@ public class LevelGenerator : MonoBehaviour
                 waterBlockInstance.SetActive(false);
             }
         }
+
+        segments.Add(lakeSegment);
     }
 
-    private void GenerateLava()
+    private void GenerateConfusion(int startBlockIndex)
+    {
+        LandscapeSegment confusionSegment = GenerateSegment(startBlockIndex, WorldManager.environmentSettings.segments.confusionSegmentData);
+
+        Transform groundBlockContentTransform = null;
+        BoxCollider groundBlockCollider = null;
+
+        for (int i = 0; i < confusionSegment.blockPairs.Count; i++)
+        {
+            groundBlockContentTransform = confusionSegment.blockPairs[i].floorBlockContent[0];
+            groundBlockCollider = confusionSegment.blockPairs[i].groundBlock.GetComponent<BoxCollider>();
+
+            groundBlockContentTransform.localPosition = new Vector3(0, -groundBlockContentTransform.localPosition.y, 0);
+            groundBlockCollider.center = new Vector3(0, -groundBlockCollider.center.y, 0);
+        }
+
+        segments.Add(confusionSegment);
+    }
+
+    private void GenerateLava(int startBlockIndex)
+    {
+        LandscapeSegment lavaSegment = GenerateSegment(startBlockIndex, WorldManager.environmentSettings.segments.lavaSegmentData);
+
+        Transform groundBlockContentTransform = null;
+        BoxCollider groundBlockCollider = null;
+
+        for (int i = 0; i < lavaSegment.blockPairs.Count; i++)
+        {
+            groundBlockContentTransform = lavaSegment.blockPairs[i].floorBlockContent[0];
+            groundBlockCollider = lavaSegment.blockPairs[i].groundBlock.GetComponent<BoxCollider>();
+
+            groundBlockContentTransform.localPosition = new Vector3(0, -groundBlockContentTransform.localPosition.y, 0);
+            groundBlockCollider.center = new Vector3(0, -groundBlockCollider.center.y, 0);
+        }
+
+        lavaSegment.CalculateDepths();
+
+        GameObject lavaBlockInstance = null;
+
+        float lavaBlockHeight = 0;
+
+        for (int i = 0; i < lavaSegment.blockPairs.Count; i++)
+        {
+            lavaBlockInstance = Instantiate(currentTheme.lavaBlockPrefab, lavaSegment.blockPairs[i].groundBlock.transform);
+
+            lavaBlockHeight = lavaSegment.groundDepths[i] - 0.5f;
+
+            if (lavaBlockHeight > 0)
+            {
+                lavaBlockInstance.transform.position = lavaSegment.blockPairs[i].groundBlock.transform.position;
+                lavaBlockInstance.transform.localScale = new Vector3(1f, 1f, lavaBlockHeight);
+            }
+            else
+            {
+                lavaBlockInstance.SetActive(false);
+            }
+        }
+
+        segments.Add(lavaSegment);
+    }
+
+    private void GenerateCoins()
     {
 
     }
@@ -438,29 +599,6 @@ public class LevelGenerator : MonoBehaviour
         WorldManager.environmentSettings.backgroundContainer.position = blockSettings.blocksContainer.position;
     }
 
-    private void PlaceCollectibles()
-    {
-        collectibles = new List<Collectible>();
-
-        for (int i = 0; i < elementMap.Length; i++)
-        {
-            if (elementMap[i] != LevelElementType.None)
-            {
-                if (elementMap[i] == LevelElementType.CollectibleHuman)
-                {
-                    humanCollectiblesCount++;
-                }
-                if (elementMap[i] == LevelElementType.CollectibleWeapon)
-                {
-                    weaponCollectiblesCount++;
-                }
-            }
-        }
-
-        PlaceHumanCollectibles();
-        PlaceWeaponCollectibles();
-    }
-
     private void GenerateBattlePath(int stagesCount, int cryticalStageIndex)
     {
         BattlePathStageInfo battleBathStageInfo = null;
@@ -492,7 +630,7 @@ public class LevelGenerator : MonoBehaviour
             //print($" BPStage generated - guard: {newBattlePathStage.GuardCrew.MembersCount} / reward: {newBattlePathStage.Reward}");
         }
 
-        //battlePath.SetActive(false);
+        battlePath.SetActive(false);
     }
 
     private void RemoveCollectibles()
@@ -645,6 +783,67 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
+    private void PlaceWind(BlockPair blockPair)
+    {
+        Transform windAreaTransform = Instantiate(currentTheme.forceAreaPrefabs.windAreaPrefab, blockPair.container.transform).transform;
+
+        windAreaTransform.position = blockPair.groundBlock.transform.position;
+
+        windAreaTransform.forward = new Vector3(0, 1, 0);
+    }
+
+    private void PlaceStaticBumper(BlockPair blockPair)
+    {
+
+    }
+
+    private void PlaceDynamicBumper(BlockPair blockPair)
+    {
+
+    }
+
+    private void PlaceSpikes(BlockPair blockPair)
+    {
+        Instantiate(dangerSettings.spikesPrefab, blockPair.CeilBlockPosition, Quaternion.identity, blockPair.ceilingBlock.transform);
+    }
+
+    private void PlacePendulumBlade(BlockPair blockPair)
+    {
+        Instantiate(dangerSettings.bladePendulumPrefab, blockPair.CeilBlockPosition, Quaternion.identity, blockPair.ceilingBlock.transform);
+    }
+
+    public void PlaceEnemyOnBlock(BlockPair blockPair, int weaponID)
+    {
+        HumanController enemyInstance = Instantiate(WorldManager.humanPrefab, blockPair.FloorBlockPosition - WorldManager.humanPrefab.components.animator.transform.localPosition, Quaternion.identity, blockPair.groundBlock.transform);
+
+        enemyInstance.Initialize(HumanTeam.Red, weaponID);
+
+        enemyInstance.defaultContainer = blockPair.groundBlock.transform;
+
+        enemyInstance.DropOnBlock(blockPair, -Vector3.right);
+
+        enemyInstance.SetPose(enemyInstance.poseSettings.additionalPoses[0]);
+
+        enemyInstance.AI.SetEnemy(WorldManager.GetClosestHuman(HumanTeam.Yellow, enemyInstance.transform.position));
+
+        enemyInstance.AI.Defend();
+    }
+
+    private void PlaceHumanMultiplier(BlockPair blockPair, float multiplier)
+    {
+
+    }
+
+    private void PlaceMagnet(BlockPair blockPair)
+    {
+
+    }
+
+    private void PlacePropeller(BlockPair blockPair)
+    {
+
+    }
+
     private void PlaceHumanCollectible(BlockPair blockPair, int humansCount)
     {
         humanCollectiblePrefab = collectibleSettings.GetAvailableHumanCollectiblePrefabs(GameManager.PopulationValue).GetRandom();
@@ -679,34 +878,9 @@ public class LevelGenerator : MonoBehaviour
         collectibles.Add(multicollectibleInstance);
     }
 
-    public void PlaceEnemyOnBlock(BlockPair blockPair, int weaponID)
-    {
-        HumanController enemyInstance = Instantiate(WorldManager.humanPrefab, blockPair.FloorBlockPosition - WorldManager.humanPrefab.components.animator.transform.localPosition, Quaternion.identity, blockPair.groundBlock.transform);
-
-        enemyInstance.Initialize(HumanTeam.Red, weaponID);
-
-        enemyInstance.defaultContainer = blockPair.groundBlock.transform;
-
-        enemyInstance.DropOnBlock(blockPair, -Vector3.right);
-
-        enemyInstance.SetPose(enemyInstance.poseSettings.additionalPoses[0]);
-
-        //enemyInstance.AI.SetEnemy(WorldManager.GetClosestHuman(HumanTeam.Yellow, enemyInstance.transform.position));
-
-        enemyInstance.AI.Defend();
-    }
-
-    private void PlaceEnemiesOnBlock(BlockPair blockPair, int weaponID, int count)
-    {
-        for (int i = 0; i < count; i++)
-        {
-            PlaceEnemyOnBlock(blockPair, weaponID);
-        }
-    }
-
     private BlockPair InstantiateBlockPair(ThemeInfo theme, Vector3 origin, Vector2 heightRange, int orderIndex)
     {
-        return InstantiateBlockPair(theme.ceilingBlockPrefab, theme.floorBlockPrefab, origin, heightRange, orderIndex);
+        return InstantiateBlockPair(theme.ceilingBlockPrefab, theme.groundBlockPrefab, origin, heightRange, orderIndex);
     }
 
     public BlockPair InstantiateBlockPair(GameObject ceilingBlockPrefab, GameObject floorBlockPrefab, Vector3 origin, Vector2 heightRange, int orderIndex)

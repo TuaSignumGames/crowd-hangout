@@ -144,7 +144,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: b4efbf40bbd5943ad8a729e7464c394f, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: fcb535fd7f24a4d29a09d66a8961fd4f, type: 2}
+      objectReference: {fileID: 2100000, guid: 179457c9cfb2e4dc085f7229b15a6b7c, type: 2}
     - target: {fileID: -7511558181221131132, guid: b4efbf40bbd5943ad8a729e7464c394f, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
@@ -152,7 +152,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: b4efbf40bbd5943ad8a729e7464c394f, type: 3}
       propertyPath: m_Materials.Array.data[2]
       value: 
-      objectReference: {fileID: 2100000, guid: fcb535fd7f24a4d29a09d66a8961fd4f, type: 2}
+      objectReference: {fileID: 2100000, guid: 179457c9cfb2e4dc085f7229b15a6b7c, type: 2}
     - target: {fileID: 919132149155446097, guid: b4efbf40bbd5943ad8a729e7464c394f, type: 3}
       propertyPath: m_Name
       value: cube_m3
