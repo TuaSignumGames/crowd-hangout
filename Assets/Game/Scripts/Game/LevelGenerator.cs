@@ -46,6 +46,9 @@ public class LevelGenerator : MonoBehaviour
     private WeaponMulticollectible weaponCollectiblePrefab;
     private WeaponMulticollectible weaponCollectibleInstance;
 
+    private MagnetCollectible magnetCollectibleInstance;
+    private PropellerCollectible propellerCollectibleInstance;
+
     private GameObject newBlockPairContainer;
 
     private Vector2 perlinNoiseOrigin;
@@ -130,6 +133,8 @@ public class LevelGenerator : MonoBehaviour
         levelPower = humanPower;
 
         segments = new List<LandscapeSegment>();
+
+        collectibles = new List<Collectible>();
 
         /*
         WeaponSetInfo weaponSet = WorldManager.weaponSets[CreativeManager.Instance.WeaponSetIndex];
@@ -348,8 +353,6 @@ public class LevelGenerator : MonoBehaviour
 
     private void GenerateCollectibles()
     {
-        collectibles = new List<Collectible>();
-
         for (int i = 0; i < elementMap.Length; i++)
         {
             if (elementMap[i] != LevelElementType.None)
@@ -836,12 +839,24 @@ public class LevelGenerator : MonoBehaviour
 
     private void PlaceMagnet(BlockPair blockPair)
     {
+        magnetCollectibleInstance = Instantiate(collectibleSettings.magnetCollectible);
 
+        magnetCollectibleInstance.Initialize();
+
+        blockPair.AddCollectible(magnetCollectibleInstance, magnetCollectibleInstance.collectibleSettings.placementRange.Value);
+
+        collectibles.Add(magnetCollectibleInstance);
     }
 
     private void PlacePropeller(BlockPair blockPair)
     {
+        propellerCollectibleInstance = Instantiate(collectibleSettings.propellerCollectible);
 
+        propellerCollectibleInstance.Initialize();
+
+        blockPair.AddCollectible(propellerCollectibleInstance, propellerCollectibleInstance.collectibleSettings.placementRange.Value);
+
+        collectibles.Add(propellerCollectibleInstance);
     }
 
     private void PlaceHumanCollectible(BlockPair blockPair, int humansCount)

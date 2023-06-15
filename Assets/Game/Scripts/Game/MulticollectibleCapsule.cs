@@ -26,6 +26,11 @@ public class MulticollectibleCapsule
         this.destructionVFX = destructionVFX;
         this.scatterData = scatterData;
 
+        Initialize();
+    }
+
+    public void Initialize()
+    {
         debrisMotionSimulators = new List<MotionSimulator>();
     }
 
@@ -42,7 +47,25 @@ public class MulticollectibleCapsule
 
     public void Break()
     {
-        capsule.SetActive(false);
+        Break(scatterData);
+    }
+
+    public void Break(Vector3 externalImpulse)
+    {
+        Break(scatterData, externalImpulse);
+    }
+
+    public void BreakPartially(Vector3 externalImpulse, Vector3 destructionOrigin, float destructionRadius)
+    {
+        BreakPartially(scatterData, externalImpulse, destructionOrigin, destructionRadius);
+    }
+
+    public void Break(ScatterData scatterData)
+    {
+        if (capsule)
+        {
+            capsule.SetActive(false);
+        }
 
         for (int i = 0; i < debris.Length; i++)
         {
@@ -66,9 +89,12 @@ public class MulticollectibleCapsule
         isBroken = true;
     }
 
-    public void Break(Vector3 externalImpulse)
+    public void Break(ScatterData scatterData, Vector3 externalImpulse)
     {
-        capsule.SetActive(false);
+        if (capsule)
+        {
+            capsule.SetActive(false);
+        }
 
         for (int i = 0; i < debris.Length; i++)
         {
@@ -92,9 +118,12 @@ public class MulticollectibleCapsule
         isBroken = true;
     }
 
-    public void BreakPartially(Vector3 externalImpulse, Vector3 destructionOrigin, float destructionRadius)
+    public void BreakPartially(ScatterData scatterData, Vector3 externalImpulse, Vector3 destructionOrigin, float destructionRadius)
     {
-        capsule.SetActive(false);
+        if (capsule)
+        {
+            capsule.SetActive(false);
+        }
 
         float sqrDestructionRadius = destructionRadius * destructionRadius;
         float sqrDistanceToFracture = 0;

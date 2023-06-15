@@ -19,6 +19,8 @@ public class Humanball
     private HumanballCell closestCell;
     private HumanballCell availableCell;
 
+    private List<HumanController> registeredHumans;
+
     private float cellSqrDistance;
     private float minCellSqrDistance;
 
@@ -45,11 +47,15 @@ public class Humanball
     public HumanballCell[] FilledCells => filledCells == null ?  GetFilledCells().ToArray() : filledCells.ToArray();
     public HumanballCell[] UsedCells => usedCells.ToArray();
 
+    public HumanController[] RegisteredHumans => registeredHumans.ToArray();
+
     public Humanball()
     {
         layers = new List<HumanballLayer>();
 
         usedCells = new List<HumanballCell>();
+
+        registeredHumans = new List<HumanController>();
     }
 
     public Humanball(List<HumanballLayer> layers)
@@ -57,6 +63,8 @@ public class Humanball
         this.layers = new List<HumanballLayer>(layers);
 
         usedCells = new List<HumanballCell>();
+
+        registeredHumans = new List<HumanController>();
 
         cellsCount = GetAvailableCellsCount();
 
@@ -125,6 +133,7 @@ public class Humanball
                     filledLayersCount = 1;
 
                     usedCells.Add(availableCell);
+                    registeredHumans.Add(human);
 
                     humansCount++;
 
@@ -150,6 +159,7 @@ public class Humanball
                     filledLayersCount = i + 1;
 
                     usedCells.Add(availableCell);
+                    registeredHumans.Add(human);
 
                     humansCount++;
 
@@ -167,6 +177,8 @@ public class Humanball
         {
             if (layers[i].TryRemoveHuman(human))
             {
+                registeredHumans.Remove(human);
+
                 humansCount--;
 
                 if (humansCount <= 0)

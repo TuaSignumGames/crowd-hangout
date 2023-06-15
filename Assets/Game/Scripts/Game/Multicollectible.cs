@@ -17,7 +17,10 @@ public class Multicollectible : Collectible
 
         elements = new MulticollectibleElement[elementsCount];
 
-        multicollectibleSettings.elementCountMarker.SetValue(elementsCount.ToString());
+        if (multicollectibleSettings.elementCountMarker.textMesh != null)
+        {
+            multicollectibleSettings.elementCountMarker.SetValue(elementsCount.ToString());
+        }
     }
 
     public virtual void FixedUpdate()
@@ -36,7 +39,10 @@ public class Multicollectible : Collectible
         }
         else
         {
-            multicollectibleSettings.elementCountMarker.Update();
+            if (multicollectibleSettings.elementCountMarker.textMesh)
+            {
+                multicollectibleSettings.elementCountMarker.Update();
+            }
         }
     }
 

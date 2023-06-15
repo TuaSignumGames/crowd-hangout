@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static PlayerController;
 
-public class HumanballProcessor
+public class HumanballProcessor : MonoBehaviour
 {
     private BallSettings ballData;
 
@@ -21,6 +21,8 @@ public class HumanballProcessor
     private Vector3 previousPosition;
     private Vector3 velocityDelta;
 
+    private Vector3 areaForce;
+
     private Vector2 tensionDeformation;
 
     private float ropeThrowingAngle;
@@ -33,15 +35,18 @@ public class HumanballProcessor
     private float swingAngularSpeed;
     private float swingAngularSpeedDelta;
 
+    private float forceAreaDampingFactor;
+
     private float springValue;
     private float tensionValue;
 
+    private bool isActive;
     private bool isLaunched;
 
-    public bool isAccidented;
-    //public bool isUnderWater;
+    private bool inForceArea;
 
-    public bool isActive = true;
+    [HideInInspector]
+    public bool isAccidented;
 
     public BallSettings Data => ballData;
 
@@ -57,6 +62,11 @@ public class HumanballProcessor
 
     public HumanballProcessor(BallSettings settings, int cellsCount)
     {
+        Initialize(settings, cellsCount);
+    }
+
+    public void Initialize(BallSettings settings, int cellsCount)
+    {
         ballData = settings;
 
         springEvaluator = new SpringEvaluator(ballData.elasticitySettings);
@@ -67,6 +77,8 @@ public class HumanballProcessor
         tensionDeformation = ballData.tensionRatio * ballData.tensionMultiplier;
 
         InitializeBallStructure(cellsCount);
+
+        isActive = true;
 
         //PlayerController.Instance.humanCountMarker.SetValue(structure.humansCount.ToString());
 
@@ -115,7 +127,7 @@ public class HumanballProcessor
         ropeThrowingAngle = assignedRope.Data.throwingAngle - 90f;
     }
 
-    public void Update()
+    public void OnUpdate()
     {
         if (isActive)
         {
@@ -146,12 +158,12 @@ public class HumanballProcessor
                 tensionValue = 0;
             }
 
-            /*
-            if (isUnderWater)
+            if (inForceArea)
             {
-                Rigidbody.AddForce(new Vector3(0, 20f, 0));
+                Rigidbody.velocity *= forceAreaDampingFactor;
+
+                Rigidbody.AddForce(areaForce);
             }
-            */
 
             speedLimit = Mathf.Lerp(speedLimit, ballData.speed, ballData.bumpDampingFactor);
 
@@ -163,7 +175,7 @@ public class HumanballProcessor
         }
     }
 
-    public void LateUpdate()
+    public void OnLateUpdate()
     {
         structure.LateUpdate();
 
@@ -243,6 +255,16 @@ public class HumanballProcessor
         pulseEvaluator.Click(ballData.pulsingSettings.clickValue);
 
         AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
+    }
+
+    public void ApplyMagnet()
+    {
+
+    }
+
+    public void ApplyPropeller()
+    {
+
     }
 
     public void Swing()
@@ -347,4 +369,44 @@ public class HumanballProcessor
 
         previousPosition = Transform.position;
     }
+    /*
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == 10)
+        {
+            areaForce = other.transform.forward * WorldManager.environmentSettings.GetForceMagnitude(other.tag);
+
+            forceAreaDampingFactor = 0.9f;
+
+            inForceArea = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.layer == 10)
+        {
+            inForceArea = false;
+        }
+    }
+    */
+    
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.layer == 10)
+        {
+            PlayerController.Humanball.ApplyForce(other.transform.forward * WorldManager.environmentSettings.GetForceMagnitude(other.tag) / structure.humansCount);
+
+            if (other.tag == "LAV")
+            {
+                //Damage(1f);
+            }
+        }
+
+        if (other.gameObject.layer == 11)
+        {
+            // TODO Implement damaging - switch human colliders to trigger 
+        }
+    }
+    
 }

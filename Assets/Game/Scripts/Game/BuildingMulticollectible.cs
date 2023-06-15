@@ -184,7 +184,10 @@ public class BuildingMulticollectible : HumanMulticollectible
                 humanCollectibles[i].Entity.transform.position = transform.position + new Vector3(Random.Range(-1.5f, 1.5f), 0.2f, 0);
             }
 
-            humanCountMarker.SetValue(humanCollectibles.Length.ToString());
+            if (humanCountMarker != null)
+            {
+                humanCountMarker.SetValue(humanCollectibles.Length.ToString());
+            }
         }
 
         public void DropElements()

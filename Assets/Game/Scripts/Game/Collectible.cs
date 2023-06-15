@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Multicollectible;
 
 public enum CollectiblePlacementType { Any, Ground, Ceiling }
 
@@ -21,14 +22,6 @@ public class Collectible : MonoBehaviour
     public bool IsCollected => isCollected;
 
     public virtual void Initialize() { }
-
-    private void LateUpdate()
-    {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            collectibleSettings.collider.enabled = !collectibleSettings.collider.enabled;
-        }
-    }
 
     public void Collect()
     {
@@ -65,6 +58,8 @@ public class Collectible : MonoBehaviour
 
     protected virtual IEnumerator CollectingCoroutine()
     {
+        collectibleSettings.capsule.Break();
+
         return null;
     }
 
@@ -87,6 +82,7 @@ public class Collectible : MonoBehaviour
         public int fittingRangeNumber;
         public float verticalShift;
         [Space]
+        public MulticollectibleCapsule capsule;
         public Collider collider;
     }
 }

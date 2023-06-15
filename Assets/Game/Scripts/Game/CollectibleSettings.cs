@@ -8,8 +8,12 @@ public enum CollectibleType { Human, Weapon }
 public class CollectibleSettings
 {
     public List<CollectibleData> humanCollectibles;
-    public List<WeaponMulticollectible> weaponCollectibles;
     public AnimationCurve populationCurve;
+    [Space]
+    public List<WeaponMulticollectible> weaponCollectibles;
+    [Space]
+    public MagnetCollectible magnetCollectible;
+    public PropellerCollectible propellerCollectible;
 
     private List<HumanMulticollectible> availableHumanCollectiblePrefabs;
 

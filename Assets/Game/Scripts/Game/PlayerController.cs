@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
 
     public BallSettings ballSettings;
     public RopeSettings ropeSettings;
+    public PowerUpSettings powerUpSettings;
     [Space]
     public TextMarker humanCountMarker;
 
@@ -35,11 +36,16 @@ public class PlayerController : MonoBehaviour
     {
         raycastDirection = new Vector2(Mathf.Cos(ropeSettings.throwingAngle * Mathf.Deg2Rad), Mathf.Sin(ropeSettings.throwingAngle * Mathf.Deg2Rad));
 
-        ball = new HumanballProcessor(ballSettings, LevelGenerator.Instance.TotalHumansCount);
+        ball = ballSettings.processor;
+        //ball = new HumanballProcessor(ballSettings, LevelGenerator.Instance.TotalHumansCount);
         rope = new RopeProcessor(ropeSettings);
+
+        ball.Initialize(ballSettings, LevelGenerator.Instance.TotalHumansCount * 2);
 
         ball.AssignRope(rope);
         rope.AssignBall(ball);
+
+        powerUpSettings.propeller.Initialize();
 
         Humanball = ball;
 
@@ -93,7 +99,8 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        ball.Update();
+        ball.OnUpdate();
+        powerUpSettings.propeller.Update();
 
         humanCountMarker.Update();
     }
@@ -124,7 +131,7 @@ public class PlayerController : MonoBehaviour
             rope.Update();
         }
 
-        ball.LateUpdate();
+        ball.OnLateUpdate();
     }
 
     public void SwitchToBattleMode()
@@ -186,6 +193,7 @@ public class PlayerController : MonoBehaviour
     [System.Serializable]
     public class BallSettings
     {
+        public HumanballProcessor processor;
         public Rigidbody rigidbody;
         [Space]
         public float speed;

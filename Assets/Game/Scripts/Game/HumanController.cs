@@ -603,27 +603,12 @@ public class HumanController : MonoBehaviour
         {
             if (other.gameObject.layer == 7)
             {
-                if (other.tag == "DNG")
-                {
-                    PlayerController.Humanball.UnstickHuman(this);
-                }
-                else
-                {
-                    PlayerController.Humanball.Bump(transform.position);
-                }
+                PlayerController.Humanball.Bump(transform.position);
             }
-        }
-    }
 
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.gameObject.layer == 10)
-        {
-            PlayerController.Humanball.ApplyForce(other.transform.forward * WorldManager.environmentSettings.GetForceMagnitude(other.tag));
-
-            if (other.tag == "LAV")
+            if (other.gameObject.layer == 11)
             {
-                Damage(1f);
+                PlayerController.Humanball.UnstickHuman(this);
             }
         }
     }

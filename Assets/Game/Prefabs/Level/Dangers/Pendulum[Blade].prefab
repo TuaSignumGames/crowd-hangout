@@ -178,7 +178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6999513040604818739}
   - component: {fileID: 6999513040604818748}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Pendulum[Blade]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -293,7 +293,7 @@ GameObject:
   - component: {fileID: 5238874551860799301}
   - component: {fileID: 5025183160822799050}
   - component: {fileID: 6338678422930511529}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Blade
   m_TagString: DNG
   m_Icon: {fileID: 0}
