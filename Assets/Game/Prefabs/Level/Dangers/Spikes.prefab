@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8679904062886678532}
   - component: {fileID: 8679904062886678535}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Spikes
   m_TagString: DNG
   m_Icon: {fileID: 0}

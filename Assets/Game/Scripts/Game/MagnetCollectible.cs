@@ -8,6 +8,6 @@ public class MagnetCollectible : Collectible
     {
         yield return base.CollectingCoroutine();
 
-        // Apply magnet 
+        PlayerController.Instance.SetMagnet(true);
     }
 }

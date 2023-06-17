@@ -104,8 +104,14 @@ public class MulticollectibleCapsule
 
             fractureVector = debrisMotionSimulators[i].Transform.position - capsule.transform.position;
 
+            Debug.Log($" Impulse: {externalImpulse}");
+
+            // TODO Check scatterData values for zero 
+
             debrisMotionSimulators[i].velocity = externalImpulse * scatterData.externalImpulseFactor + fractureVector.normalized.Multiplied(scatterData.impulseRatio) * scatterData.impulseMagnitudeRange.Value;
             debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * scatterData.angularMomentumRange.Value;
+
+            Debug.Log(debrisMotionSimulators[i].velocity);
         }
 
         if (destructionVFX)

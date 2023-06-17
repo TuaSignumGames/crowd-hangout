@@ -257,16 +257,6 @@ public class HumanballProcessor : MonoBehaviour
         AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
     }
 
-    public void ApplyMagnet()
-    {
-
-    }
-
-    public void ApplyPropeller()
-    {
-
-    }
-
     public void Swing()
     {
         if (!isLaunched)
@@ -399,13 +389,15 @@ public class HumanballProcessor : MonoBehaviour
 
             if (other.tag == "LAV")
             {
-                //Damage(1f);
+                structure.RegisteredHumans.GetRandom().Damage(1f);
             }
         }
 
         if (other.gameObject.layer == 11)
         {
-            // TODO Implement damaging - switch human colliders to trigger 
+            Bump(transform.position);
+
+            UnstickHuman(structure.RegisteredHumans.GetRandom());
         }
     }
     

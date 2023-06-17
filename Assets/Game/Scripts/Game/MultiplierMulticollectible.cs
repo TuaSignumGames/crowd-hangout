@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using static BuildingMulticollectible;
 
+// Fix capsule breaking (frame scattering) 
+
 public class MultiplierMulticollectible : HumanMulticollectible
 {
     public override void Initialize(int elementsCount = 1)

@@ -5,13 +5,15 @@ using UnityEngine;
 [System.Serializable]
 public class Propeller
 {
-    public GameObject propeller;
-    public Transform screwContainer;
+    public GameObject container;
+    public Transform screwTransform;
     [Space]
     public float angularSpeed;
 
     private float screwAngle;
     private float angularDelta;
+
+    public bool IsActive => container.activeSelf;
 
     public void Initialize()
     {
@@ -22,6 +24,11 @@ public class Propeller
     {
         screwAngle += angularDelta;
 
-        screwContainer.localEulerAngles = new Vector3(screwAngle, 0, 0);
+        screwTransform.localEulerAngles = new Vector3(screwAngle, 0, 0);
+    }
+
+    public void SetActive(bool isActive)
+    {
+        container.SetActive(isActive);
     }
 }

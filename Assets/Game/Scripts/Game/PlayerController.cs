@@ -100,7 +100,11 @@ public class PlayerController : MonoBehaviour
         }
 
         ball.OnUpdate();
-        powerUpSettings.propeller.Update();
+
+        if (powerUpSettings.propeller.IsActive)
+        {
+            powerUpSettings.propeller.Update();
+        }
 
         humanCountMarker.Update();
     }
@@ -132,6 +136,20 @@ public class PlayerController : MonoBehaviour
         }
 
         ball.OnLateUpdate();
+    }
+
+    public void SetMagnet(bool enabled)
+    {
+        powerUpSettings.magnet.SetActive(enabled);
+
+        // TODO Increase collider size for all collectibles on level 
+    }
+
+    public void SetPropeller(bool enabled)
+    {
+        powerUpSettings.propeller.SetActive(enabled);
+
+        // TODO Fit propeller, add it to Update method, switch controls 
     }
 
     public void SwitchToBattleMode()

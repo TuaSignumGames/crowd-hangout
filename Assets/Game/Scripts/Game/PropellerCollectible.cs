@@ -8,6 +8,6 @@ public class PropellerCollectible : Collectible
     {
         yield return base.CollectingCoroutine();
 
-        // Apply propeller 
+        PlayerController.Instance.SetPropeller(true);
     }
 }
