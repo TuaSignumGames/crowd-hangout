@@ -7,7 +7,7 @@ public class Magnet
 {
     public GameObject container;
     public Transform iconTransform;
-    //public ParticleSystem magnetFieldVFX;
+    public float colliderMultiplier;
 
     public bool IsActive => container.activeSelf;
 

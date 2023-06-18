@@ -7,4 +7,9 @@ public class PowerUpSettings
 {
     public Magnet magnet;
     public Propeller propeller;
+
+    public bool IsAnyPowerUpActive()
+    {
+        return magnet.IsActive || propeller.IsActive;
+    }
 }

@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// - PowerUp resource bar 
+// - Block demolition by Propeller 
+// - Test and build 
+
 public enum LevelElementType
 {
     None, EnvironmentLake, EnvironmentWind, ObstacleBumperStatic, ObstacleBumperDynamic, ObstacleConfusion, DangerLava, DangerUpperSpikes, DangerPendulumBlade, DangerPatrol,
@@ -123,7 +127,7 @@ public class LevelGenerator : MonoBehaviour
         {
             stageInfo = WorldManager.gameProgressionSettings.GetStageOf(LevelManager.LevelNumber);
 
-            structureIndex = 5; //stageInfo.availableStructureIndices.GetRandom();
+            structureIndex = 16; //stageInfo.availableStructureIndices.GetRandom();
             landscapeIndex = stageInfo.availableLandscapeIndices.GetRandom();
         }
 
@@ -1016,6 +1020,19 @@ public class LevelGenerator : MonoBehaviour
         for (int i = 0; i < battlePath.stages.Count; i++)
         {
             battlePath.stages[i].SetVisible(i >= Mathf.Clamp(pivotStageIndex + battlePathSettings.visibilityRange.x, 0, battlePath.stages.Count - 1) && i <= Mathf.Clamp(pivotStageIndex + battlePathSettings.visibilityRange.y, 0, battlePath.stages.Count - 1));
+        }
+    }
+
+    public void MultiplyCollectibleRadiuses(float multiplier)
+    {
+        for (int i = 0; i < collectibles.Count; i++)
+        {
+            if (collectibles[i].collectibleSettings.collider.GetType() == typeof(SphereCollider))
+            {
+                ((SphereCollider)collectibles[i].collectibleSettings.collider).radius *= multiplier;
+
+                print($" Collider radius applied: {((SphereCollider)collectibles[i].collectibleSettings.collider).radius}");
+            }
         }
     }
 

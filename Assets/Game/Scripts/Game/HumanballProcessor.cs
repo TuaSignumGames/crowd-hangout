@@ -45,6 +45,8 @@ public class HumanballProcessor : MonoBehaviour
 
     private bool inForceArea;
 
+    private bool isPropellerActive;
+
     [HideInInspector]
     public bool isAccidented;
 
@@ -131,38 +133,39 @@ public class HumanballProcessor : MonoBehaviour
     {
         if (isActive)
         {
-            if (assignedRope.IsConnected)
+            if (isPropellerActive)
             {
-                Transform.up = Vector3.Lerp(Transform.up, assignedRope.Direction, 0.1f);
-
-                if (isLaunched)
-                {
-                    tensionValue = Mathf.Lerp(tensionValue, 1f, 0.1f);
-
-                    springEvaluator.SetValue(tensionValue);
-                }
-                else
-                {
-                    assignedRope.Data.swingContainer.localEulerAngles = new Vector3(0, 0, Mathf.Sin(6.28f * Time.timeSinceLevelLoad / 4f) * 6f);
-                }
+                Rigidbody.velocity = Transform.up * linearSpeed;
+                Rigidbody.angularVelocity = new Vector3();
             }
             else
             {
-                if (structure.FilledLayersCount < 2)
+                if (assignedRope.IsConnected)
                 {
-                    ballData.rigidbody.angularVelocity = new Vector3();
+                    Transform.up = Vector3.Lerp(Transform.up, assignedRope.Direction, 0.1f);
 
-                    Transform.eulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Transform.eulerAngles.z, ropeThrowingAngle, 0.1f));
+                    if (isLaunched)
+                    {
+                        tensionValue = Mathf.Lerp(tensionValue, 1f, 0.1f);
+
+                        springEvaluator.SetValue(tensionValue);
+                    }
+                    else
+                    {
+                        assignedRope.Data.swingContainer.localEulerAngles = new Vector3(0, 0, Mathf.Sin(6.28f * Time.timeSinceLevelLoad / 4f) * 6f);
+                    }
                 }
+                else
+                {
+                    if (structure.FilledLayersCount < 2)
+                    {
+                        ballData.rigidbody.angularVelocity = new Vector3();
 
-                tensionValue = 0;
-            }
+                        Transform.eulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Transform.eulerAngles.z, ropeThrowingAngle, 0.1f));
+                    }
 
-            if (inForceArea)
-            {
-                Rigidbody.velocity *= forceAreaDampingFactor;
-
-                Rigidbody.AddForce(areaForce);
+                    tensionValue = 0;
+                }
             }
 
             speedLimit = Mathf.Lerp(speedLimit, ballData.speed, ballData.bumpDampingFactor);
@@ -305,6 +308,13 @@ public class HumanballProcessor : MonoBehaviour
         swingAngularSpeedDelta = 0;
     }
 
+    public void Fly(Vector3 direction, float speed)
+    {
+        linearSpeed = speed;
+
+        Transform.up = Vector3.Lerp(Transform.up, direction, 0.1f);
+    }
+
     public void Jump(float height)
     {
         if (height > 0)
@@ -331,10 +341,18 @@ public class HumanballProcessor : MonoBehaviour
         Rigidbody.AddForce(force);
     }
 
+    public void SetPropellerMode(bool enabled)
+    {
+        isPropellerActive = enabled;
+
+        Transform.up = Vector3.right;
+    }
+
     public void UpdateContainerOrientation(Vector3 connectionPoint)
     {
         ballData.structureContainer.SetParent(null);
         ballData.suspensionContainer.SetParent(null);
+        ballData.attributesContainer.SetParent(null);
 
         ropeConnectionCell = structure.GetPlanarClosestFilledCell(connectionPoint, Axis.Z);
 
@@ -345,6 +363,7 @@ public class HumanballProcessor : MonoBehaviour
 
         ballData.structureContainer.SetParent(ballData.suspensionContainer);
         ballData.suspensionContainer.SetParent(ballData.rigidbody.transform);
+        ballData.attributesContainer.SetParent(ballData.rigidbody.transform);
 
         previousPosition = Transform.position;
     }

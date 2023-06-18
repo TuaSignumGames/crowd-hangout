@@ -8,7 +8,10 @@ public class Propeller
     public GameObject container;
     public Transform screwTransform;
     [Space]
-    public float angularSpeed;
+    public float flightSpeed;
+    public float controlSensitivity;
+    [Space]
+    public float screwAngularSpeed;
 
     private float screwAngle;
     private float angularDelta;
@@ -17,7 +20,7 @@ public class Propeller
 
     public void Initialize()
     {
-        angularDelta = angularSpeed * Time.fixedDeltaTime;
+        angularDelta = screwAngularSpeed * Time.fixedDeltaTime;
     }
 
     public void Update()

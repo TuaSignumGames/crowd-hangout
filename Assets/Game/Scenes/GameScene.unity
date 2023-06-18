@@ -2415,6 +2415,39 @@ Transform:
   m_Father: {fileID: 1227643223}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &434596992
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 434596993}
+  m_Layer: 0
+  m_Name: AttributesContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &434596993
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 434596992}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 792430084}
+  - {fileID: 1762746474}
+  m_Father: {fileID: 1779204875}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &464009252
 GameObject:
   m_ObjectHideFlags: 0
@@ -3632,11 +3665,11 @@ MonoBehaviour:
       availableLandscapeIndices: 0000000001000000
     - title: Level 10-19
       initialLevelNumber: 10
-      availableStructureIndices: 0100000002000000
+      availableStructureIndices: 0100000002000000030000000400000005000000
       availableLandscapeIndices: 0000000001000000
     - title: Level 20+
       initialLevelNumber: 20
-      availableStructureIndices: 020000000300000004000000
+      availableStructureIndices: 02000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f000000
       availableLandscapeIndices: 000000000100000002000000
   _battlePathProgressionSettings:
     stages:
@@ -4975,8 +5008,8 @@ Transform:
   m_Children:
   - {fileID: 3420630845974873602}
   - {fileID: 1238177249}
-  m_Father: {fileID: 1779204875}
-  m_RootOrder: 1
+  m_Father: {fileID: 434596993}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &817846466
 GameObject:
@@ -7203,9 +7236,9 @@ MonoBehaviour:
     bladePendulumPrefab: {fileID: 6999513040604818738, guid: 7adf0de3d62514eacb66ad551312a7d6, type: 3}
   collectibleSettings:
     humanCollectibles:
-    - populationValue: 100
-      prefab: {fileID: 84780433877696196, guid: 111df833fdab14e3bb2174076155915c, type: 3}
     - populationValue: 0
+      prefab: {fileID: 84780433877696196, guid: 111df833fdab14e3bb2174076155915c, type: 3}
+    - populationValue: 100
       prefab: {fileID: 7058858665493366268, guid: 9e3a91f64f92d4bec99f74edebac0241, type: 3}
     - populationValue: 100
       prefab: {fileID: 7820228730557124958, guid: d892654380983430dbbb3767f2fdc365, type: 3}
@@ -7280,7 +7313,7 @@ MonoBehaviour:
         blocksCount: 6
         elementType: 15
       cyclesCount: 2
-    - title: Medium
+    - title: Medium-1
       startStep:
         blocksCount: 5
         elementType: 0
@@ -7295,7 +7328,74 @@ MonoBehaviour:
         blocksCount: 1
         elementType: 0
       cyclesCount: 2
-    - title: Hard
+    - title: Medium-2
+      startStep:
+        blocksCount: 5
+        elementType: 0
+      cycle:
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 5
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 15
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 2
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 15
+      endStep:
+        blocksCount: 1
+        elementType: 0
+      cyclesCount: 1
+    - title: Medium-3
+      startStep:
+        blocksCount: 5
+        elementType: 0
+      cycle:
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 2
+      - blocksCount: 5
+        elementType: 15
+      endStep:
+        blocksCount: 1
+        elementType: 0
+      cyclesCount: 2
+    - title: Medium-4
+      startStep:
+        blocksCount: 5
+        elementType: 0
+      cycle:
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 2
+      - blocksCount: 5
+        elementType: 11
+      - blocksCount: 5
+        elementType: 15
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 15
+      endStep:
+        blocksCount: 1
+        elementType: 0
+      cyclesCount: 1
+    - title: Hard-1
       startStep:
         blocksCount: 5
         elementType: 0
@@ -7306,11 +7406,133 @@ MonoBehaviour:
         elementType: 14
       - blocksCount: 4
         elementType: 15
+      - blocksCount: 4
+        elementType: 1
+      - blocksCount: 4
+        elementType: 14
+      - blocksCount: 4
+        elementType: 14
+      - blocksCount: 4
+        elementType: 15
+      - blocksCount: 4
+        elementType: 6
       endStep:
         blocksCount: 1
         elementType: 0
-      cyclesCount: 2
-    - title: Advanced
+      cyclesCount: 1
+    - title: Hard-2
+      startStep:
+        blocksCount: 5
+        elementType: 0
+      cycle:
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 4
+        elementType: 5
+      - blocksCount: 3
+        elementType: 14
+      - blocksCount: 4
+        elementType: 15
+      - blocksCount: 4
+        elementType: 6
+      - blocksCount: 4
+        elementType: 14
+      - blocksCount: 4
+        elementType: 2
+      - blocksCount: 4
+        elementType: 14
+      - blocksCount: 4
+        elementType: 15
+      endStep:
+        blocksCount: 1
+        elementType: 0
+      cyclesCount: 1
+    - title: Hard-3
+      startStep:
+        blocksCount: 5
+        elementType: 0
+      cycle:
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 4
+        elementType: 2
+      - blocksCount: 3
+        elementType: 14
+      - blocksCount: 4
+        elementType: 15
+      - blocksCount: 4
+        elementType: 1
+      - blocksCount: 4
+        elementType: 14
+      - blocksCount: 4
+        elementType: 2
+      - blocksCount: 4
+        elementType: 14
+      - blocksCount: 4
+        elementType: 15
+      - blocksCount: 4
+        elementType: 6
+      endStep:
+        blocksCount: 1
+        elementType: 0
+      cyclesCount: 1
+    - title: Hard-4
+      startStep:
+        blocksCount: 5
+        elementType: 0
+      cycle:
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 4
+        elementType: 2
+      - blocksCount: 3
+        elementType: 11
+      - blocksCount: 4
+        elementType: 15
+      - blocksCount: 4
+        elementType: 1
+      - blocksCount: 4
+        elementType: 14
+      - blocksCount: 4
+        elementType: 2
+      - blocksCount: 4
+        elementType: 14
+      - blocksCount: 4
+        elementType: 6
+      - blocksCount: 4
+        elementType: 15
+      endStep:
+        blocksCount: 1
+        elementType: 0
+      cyclesCount: 1
+    - title: Hard-5
+      startStep:
+        blocksCount: 5
+        elementType: 0
+      cycle:
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 4
+        elementType: 5
+      - blocksCount: 3
+        elementType: 14
+      - blocksCount: 4
+        elementType: 12
+      - blocksCount: 4
+        elementType: 6
+      - blocksCount: 4
+        elementType: 14
+      - blocksCount: 4
+        elementType: 2
+      - blocksCount: 4
+        elementType: 14
+      - blocksCount: 4
+        elementType: 15
+      endStep:
+        blocksCount: 1
+        elementType: 0
+      cyclesCount: 1
+    - title: Advanced-1
       startStep:
         blocksCount: 5
         elementType: 14
@@ -7321,33 +7543,135 @@ MonoBehaviour:
         elementType: 15
       - blocksCount: 3
         elementType: 14
+      - blocksCount: 4
+        elementType: 5
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 15
+      - blocksCount: 4
+        elementType: 8
+      - blocksCount: 3
+        elementType: 14
       endStep:
         blocksCount: 4
         elementType: 15
-      cyclesCount: 2
-    - title: Sandbox
+      cyclesCount: 1
+    - title: Advanced-2
       startStep:
         blocksCount: 5
-        elementType: 0
+        elementType: 14
+      cycle:
+      - blocksCount: 4
+        elementType: 7
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 15
+      - blocksCount: 3
+        elementType: 8
+      - blocksCount: 3
+        elementType: 14
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 15
+      - blocksCount: 4
+        elementType: 6
+      - blocksCount: 3
+        elementType: 14
+      endStep:
+        blocksCount: 4
+        elementType: 15
+      cyclesCount: 1
+    - title: Advanced-3
+      startStep:
+        blocksCount: 5
+        elementType: 14
       cycle:
       - blocksCount: 5
         elementType: 14
       - blocksCount: 5
-        elementType: 1
-      - blocksCount: 5
-        elementType: 12
-      - blocksCount: 5
-        elementType: 5
-      - blocksCount: 5
-        elementType: 2
-      - blocksCount: 5
-        elementType: 7
-      - blocksCount: 5
-        elementType: 11
-      - blocksCount: 5
+        elementType: 15
+      - blocksCount: 3
+        elementType: 14
+      - blocksCount: 4
         elementType: 8
       - blocksCount: 5
-        elementType: 6
+        elementType: 14
+      - blocksCount: 5
+        elementType: 15
+      - blocksCount: 4
+        elementType: 5
+      - blocksCount: 5
+        elementType: 14
+      endStep:
+        blocksCount: 4
+        elementType: 2
+      cyclesCount: 1
+    - title: Advanced-4
+      startStep:
+        blocksCount: 5
+        elementType: 14
+      cycle:
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 11
+      - blocksCount: 3
+        elementType: 14
+      - blocksCount: 4
+        elementType: 8
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 15
+      - blocksCount: 4
+        elementType: 5
+      - blocksCount: 5
+        elementType: 14
+      endStep:
+        blocksCount: 4
+        elementType: 2
+      cyclesCount: 1
+    - title: Advanced-5
+      startStep:
+        blocksCount: 5
+        elementType: 14
+      cycle:
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 12
+      - blocksCount: 3
+        elementType: 14
+      - blocksCount: 4
+        elementType: 5
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 15
+      - blocksCount: 4
+        elementType: 8
+      - blocksCount: 3
+        elementType: 14
+      endStep:
+        blocksCount: 4
+        elementType: 15
+      cyclesCount: 1
+    - title: Sandbox
+      startStep:
+        blocksCount: 5
+        elementType: 12
+      cycle:
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 14
+      - blocksCount: 5
+        elementType: 1
       endStep:
         blocksCount: 5
         elementType: 0
@@ -14446,6 +14770,7 @@ MonoBehaviour:
     bumpDampingFactor: 0.15
     suspensionContainer: {fileID: 838087752}
     structureContainer: {fileID: 2097472858}
+    attributesContainer: {fileID: 434596993}
     elasticitySettings:
       springFactor: 300
       dampingFactor: 0.9
@@ -14479,10 +14804,13 @@ MonoBehaviour:
     magnet:
       container: {fileID: 792430083}
       iconTransform: {fileID: 3420630845974873602}
+      colliderMultiplier: 4
     propeller:
       container: {fileID: 1762746473}
       screwTransform: {fileID: 1975496979}
-      angularSpeed: 720
+      flightSpeed: 8
+      controlSensitivity: 4
+      screwAngularSpeed: 420
   humanCountMarker:
     pivotContainer: {fileID: 1827495150}
     markerContainer: {fileID: 1715921069}
@@ -17816,7 +18144,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1762746474}
-  m_Layer: 0
+  - component: {fileID: 1762746475}
+  m_Layer: 8
   m_Name: PropellerContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17836,9 +18165,22 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1705538901}
-  m_Father: {fileID: 1779204875}
-  m_RootOrder: 2
+  m_Father: {fileID: 434596993}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1762746475
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1762746473}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0.75, z: 0}
 --- !u!1 &1779204874
 GameObject:
   m_ObjectHideFlags: 0
@@ -17870,8 +18212,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 838087752}
-  - {fileID: 792430084}
-  - {fileID: 1762746474}
+  - {fileID: 434596993}
   m_Father: {fileID: 1311670247}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -78,11 +78,18 @@ public class PlayerController : MonoBehaviour
             {
                 if (InputManager.touchPresent && !ball.isAccidented)
                 {
-                    if (targetBlockTransform)
+                    if (powerUpSettings.propeller.IsActive)
                     {
-                        if (rope.Connect(targetBlockTransform.position))
+                        ball.Fly(new Vector3(1f, InputManager.normalizedSlideDisplacement.y * powerUpSettings.propeller.controlSensitivity).normalized, powerUpSettings.propeller.flightSpeed);
+                    }
+                    else
+                    {
+                        if (targetBlockTransform)
                         {
-                            ball.Swing();
+                            if (rope.Connect(targetBlockTransform.position))
+                            {
+                                ball.Swing();
+                            }
                         }
                     }
                 }
@@ -119,17 +126,19 @@ public class PlayerController : MonoBehaviour
         {
             if (InputManager.touch)
             {
-                ball.isAccidented = false;
-
-                if (!rope.IsConnected)
+                if (powerUpSettings.propeller.IsActive)
                 {
-                    targetBlockTransform = RaycastBlock(raycastDirection);
-                }
-            }
 
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                ball.DropHumans(Mathf.FloorToInt(ball.Structure.humansCount / 2));
+                }
+                else
+                {
+                    ball.isAccidented = false;
+
+                    if (!rope.IsConnected)
+                    {
+                        targetBlockTransform = RaycastBlock(raycastDirection);
+                    }
+                }
             }
 
             rope.Update();
@@ -142,19 +151,36 @@ public class PlayerController : MonoBehaviour
     {
         powerUpSettings.magnet.SetActive(enabled);
 
-        // TODO Increase collider size for all collectibles on level 
+        LevelGenerator.Instance.MultiplyCollectibleRadiuses(powerUpSettings.magnet.colliderMultiplier);
     }
 
     public void SetPropeller(bool enabled)
     {
         powerUpSettings.propeller.SetActive(enabled);
 
-        // TODO Fit propeller, add it to Update method, switch controls 
+        if (rope.IsLaunched)
+        {
+            targetBlockTransform = null;
+
+            ball.Release();
+            rope.Disconnect();
+        }
+
+        ball.SetPropellerMode(enabled);
+        ball.Fly(Vector3.right, powerUpSettings.propeller.flightSpeed);
+    }
+
+    public void DisableAllPowerUps()
+    {
+        SetMagnet(false);
+        SetPropeller(false);
     }
 
     public void SwitchToBattleMode()
     {
         ball.Rigidbody.isKinematic = true;
+
+        DisableAllPowerUps();
 
         rope.Disconnect();
         //rope.Update();
@@ -222,6 +248,7 @@ public class PlayerController : MonoBehaviour
         [Space]
         public Transform suspensionContainer;
         public Transform structureContainer;
+        public Transform attributesContainer;
         [Space]
         public SpringData elasticitySettings;
         public PulseData pulsingSettings;
