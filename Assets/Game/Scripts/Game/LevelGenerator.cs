@@ -167,6 +167,8 @@ public class LevelGenerator : MonoBehaviour
 
         GenerateBattlePath(Mathf.Clamp(GameManager.CryticalStageIndex + 6, 10, int.MaxValue), GameManager.CryticalStageIndex);
 
+        RebuildBlockPairsList();
+
         print($" -- Compositions Generated: \n Population: {GameManager.PopulationValue} / Top weapon ID: {WorldManager.GetWeaponID(GameManager.TopWeaponPower)} \n\n - Multicollectibles: {humanCollectiblesCount + weaponCollectiblesCount} (Human: {humanCollectiblesCount}[{totalHumansCount}], Weapon: {weaponCollectiblesCount}[{totalWeaponsCount}]) \n - Level power: {levelPower}");
 
         levelLength = blockPairs.GetLast().Position.x - blockPairs[3].Position.x;
@@ -223,7 +225,7 @@ public class LevelGenerator : MonoBehaviour
             {
                 CheckForBattlePath();
 
-                UpdateLevelVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).OrderIndex);
+                UpdateLevelVisibility(GetBlockPair(PlayerController.Humanball.Transform.position).orderIndex);
 
                 UIProgressBar.Instance.SetProgressValue(Mathf.Clamp01(PlayerController.Humanball.Transform.position.x / levelLength));
             }
@@ -640,6 +642,31 @@ public class LevelGenerator : MonoBehaviour
         battlePath.SetActive(false);
     }
 
+    private void RebuildBlockPairsList()
+    {
+        blockPairs = new List<BlockPair>();
+
+        GameObject[] blockPairElements = new GameObject[0];
+
+        GameObject[] blockPairContainers = blockSettings.blocksContainer.GetGameObjectsInChildren();
+
+        for (int i = 0; i < blockPairContainers.Length; i++)
+        {
+            blockPairElements = blockPairContainers[i].transform.GetGameObjectsInChildren();
+
+            blockPairs.Add(new BlockPair(blockPairElements[0], blockPairElements[1], blockPairContainers[i], i, blockSettings.thresholdValue));
+        }
+
+        blockPairs.Sort((a, b) => a.Position.x.CompareTo(b.Position.x));
+
+        for (int i = 0; i < blockPairs.Count; i++)
+        {
+            blockPairs[i].orderIndex = i;
+
+            blockPairs[i].container.transform.SetSiblingIndex(i);
+        }
+    }
+
     private void RemoveCollectibles()
     {
         for (int i = 0; i < collectibles.Count; i++)
@@ -983,7 +1010,7 @@ public class LevelGenerator : MonoBehaviour
 
     public void UpdateLevelConfiguration(int humanballLayerIndex)
     {
-        SetBlocksHeightIncrement(GetBlockPair(humanballTransform.position).OrderIndex + blockSettings.heightIncrementSettings.transitionShift, blockSettings.heightIncrementSettings);
+        SetBlocksHeightIncrement(GetBlockPair(humanballTransform.position).orderIndex + blockSettings.heightIncrementSettings.transitionShift, blockSettings.heightIncrementSettings);
 
         for (int i = 0; i < blockPairs.Count; i++)
         {

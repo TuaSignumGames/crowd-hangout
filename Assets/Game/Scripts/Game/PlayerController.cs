@@ -50,6 +50,7 @@ public class PlayerController : MonoBehaviour
         Humanball = ball;
 
         humanCountMarker.Initialize();
+        powerUpSettings.progressMarker.Initialize();
 
         ball.Structure.OnLayerIncremented += (a) => humanCountMarker.IncrementDistance(0.2f);
 
@@ -114,6 +115,7 @@ public class PlayerController : MonoBehaviour
         }
 
         humanCountMarker.Update();
+        powerUpSettings.progressMarker.Update();
     }
 
     private void LateUpdate()
@@ -132,16 +134,45 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
-                    ball.isAccidented = false;
-
-                    if (!rope.IsConnected)
+                    if (ball.IsGrounded || ball.ExternalForceArea != null)
                     {
-                        targetBlockTransform = RaycastBlock(raycastDirection);
+                        if (ball.IsGrounded)
+                        {
+                            ball.Jump(LevelGenerator.Instance.GetBlockPair(ball.transform.position).Height / 2f);
+                        }
+                    }
+                    else
+                    {
+                        ball.isAccidented = false;
+
+                        if (!rope.IsConnected)
+                        {
+                            targetBlockTransform = RaycastBlock(raycastDirection);
+                        }
                     }
                 }
             }
 
             rope.Update();
+        }
+
+        if (powerUpSettings.IsAnyPowerUpActive())
+        {
+            if (powerUpSettings.magnet.IsActive)
+            {
+                if (powerUpSettings.progressMarker.SetValue(powerUpSettings.magnet.GetNormalizedTime()) >= 1f)
+                {
+                    SetMagnet(false);
+                }
+            }
+
+            if (powerUpSettings.propeller.IsActive)
+            {
+                if (powerUpSettings.progressMarker.SetValue(powerUpSettings.propeller.GetNormalizedTime()) >= 1f)
+                {
+                    SetPropeller(false);
+                }
+            }
         }
 
         ball.OnLateUpdate();
@@ -150,13 +181,15 @@ public class PlayerController : MonoBehaviour
     public void SetMagnet(bool enabled)
     {
         powerUpSettings.magnet.SetActive(enabled);
+        powerUpSettings.progressMarker.SetActive(enabled);
 
-        LevelGenerator.Instance.MultiplyCollectibleRadiuses(powerUpSettings.magnet.colliderMultiplier);
+        LevelGenerator.Instance.MultiplyCollectibleRadiuses(enabled ? powerUpSettings.magnet.colliderMultiplier : 1f / powerUpSettings.magnet.colliderMultiplier);
     }
 
     public void SetPropeller(bool enabled)
     {
         powerUpSettings.propeller.SetActive(enabled);
+        powerUpSettings.progressMarker.SetActive(enabled);
 
         if (rope.IsLaunched)
         {

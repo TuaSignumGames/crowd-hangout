@@ -12,6 +12,8 @@ public class HumanballProcessor : MonoBehaviour
 
     private Humanball structure;
 
+    private ForceArea externalForceArea;
+
     private SpringEvaluator springEvaluator;
     private PulseEvaluator pulseEvaluator;
 
@@ -30,7 +32,10 @@ public class HumanballProcessor : MonoBehaviour
     private float linearSpeed;
     private float linearAccelerationDelta;
 
-    private float speedLimit;
+    private float baseSpeedLimit;
+    private float actualSpeedLimit;
+
+    private float jumpImpulseMagnitude;
 
     private float swingAngularSpeed;
     private float swingAngularSpeedDelta;
@@ -43,6 +48,8 @@ public class HumanballProcessor : MonoBehaviour
     private bool isActive;
     private bool isLaunched;
 
+    private bool isGrounded;
+    private bool isJumped;
     private bool inForceArea;
 
     private bool isPropellerActive;
@@ -58,9 +65,11 @@ public class HumanballProcessor : MonoBehaviour
 
     public Humanball Structure => structure;
 
+    public ForceArea ExternalForceArea => externalForceArea;
+
     public Vector3 Velocity => velocityDelta / Time.fixedDeltaTime;
 
-    //public bool IsGrounded => isGrounded;
+    public bool IsGrounded => isGrounded;
 
     public HumanballProcessor(BallSettings settings, int cellsCount)
     {
@@ -77,6 +86,8 @@ public class HumanballProcessor : MonoBehaviour
         linearAccelerationDelta = ballData.acceleration * Time.fixedDeltaTime;
 
         tensionDeformation = ballData.tensionRatio * ballData.tensionMultiplier;
+
+        baseSpeedLimit = ballData.speed;
 
         InitializeBallStructure(cellsCount);
 
@@ -168,9 +179,12 @@ public class HumanballProcessor : MonoBehaviour
                 }
             }
 
-            speedLimit = Mathf.Lerp(speedLimit, ballData.speed, ballData.bumpDampingFactor);
+            if (!isJumped)
+            {
+                actualSpeedLimit = Mathf.Lerp(actualSpeedLimit, baseSpeedLimit, ballData.bumpDampingFactor);
+            }
 
-            Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, speedLimit);
+            Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, actualSpeedLimit);
 
             springEvaluator.Update(ref springValue);
 
@@ -183,6 +197,13 @@ public class HumanballProcessor : MonoBehaviour
         structure.LateUpdate();
 
         pulseEvaluator.Update();
+
+        if (isJumped && Rigidbody.velocity.y < 0)
+        {
+            isJumped = false;
+
+            actualSpeedLimit = baseSpeedLimit;
+        }
     }
 
     public HumanballCell ReserveCell(HumanController humanController)
@@ -319,7 +340,14 @@ public class HumanballProcessor : MonoBehaviour
     {
         if (height > 0)
         {
-            Rigidbody.velocity = new Vector3(0, Mathf.Sqrt(2 * -Physics.gravity.y * height) * 1.5f, 0);
+            isJumped = true;
+
+            jumpImpulseMagnitude = Mathf.Sqrt(2 * -Physics.gravity.y * height);
+            actualSpeedLimit = jumpImpulseMagnitude;
+
+            pulseEvaluator.Click(ballData.pulsingSettings.clickValue);
+
+            Rigidbody.velocity = new Vector3(0, jumpImpulseMagnitude, 0);
         }
     }
 
@@ -329,7 +357,7 @@ public class HumanballProcessor : MonoBehaviour
 
         Release();
 
-        speedLimit = ballData.speed * 3f;
+        actualSpeedLimit = ballData.speed * 3f;
 
         Rigidbody.velocity += (Transform.position - contactPoint).normalized * ballData.bumpImpulse;
 
@@ -399,12 +427,39 @@ public class HumanballProcessor : MonoBehaviour
         }
     }
     */
-    
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.layer == 7)
+        {
+            isGrounded = collision.gameObject.transform.position.y < Transform.position.y;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.layer == 7)
+        {
+            isGrounded = false;
+        }
+    }
+
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.layer == 10)
         {
-            PlayerController.Humanball.ApplyForce(other.transform.forward * WorldManager.environmentSettings.GetForceMagnitude(other.tag) / structure.humansCount);
+            externalForceArea = WorldManager.environmentSettings.TryGetForceArea(other);
+
+            if (InputManager.touchPresent)
+            {
+                //ApplyForce((-externalForceArea.Force + new Vector3(externalForceArea.Data.forceMagnitude / 6f, 0, 0)) / structure.humansCount / 6f);
+
+                ApplyForce((-externalForceArea.Force / 10f + new Vector3(externalForceArea.Data.forceMagnitude / 6f, 0)) / structure.humansCount);
+            }
+            else
+            {
+                ApplyForce(externalForceArea.Force / structure.humansCount);
+            }
 
             if (other.tag == "LAV")
             {
@@ -419,5 +474,12 @@ public class HumanballProcessor : MonoBehaviour
             UnstickHuman(structure.RegisteredHumans.GetRandom());
         }
     }
-    
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.layer == 10)
+        {
+            externalForceArea = null;
+        }
+    }
 }

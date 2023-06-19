@@ -24,9 +24,17 @@ public class EnvironmentSettings
         return titles;
     }
 
-    public float GetForceMagnitude(string tag)
+    public ForceArea TryGetForceArea(Collider collider)
     {
-        return forceAreas.Find((area) => area.tag == tag).forceMagnitude;
+        for (int i = 0; i < forceAreas.Count; i++)
+        {
+            if (forceAreas[i].tag == collider.tag)
+            {
+                return new ForceArea(forceAreas[i], collider);
+            }
+        }
+
+        return null;
     }
 }
 

@@ -12,9 +12,13 @@ public class Propeller
     public float controlSensitivity;
     [Space]
     public float screwAngularSpeed;
+    [Space]
+    public float duration;
 
     private float screwAngle;
     private float angularDelta;
+
+    private float activationTime;
 
     public bool IsActive => container.activeSelf;
 
@@ -32,6 +36,16 @@ public class Propeller
 
     public void SetActive(bool isActive)
     {
+        if (isActive)
+        {
+            activationTime = Time.timeSinceLevelLoad;
+        }
+
         container.SetActive(isActive);
+    }
+
+    public float GetNormalizedTime()
+    {
+        return (Time.timeSinceLevelLoad - activationTime) / duration;
     }
 }

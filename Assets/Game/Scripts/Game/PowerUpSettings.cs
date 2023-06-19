@@ -5,6 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class PowerUpSettings
 {
+    public CircularProgressMarker progressMarker;
+    [Space]
     public Magnet magnet;
     public Propeller propeller;
 

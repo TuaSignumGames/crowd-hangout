@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BlockPair
 {
@@ -23,8 +24,6 @@ public class BlockPair
 
     private float thresholdValue;
 
-    private int orderIndex;
-
     private bool isVisible;
 
     public Collectible Collectible => collectible;
@@ -34,9 +33,9 @@ public class BlockPair
     public Vector3 CeilBlockPosition => ceilingBlock.transform.position;
     public Vector3 FloorBlockPosition => groundBlock.transform.position;
 
-    public float Height => height;
+    public int orderIndex;
 
-    public int OrderIndex => orderIndex;
+    public float Height => ceilingBlock.transform.position.y - groundBlock.transform.position.y;
 
     public BlockPair(GameObject ceilBlock, GameObject floorBlock, GameObject container, int orderIndex, float thresholdValue)
     {
