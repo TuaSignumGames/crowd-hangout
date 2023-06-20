@@ -78,6 +78,8 @@ public class WorldManager : MonoBehaviour
 
         RenderSettings.skybox = environmentSettings.themes[themeIndex].skyboxMaterial;
 
+        environmentSettings.particles.InitializePools(5);
+
         //int iterations = 50;
 
         //print($" - Weapon upgrade cycle for [{iterations}] iterations");

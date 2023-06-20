@@ -31,6 +31,8 @@ public class Humanball
 
     private int counter;
 
+    private bool isTriggerColliderRequired;
+
     public int humansCount;
 
     public Action<int> OnLayerIncremented;
@@ -135,6 +137,11 @@ public class Humanball
                     usedCells.Add(availableCell);
                     registeredHumans.Add(human);
 
+                    if (isTriggerColliderRequired)
+                    {
+                        human.components.collider.isTrigger = true;
+                    }
+
                     humansCount++;
 
                     return availableCell;
@@ -161,6 +168,11 @@ public class Humanball
                     usedCells.Add(availableCell);
                     registeredHumans.Add(human);
 
+                    if (isTriggerColliderRequired)
+                    {
+                        human.components.collider.isTrigger = true;
+                    }
+
                     humansCount++;
 
                     return availableCell;
@@ -169,6 +181,11 @@ public class Humanball
         }
 
         return null;
+    }
+
+    public void RegisterHuman(HumanController human)
+    {
+        registeredHumans.Add(human);
     }
 
     public void RemoveHuman(HumanController human)
@@ -304,6 +321,16 @@ public class Humanball
         }
 
         return new Vector3(midpoint.x / filledCells.Count, midpoint.y / filledCells.Count, 0);
+    }
+
+    public void SetHumanColliderAsTriggers(bool isTrigger)
+    {
+        isTriggerColliderRequired = isTrigger;
+
+        for (int i = 0; i < registeredHumans.Count; i++)
+        {
+            registeredHumans[i].components.collider.isTrigger = isTrigger;
+        }
     }
 
     private void CheckForPlanarClosestCell(HumanballCell cell, Vector3 point, Axis planeAxis)

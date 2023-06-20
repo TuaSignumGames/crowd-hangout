@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// - PowerUp resource bar 
-// - Block demolition by Propeller 
 // - Test and build 
+//
+// - Return HumanCollectible elements dropping 
 
 public enum LevelElementType
 {
@@ -54,6 +54,10 @@ public class LevelGenerator : MonoBehaviour
     private PropellerCollectible propellerCollectibleInstance;
 
     private GameObject newBlockPairContainer;
+
+    private BlockPair fracturedBlockPair;
+
+    private ParticleSystem fracturedBlockVFX;
 
     private Vector2 perlinNoiseOrigin;
 
@@ -127,7 +131,7 @@ public class LevelGenerator : MonoBehaviour
         {
             stageInfo = WorldManager.gameProgressionSettings.GetStageOf(LevelManager.LevelNumber);
 
-            structureIndex = 16; //stageInfo.availableStructureIndices.GetRandom();
+            structureIndex = stageInfo.availableStructureIndices.GetRandom(); // 16 
             landscapeIndex = stageInfo.availableLandscapeIndices.GetRandom();
         }
 
@@ -201,7 +205,7 @@ public class LevelGenerator : MonoBehaviour
 
         elementMap[previousCollectiblePlacementIndex + levelData.structureData.endStep.blocksCount] = levelData.structureData.endStep.elementType;
     }
-
+    /*
     public void GenerateFromEditor()
     {
         levelData = levelSettings.GetConfiguration(1, 1);
@@ -210,7 +214,7 @@ public class LevelGenerator : MonoBehaviour
 
         GenerateBlocks();
     }
-
+    */
     private void LateUpdate()
     {
         if (isLevelGenerated)
@@ -1061,6 +1065,61 @@ public class LevelGenerator : MonoBehaviour
                 print($" Collider radius applied: {((SphereCollider)collectibles[i].collectibleSettings.collider).radius}");
             }
         }
+    }
+
+    public void FractureBlock(GameObject block, Vector3 hitPosition)
+    {
+        fracturedBlockPair = GetBlockPair(block.transform.position);
+
+        if (block.transform.position.y > fracturedBlockPair.Position.y)
+        {
+            fracturedBlockVFX = WorldManager.environmentSettings.particles.cliffFracturePool.Eject();
+
+            block.transform.position = new Vector3(block.transform.position.x, hitPosition.y + blockSettings.thresholdValue, block.transform.position.z);
+
+            for (int i = 0; i < collectibles.Count; i++)
+            {
+                if (collectibles[i].Placement != CollectiblePlacementType.Ground && Mathf.RoundToInt(collectibles[i].transform.position.x) == Mathf.RoundToInt(block.transform.position.x))
+                {
+                    if (!collectibles[i].IsCollected)
+                    {
+                        collectibles[i].Collect();
+                    }
+                }
+            }
+        }
+        else
+        {
+            fracturedBlockVFX = WorldManager.environmentSettings.particles.foilFracturePool.Eject();
+
+            block.transform.position = new Vector3(block.transform.position.x, hitPosition.y - blockSettings.thresholdValue, block.transform.position.z);
+
+            for (int i = 0; i < collectibles.Count; i++)
+            {
+                if (collectibles[i].Placement == CollectiblePlacementType.Ground && Mathf.RoundToInt(collectibles[i].transform.position.x) == Mathf.RoundToInt(block.transform.position.x))
+                {
+                    if (!collectibles[i].IsCollected)
+                    {
+                        collectibles[i].Collect();
+                    }
+                }
+            }
+        }
+
+        if (block.transform.childCount > 1)
+        {
+            foreach (GameObject blockElement in block.transform.GetGameObjectsInChildren())
+            {
+                if (blockElement.layer != 7)
+                {
+                    blockElement.SetActive(false);
+                }
+            }
+        }
+
+        fracturedBlockVFX.transform.position = block.transform.position;
+
+        fracturedBlockVFX.Play();
     }
 
     public BlockPair GetBlockPair(Vector3 position)

@@ -596,7 +596,7 @@ public class HumanController : MonoBehaviour
         components.animator.SetFloat(animatorSpeedFactorHash, Mathf.Clamp01(actualSpeed));
         components.animator.SetBool(animatorRunningHash, actualSpeed > 0);
     }
-
+    /*
     private void OnTriggerEnter(Collider other)
     {
         if (!isFree)
@@ -612,7 +612,7 @@ public class HumanController : MonoBehaviour
             }
         }
     }
-
+    */
     private void OnValidate()
     {
         if (teamSettings.Count > 0)

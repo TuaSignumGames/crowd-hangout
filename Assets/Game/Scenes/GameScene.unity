@@ -3456,6 +3456,11 @@ MonoBehaviour:
           m_RotationOrder: 4
         heightMultiplier: 2
       skyboxMaterial: {fileID: 2100000, guid: ede91f123e8ce404195f1fddb6bc6c57, type: 2}
+    particles:
+      particlesContainer: {fileID: 909890997}
+      cliffFracturesPrefab: {fileID: 3456849252135196519, guid: d9825f46b42f4476bb39f977314f570f, type: 3}
+      foilFracturesPrefab: {fileID: 4500676967973202558, guid: 02c5041185af6480c9d568345be7e148, type: 3}
+      dangerFracturesPrefab: {fileID: 4500676967973202558, guid: 3bd6434c30854458d8f55d52a645fad5, type: 3}
     segments:
       lakeSegmentData:
         ceilingProfile:
@@ -3789,6 +3794,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1781121593}
+  - {fileID: 909890998}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6586,6 +6592,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e0cbff706c4f34e9b818d652d23df824, type: 3}
   m_PrefabInstance: {fileID: 908156542}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &909890997
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 909890998}
+  m_Layer: 0
+  m_Name: Particles
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &909890998
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 909890997}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 566636409}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &913964855
 GameObject:
   m_ObjectHideFlags: 0
@@ -7356,9 +7393,9 @@ MonoBehaviour:
     humanCollectibles:
     - populationValue: 0
       prefab: {fileID: 84780433877696196, guid: 111df833fdab14e3bb2174076155915c, type: 3}
-    - populationValue: 100
+    - populationValue: 9999999
       prefab: {fileID: 7058858665493366268, guid: 9e3a91f64f92d4bec99f74edebac0241, type: 3}
-    - populationValue: 100
+    - populationValue: 10
       prefab: {fileID: 7820228730557124958, guid: d892654380983430dbbb3767f2fdc365, type: 3}
     populationCurve:
       serializedVersion: 2
@@ -7780,10 +7817,12 @@ MonoBehaviour:
     - title: Sandbox
       startStep:
         blocksCount: 5
-        elementType: 11
+        elementType: 12
       cycle:
       - blocksCount: 5
-        elementType: 14
+        elementType: 8
+      - blocksCount: 5
+        elementType: 7
       - blocksCount: 5
         elementType: 14
       - blocksCount: 5
@@ -18388,7 +18427,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1762746473}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}

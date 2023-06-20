@@ -128,6 +128,8 @@ public class HumanballProcessor : MonoBehaviour
 
         structure = new Humanball(structureLayers);
 
+        structure.RegisterHuman(HumanController.selectedHuman);
+
         structure.humansCount = 1;
 
         PlayerController.Instance.humanCountMarker.SetValue(structure.humansCount.ToString());
@@ -294,6 +296,8 @@ public class HumanballProcessor : MonoBehaviour
 
             Transform.SetParent(assignedRope.Data.swingContainer);
 
+            structure.SetHumanColliderAsTriggers(true);
+
             previousPosition = Transform.position;
         }
         
@@ -323,6 +327,8 @@ public class HumanballProcessor : MonoBehaviour
     {
         ballData.rigidbody.isKinematic = false;
 
+        structure.SetHumanColliderAsTriggers(false);
+
         ballData.rigidbody.velocity = Velocity;
         ballData.rigidbody.angularVelocity = new Vector3(0, 0, swingAngularSpeed / 30f);
 
@@ -331,7 +337,7 @@ public class HumanballProcessor : MonoBehaviour
 
     public void Fly(Vector3 direction, float speed)
     {
-        linearSpeed = speed;
+        linearSpeed = speed; // Mathf.Lerp(linearSpeed, speed, 0.2f);
 
         Transform.up = Vector3.Lerp(Transform.up, direction, 0.1f);
     }
@@ -341,6 +347,7 @@ public class HumanballProcessor : MonoBehaviour
         if (height > 0)
         {
             isJumped = true;
+            isGrounded = false;
 
             jumpImpulseMagnitude = Mathf.Sqrt(2 * -Physics.gravity.y * height);
             actualSpeedLimit = jumpImpulseMagnitude;
@@ -406,41 +413,40 @@ public class HumanballProcessor : MonoBehaviour
 
         previousPosition = Transform.position;
     }
-    /*
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == 10)
+        if (other.gameObject.layer == 7)
         {
-            areaForce = other.transform.forward * WorldManager.environmentSettings.GetForceMagnitude(other.tag);
+            if (PlayerController.Instance.powerUpSettings.propeller.IsActive)
+            {
+                LevelGenerator.Instance.FractureBlock(other.gameObject, PlayerController.Instance.powerUpSettings.propeller.screwTransform.position);
 
-            forceAreaDampingFactor = 0.9f;
+                linearSpeed *= 5f;
+            }
+            else
+            {
+                Bump(transform.position);
 
-            inForceArea = true;
+                if (transform.position.y > LevelGenerator.Instance.GetBlockPair(transform.position).Position.y)
+                {
+                    UnstickHuman(structure.RegisteredHumans.GetRandom());
+                }
+            }
         }
-    }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.layer == 10)
+        if (other.gameObject.layer == 11)
         {
-            inForceArea = false;
-        }
-    }
-    */
+            if (PlayerController.Instance.powerUpSettings.propeller.IsActive)
+            {
+                other.gameObject.SetActive(false);
 
-    private void OnCollisionStay(Collision collision)
-    {
-        if (collision.gameObject.layer == 7)
-        {
-            isGrounded = collision.gameObject.transform.position.y < Transform.position.y;
-        }
-    }
+                ParticleSystem dangerFractureVFX = WorldManager.environmentSettings.particles.dangerFracturePool.Eject();
 
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.layer == 7)
-        {
-            isGrounded = false;
+                dangerFractureVFX.transform.position = other.gameObject.transform.position;
+
+                dangerFractureVFX.Play();
+            }
         }
     }
 
@@ -454,7 +460,7 @@ public class HumanballProcessor : MonoBehaviour
             {
                 //ApplyForce((-externalForceArea.Force + new Vector3(externalForceArea.Data.forceMagnitude / 6f, 0, 0)) / structure.humansCount / 6f);
 
-                ApplyForce((-externalForceArea.Force / 10f + new Vector3(externalForceArea.Data.forceMagnitude / 6f, 0)) / structure.humansCount);
+                ApplyForce((-externalForceArea.Force - Physics.gravity + new Vector3(externalForceArea.Data.forceMagnitude / 6f, 0)) / structure.humansCount);
             }
             else
             {
@@ -469,9 +475,12 @@ public class HumanballProcessor : MonoBehaviour
 
         if (other.gameObject.layer == 11)
         {
-            Bump(transform.position);
+            if (!PlayerController.Instance.powerUpSettings.propeller.IsActive)
+            {
+                Bump(transform.position);
 
-            UnstickHuman(structure.RegisteredHumans.GetRandom());
+                UnstickHuman(structure.RegisteredHumans.GetRandom());
+            }
         }
     }
 
@@ -480,6 +489,39 @@ public class HumanballProcessor : MonoBehaviour
         if (other.gameObject.layer == 10)
         {
             externalForceArea = null;
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == 7)
+        {
+            if (transform.position.y > LevelGenerator.Instance.GetBlockPair(transform.position).Position.y)
+            {
+                UnstickHuman(structure.RegisteredHumans.GetRandom());
+            }
+        }
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.layer == 7)
+        {
+            if (!PlayerController.Instance.powerUpSettings.propeller.IsActive)
+            {
+                isGrounded = collision.gameObject.transform.position.y < Transform.position.y;
+            }
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.layer == 7)
+        {
+            if (isJumped)
+            {
+                isGrounded = false;
+            }
         }
     }
 }

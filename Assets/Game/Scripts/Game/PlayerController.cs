@@ -37,7 +37,6 @@ public class PlayerController : MonoBehaviour
         raycastDirection = new Vector2(Mathf.Cos(ropeSettings.throwingAngle * Mathf.Deg2Rad), Mathf.Sin(ropeSettings.throwingAngle * Mathf.Deg2Rad));
 
         ball = ballSettings.processor;
-        //ball = new HumanballProcessor(ballSettings, LevelGenerator.Instance.TotalHumansCount);
         rope = new RopeProcessor(ropeSettings);
 
         ball.Initialize(ballSettings, LevelGenerator.Instance.TotalHumansCount * 2);
@@ -53,6 +52,7 @@ public class PlayerController : MonoBehaviour
         powerUpSettings.progressMarker.Initialize();
 
         ball.Structure.OnLayerIncremented += (a) => humanCountMarker.IncrementDistance(0.2f);
+        ball.Structure.OnLayerIncremented += (a) => powerUpSettings.progressMarker.IncrementDistance(0.2f);
 
         HumanController.InitializeAnimatorHashes();
 
@@ -199,6 +199,8 @@ public class PlayerController : MonoBehaviour
             rope.Disconnect();
         }
 
+        ball.Structure.SetHumanColliderAsTriggers(enabled);
+
         ball.SetPropellerMode(enabled);
         ball.Fly(Vector3.right, powerUpSettings.propeller.flightSpeed);
     }
@@ -234,6 +236,8 @@ public class PlayerController : MonoBehaviour
         ball.Rigidbody.gameObject.SetActive(false);
 
         rope.SetActive(false);
+
+        humanCountMarker.SetActive(false);
 
         LevelManager.Instance.OnLevelFinished(false);
     }
