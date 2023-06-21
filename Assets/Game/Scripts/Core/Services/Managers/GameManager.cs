@@ -17,9 +17,9 @@ public class GameManager : Service<GameManager>
     private float _defaultFixedDeltaTime;
     private float _timeScaleValue;
 
-    public static float Currency { get { return PlayerPrefs.GetFloat("COIN", 5f); } set { PlayerPrefs.SetFloat("COIN", value); } }
+    public static float Currency { get { return PlayerPrefs.GetFloat("COIN", 5000000f); } set { PlayerPrefs.SetFloat("COIN", value); } }
 
-    public static int WeaponUpgradeIndex { get { return PlayerPrefs.GetInt("UPG.WPN", 0); } set { PlayerPrefs.SetInt("UPG.WPN", value); } }
+    public static int WeaponUpgradeIndex { get { return  PlayerPrefs.GetInt("UPG.WPN", 0); } set { PlayerPrefs.SetInt("UPG.WPN", value); } }
     public static int PopulationUpgradeIndex { get { return PlayerPrefs.GetInt("UPG.PPL", 0); } set { PlayerPrefs.SetInt("UPG.PPL", value); } }
 
     public static float TopWeaponPower { get { return PlayerPrefs.GetFloat("WPN.TP", WorldManager.GetWeaponPower(0)); } set { PlayerPrefs.SetFloat("WPN.TP", value); } }

@@ -2,9 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// - Test and build 
+// - Add new structures from level 5 to level 10 
+// - Magnet power-up: pull humans from building 
+// - BattlePath: increase attack rate and motion speed by tapping
 //
 // - Return HumanCollectible elements dropping 
+// - Return shadows on EndScreen titles
+//
+// - Integrate WisdomSDK 
+// - Check progression events 
 
 public enum LevelElementType
 {

@@ -218,11 +218,11 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 7560757168807600987}
-  - title: AK[P:50]
+  - title: AK[P:25]
     weaponContainer: {fileID: 6113200975160171124}
     weaponModel: {fileID: 6984221268682583114}
     ammoContainer: {fileID: 8902783578381812959}
-    damageRate: 50
+    damageRate: 25
     reloadingTime: 0.1
     attackDistance: 13
     parabolaHeight: 0
