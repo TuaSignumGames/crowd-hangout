@@ -507,7 +507,7 @@ public class HumanballProcessor : MonoBehaviour
     {
         if (collision.gameObject.layer == 7)
         {
-            if (!PlayerController.Instance.powerUpSettings.propeller.IsActive)
+            if (externalForceArea == null && !PlayerController.Instance.powerUpSettings.propeller.IsActive)
             {
                 isGrounded = collision.gameObject.transform.position.y < Transform.position.y;
             }

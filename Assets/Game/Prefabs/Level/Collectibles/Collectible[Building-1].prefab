@@ -2917,6 +2917,10 @@ MonoBehaviour:
       max: 0
     fittingRangeNumber: 1
     verticalShift: 2
+    capsule:
+      capsule: {fileID: 0}
+      debris: []
+      destructionVFX: {fileID: 0}
     collider: {fileID: 2771079093471186133}
   multicollectibleSettings:
     elementCountMarker:
@@ -2938,7 +2942,7 @@ MonoBehaviour:
         max: 720
       externalImpulseFactor: 0.3
       gravityModifier: 1
-    collectiblePullingSpeed: 100
+    collectiblePullingSpeed: 25
     collectiblePullingDelay: 0
     collectibleScatteringSettings:
       impulseRatio: {x: 1, y: 10, z: 1}

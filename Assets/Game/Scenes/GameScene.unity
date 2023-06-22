@@ -3698,16 +3698,16 @@ MonoBehaviour:
       initialLevelNumber: 1
       availableStructureIndices: 00000000
       availableLandscapeIndices: 00000000
-    - title: Level 4-9
+    - title: Level 4-7
       initialLevelNumber: 4
       availableStructureIndices: 0000000001000000
       availableLandscapeIndices: 0000000001000000
-    - title: Level 10-19
-      initialLevelNumber: 10
+    - title: Level 8-11
+      initialLevelNumber: 8
       availableStructureIndices: 0100000002000000030000000400000005000000
       availableLandscapeIndices: 0000000001000000
-    - title: Level 20+
-      initialLevelNumber: 20
+    - title: Level 12+
+      initialLevelNumber: 12
       availableStructureIndices: 02000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f000000
       availableLandscapeIndices: 000000000100000002000000
   _battlePathProgressionSettings:
@@ -7817,7 +7817,7 @@ MonoBehaviour:
     - title: Sandbox
       startStep:
         blocksCount: 5
-        elementType: 12
+        elementType: 11
       cycle:
       - blocksCount: 5
         elementType: 8
@@ -14969,7 +14969,7 @@ MonoBehaviour:
     magnet:
       container: {fileID: 792430083}
       iconTransform: {fileID: 3420630845974873602}
-      colliderMultiplier: 4
+      colliderMultiplier: 5
       duration: 10
     propeller:
       container: {fileID: 1762746473}

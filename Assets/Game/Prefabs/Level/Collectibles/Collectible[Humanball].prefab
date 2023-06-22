@@ -483,13 +483,13 @@ MonoBehaviour:
         max: 0
       externalImpulseFactor: 0
       gravityModifier: 1
-    collectiblePullingSpeed: 100
-    collectiblePullingDelay: 0
+    collectiblePullingSpeed: 25
+    collectiblePullingDelay: 0.6
     collectibleScatteringSettings:
       impulseRatio: {x: 1, y: 1, z: 1}
       impulseMagnitudeRange:
-        min: 0
-        max: 0
+        min: 10
+        max: 20
       angularMomentumRange:
         min: 90
         max: 720

@@ -2,12 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// - Add new structures from level 5 to level 10 
-// - Magnet power-up: pull humans from building 
-// - BattlePath: increase attack rate and motion speed by tapping
-//
-// - Return HumanCollectible elements dropping 
-// - Return shadows on EndScreen titles
+// - BattlePath: increase attack rate and motion speed by tapping 
 //
 // - Integrate WisdomSDK 
 // - Check progression events 
@@ -137,7 +132,7 @@ public class LevelGenerator : MonoBehaviour
         {
             stageInfo = WorldManager.gameProgressionSettings.GetStageOf(LevelManager.LevelNumber);
 
-            structureIndex = stageInfo.availableStructureIndices.GetRandom(); // 16 
+            structureIndex = 16; //stageInfo.availableStructureIndices.GetRandom(); // 16 
             landscapeIndex = stageInfo.availableLandscapeIndices.GetRandom();
         }
 
@@ -1064,11 +1059,14 @@ public class LevelGenerator : MonoBehaviour
     {
         for (int i = 0; i < collectibles.Count; i++)
         {
+            if (collectibles[i].collectibleSettings.collider.GetType() == typeof(BoxCollider))
+            {
+                ((BoxCollider)collectibles[i].collectibleSettings.collider).size *= multiplier;
+            }
+
             if (collectibles[i].collectibleSettings.collider.GetType() == typeof(SphereCollider))
             {
                 ((SphereCollider)collectibles[i].collectibleSettings.collider).radius *= multiplier;
-
-                print($" Collider radius applied: {((SphereCollider)collectibles[i].collectibleSettings.collider).radius}");
             }
         }
     }

@@ -74,7 +74,8 @@ public class MulticollectibleElement
         {
             if (pullAvailabilityTime == 0)
             {
-                pullAvailabilityTime = Time.timeSinceLevelLoad + pullDelay;
+                //pullSpeed *= PlayerController.Instance.powerUpSettings.magnet.colliderMultiplier;
+                pullAvailabilityTime = PlayerController.Instance.powerUpSettings.magnet.IsActive ? Time.timeSinceLevelLoad : Time.timeSinceLevelLoad + pullDelay;
             }
 
             motionSimulator.DampVelocity(pullDelay);
