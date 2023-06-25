@@ -30,7 +30,6 @@ public class HumanballProcessor : MonoBehaviour
     private float ropeThrowingAngle;
 
     private float linearSpeed;
-    private float linearAccelerationDelta;
 
     private float baseSpeedLimit;
     private float actualSpeedLimit;
@@ -39,6 +38,7 @@ public class HumanballProcessor : MonoBehaviour
 
     private float swingAngularSpeed;
     private float swingAngularSpeedDelta;
+    private float swingAngularAccelerationIncrement;
 
     private float forceAreaDampingFactor;
 
@@ -82,8 +82,6 @@ public class HumanballProcessor : MonoBehaviour
 
         springEvaluator = new SpringEvaluator(ballData.elasticitySettings);
         pulseEvaluator = new PulseEvaluator(Transform, ballData.pulsingSettings.retrievalFactor, ballData.pulsingSettings.clickValue * 2f);
-
-        linearAccelerationDelta = ballData.acceleration * Time.fixedDeltaTime;
 
         tensionDeformation = ballData.tensionRatio * ballData.tensionMultiplier;
 
@@ -306,7 +304,7 @@ public class HumanballProcessor : MonoBehaviour
             swingAngularSpeed = ballData.speed / assignedRope.Length * 57.325f;
             swingAngularSpeedDelta = swingAngularSpeed * Time.fixedDeltaTime;
         }
-        
+
         /*
         linearSpeed = Mathf.Clamp(linearSpeed + linearAccelerationDelta, -ballData.speed, ballData.speed);
 
@@ -314,7 +312,14 @@ public class HumanballProcessor : MonoBehaviour
         swingAngularSpeedDelta = swingAngularSpeed * Time.fixedDeltaTime;
         */
 
-        assignedRope.Data.swingContainer.localEulerAngles += new Vector3(0, 0, swingAngularSpeedDelta);
+        //assignedRope.Data.swingContainer.localEulerAngles += new Vector3(0, 0, swingAngularSpeedDelta);
+
+        //print($" Min: {assignedRope.SwingHorizontalRange.min} / Max: {assignedRope.SwingHorizontalRange.max} / Length: {assignedRope.SwingHorizontalRange.length}");
+
+        if (assignedRope.SwingHorizontalRange.length > 0)
+        {
+            assignedRope.Data.swingContainer.localEulerAngles += new Vector3(0, 0, ballData.angularSpeedCurve.Evaluate((transform.position.x - assignedRope.SwingHorizontalRange.min) / assignedRope.SwingHorizontalRange.length) * swingAngularSpeedDelta);
+        }
 
         velocityDelta = Transform.position - previousPosition;
 

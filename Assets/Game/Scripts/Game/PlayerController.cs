@@ -279,6 +279,7 @@ public class PlayerController : MonoBehaviour
         [Space]
         public float speed;
         public float acceleration;
+        public AnimationCurve angularSpeedCurve;
         [Space]
         public float bumpImpulse;
         public float bumpDampingFactor;

@@ -9,6 +9,8 @@ public class RopeProcessor
 
     private HumanballProcessor assignedBall;
 
+    private FloatRange swingHorizontalRange;
+
     private float targetRopeLenght;
     private float actualRopeLenght;
 
@@ -23,6 +25,8 @@ public class RopeProcessor
 
     public Vector3 Vector => ConnectionPoint - ropeData.originTransform.position;
     public Vector3 Direction => Vector.normalized;
+
+    public FloatRange SwingHorizontalRange => swingHorizontalRange;
 
     public float Length => actualRopeLenght;
 
@@ -82,13 +86,15 @@ public class RopeProcessor
         }
         else
         {
-            if (ropeData.swingContainer.childCount == 0)
+            if (swingHorizontalRange.length == 0)
             {
-                assignedBall.Transform.SetParent(ropeData.swingContainer);
+                //assignedBall.Transform.SetParent(ropeData.swingContainer);
+
+                swingHorizontalRange = new FloatRange(point.x - targetRopeLenght, point.x + targetRopeLenght);
 
                 AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
 
-                Debug.Log(" - Rope is connected");
+                //Debug.Log(" - Rope is connected");
             }
         }
 
@@ -108,6 +114,8 @@ public class RopeProcessor
             actualRopeLenght = targetRopeLenght;
 
             assignedBall.Transform.SetParent(ropeData.swingContainer);
+
+            swingHorizontalRange = new FloatRange(point.x - targetRopeLenght, point.x + targetRopeLenght);
         }
 
         isConnected = true;
@@ -122,6 +130,8 @@ public class RopeProcessor
 
         targetRopeLenght = 0;
         actualRopeLenght = 0;
+
+        swingHorizontalRange = new FloatRange();
 
         SetActive(false);
     }

@@ -105,6 +105,26 @@ public class Crowd
         members.Remove(human);
     }
 
+    public void MultiplyMotionSpeed(float multiplier)
+    {
+        for (int i = 0; i < members.Count; i++)
+        {
+            members[i].SetSpeedMultiplier(multiplier);
+        }
+
+        UIStatBoosterPoint.Instance.SetMotionSpeedValue(Mathf.RoundToInt((multiplier - 1f) * 100f));
+    }
+
+    public void MultiplyDamageRate(float multiplier)
+    {
+        for (int i = 0; i < members.Count; i++)
+        {
+            members[i].Weapon.SetDamageMultiplier(multiplier);
+        }
+
+        UIStatBoosterPoint.Instance.SetDamageRateValue(Mathf.RoundToInt((multiplier - 1f) * 100f));
+    }
+
     public HumanController GetClosestMember(Vector3 position)
     {
         closestMemberSqrDistance = float.MaxValue;

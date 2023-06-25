@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-//using SupersonicWisdomSDK;
+using SupersonicWisdomSDK;
 
 public class LevelManager : Service<LevelManager>
 {
@@ -61,13 +61,13 @@ public class LevelManager : Service<LevelManager>
         if (!_isLevelStarted)
         {
             StartCoroutine(LevelStartingCoroutine());
-/*
+
 #if !UNITY_EDITOR
 
             SupersonicWisdom.Api.NotifyLevelStarted(LevelNumber, null);
 
 #endif
-*/
+
         }
     }
 
@@ -81,7 +81,7 @@ public class LevelManager : Service<LevelManager>
             _levelFinishTime = Time.timeSinceLevelLoad;
 
             SwitchLevelEntities(false);
-/*
+
 #if !UNITY_EDITOR
 
             if (_isLevelPassed)
@@ -94,7 +94,7 @@ public class LevelManager : Service<LevelManager>
             }
 
 #endif
-*/
+
             AppManager.Instance.PlayHaptic(_isLevelPassed ? MoreMountains.NiceVibrations.HapticTypes.Success : MoreMountains.NiceVibrations.HapticTypes.Failure);
 
             //UIRewardPanel.Instance.SetReward(_rewardAmount);

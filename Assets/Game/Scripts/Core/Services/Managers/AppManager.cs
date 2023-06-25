@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using MoreMountains.NiceVibrations;
-//using SupersonicWisdomSDK;
+using SupersonicWisdomSDK;
 
 public class AppManager : Service<AppManager>
 {
@@ -34,14 +34,14 @@ public class AppManager : Service<AppManager>
         {
             PlayerPrefs.SetInt("APP_FLF", 1);
         }
-/*
+
 #if !UNITY_EDITOR
 
         SupersonicWisdom.Api.AddOnReadyListener(LoadGameScene);
         SupersonicWisdom.Api.Initialize();
 
 #endif
-*/
+
         _isVibrationActive = IsVibrationActive;
 
         base.Initialize();

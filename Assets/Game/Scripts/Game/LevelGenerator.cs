@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// - BattlePath: increase attack rate and motion speed by tapping 
-//
 // - Integrate WisdomSDK 
 // - Check progression events 
 
@@ -132,7 +130,7 @@ public class LevelGenerator : MonoBehaviour
         {
             stageInfo = WorldManager.gameProgressionSettings.GetStageOf(LevelManager.LevelNumber);
 
-            structureIndex = 16; //stageInfo.availableStructureIndices.GetRandom(); // 16 
+            structureIndex = stageInfo.availableStructureIndices.GetRandom(); // 16 
             landscapeIndex = stageInfo.availableLandscapeIndices.GetRandom();
         }
 
@@ -624,7 +622,7 @@ public class LevelGenerator : MonoBehaviour
             battlePathSettings.stagesContainer.RemoveChildrenImmediate();
         }
 
-        battlePath = new BattlePath(battlePathSettings.pathContainer.gameObject);
+        battlePath = new BattlePath(battlePathSettings.pathContainer.gameObject, battlePathSettings);
 
         battlePath.transform.position = blockPairs.GetLast().FloorBlockPosition + new Vector3(blockSettings.blockLength / 2f, 0, 0);
 

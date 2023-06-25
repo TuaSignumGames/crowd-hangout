@@ -15,6 +15,7 @@ import java.util.UUID;
 public class SwUtils {
     private static final Handler bgThreadHandler;
     private static final Handler mainThreadHandler;
+    private static final String TAG = SwUtils.class.getSimpleName();
 
     static {
         mainThreadHandler = new Handler(Looper.getMainLooper());
@@ -31,7 +32,8 @@ public class SwUtils {
         return mainThreadHandler;
     }
 
-    public static JSONObject createEvent(String eventName, String sessionId, String megaSessionId, String conversionData, String metadataStr, String customsStr, String extraStr){
+    public static JSONObject createEvent(String eventName, String sessionId, String megaSessionId,
+            String conversionData, String metadataStr, String customsStr, String extraStr) {
         JSONObject json = new JSONObject();
 
         String eventId = UUID.randomUUID().toString();
@@ -44,25 +46,31 @@ public class SwUtils {
         addToJson(json, Constants.KEY_CONVERSION_DATA, conversionData);
         addToJson(json, Constants.KEY_CLIENT_TS, clientTs);
 
-        try {
-            JSONObject extraJson = new JSONObject(extraStr);
-            addToJson(json, Constants.KEY_EXTRA, extraJson);
-        } catch (JSONException e) {
-            SdkLogger.log("Could not parse extraData - " + extraStr);
+        if (extraStr != "") {
+            try {
+                JSONObject extraJson = new JSONObject(extraStr);
+                addToJson(json, Constants.KEY_EXTRA, extraJson);
+            } catch (JSONException e) {
+                SdkLogger.log("Could not parse extraData - " + extraStr);
+            }
         }
 
-        try {
-            JSONObject metaJson = new JSONObject(metadataStr);
-            json = merge(json, metaJson);
-        } catch (JSONException e) {
-            SdkLogger.log("Could not parse metadata - " + metadataStr);
+        if (metadataStr != "") {
+            try {
+                JSONObject metaJson = new JSONObject(metadataStr);
+                json = merge(json, metaJson);
+            } catch (JSONException e) {
+                SdkLogger.log("Could not parse metadata - " + metadataStr);
+            }
         }
 
-        try {
-            JSONObject customsJson = new JSONObject(customsStr);
-            json = merge(json, customsJson);
-        } catch (JSONException e) {
-            SdkLogger.log("Could not parse customs - " + customsStr);
+        if (customsStr != "") {
+            try {
+                JSONObject customsJson = new JSONObject(customsStr);
+                json = merge(json, customsJson);
+            } catch (JSONException e) {
+                SdkLogger.log("Could not parse customs - " + customsStr);
+            }
         }
 
         return json;
@@ -72,9 +80,9 @@ public class SwUtils {
 
         JSONObject jsonObject = new JSONObject();
 
-        for(JSONObject temp : jsonObjects){
+        for (JSONObject temp : jsonObjects) {
             Iterator<String> keys = temp.keys();
-            while(keys.hasNext()){
+            while (keys.hasNext()) {
                 String key = keys.next();
                 jsonObject.putOpt(key, temp.get(key));
             }
@@ -83,15 +91,17 @@ public class SwUtils {
         return jsonObject;
     }
 
-    public static Object safeGetObject(JSONObject jsonObject, String key){
-        Object value = "";
+    public static <T> T safeGetObject(JSONObject jsonObject, String key) {
+        Object value;
+        T typedValue = null;
         try {
             value = jsonObject.get(key);
-        } catch (JSONException e) {
-            SdkLogger.error("SwUtils", "Error getting key - " + key + " from json - " + jsonObject + "\nexception: " + e);
+            typedValue = (T) value;
+        } catch (ClassCastException | JSONException e) {
+            SdkLogger.error(TAG, "Error getting key - " + key + " from json - " + jsonObject + "\nexception: " + e);
         }
 
-        return value;
+        return typedValue;
     }
 
     public static void addToJson(JSONObject json, String key, Object value) {
@@ -99,6 +109,14 @@ public class SwUtils {
             json.putOpt(key, value);
         } catch (JSONException e) {
             SdkLogger.error(null, "Error adding key - " + key + " to json - " + json + "\nexception: " + e);
+        }
+    }
+
+    public static JSONObject createJsonOrEmpty(String jsonStr) {
+        try {
+            return new JSONObject(jsonStr);
+        } catch (JSONException e) {
+            return new JSONObject();
         }
     }
 }

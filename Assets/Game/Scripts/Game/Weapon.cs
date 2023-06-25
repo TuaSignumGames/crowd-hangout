@@ -44,6 +44,9 @@ public class Weapon
 
     private float damage;
 
+    private float damageMultiplier;
+    private float reloadingTimeDivider;
+
     private float previousAttackTime;
     private float availableAttackTime;
 
@@ -67,11 +70,14 @@ public class Weapon
 
         damage = damageRate * reloadingTime;
 
+        damageMultiplier = 1f;
+        reloadingTimeDivider = 1f;
+
         sqrAttackDistance = attackDistance * attackDistance;
 
         if (ammoContainer && projectileSpeed > 0)
         {
-            ammoPoolSize = Mathf.CeilToInt(attackDistance / (projectileSpeed * reloadingTime)) + 1;
+            ammoPoolSize = Mathf.CeilToInt(attackDistance / (projectileSpeed * reloadingTime)) * 5 + 1;
 
             projectilePool = new Pool<Projectile>(GenerateProjectiles(ammoPoolSize));
         }
@@ -128,11 +134,11 @@ public class Weapon
 
                 if (projectilePool == null)
                 {
-                    human.Damage(damage, ownerHuman);
+                    human.Damage(damage * damageMultiplier, ownerHuman);
                 }
                 else
                 {
-                    projectilePool.Eject().Launch(human.transform.position + Random.insideUnitSphere * 0.2f, projectileSpeed, () => human.Damage(damage, ownerHuman));
+                    projectilePool.Eject().Launch(human.transform.position + Random.insideUnitSphere * 0.2f, projectileSpeed, () => human.Damage(damage * damageMultiplier, ownerHuman));
                 }
 
                 if (attackVFX)
@@ -142,7 +148,7 @@ public class Weapon
 
                 AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
 
-                availableAttackTime = Time.timeSinceLevelLoad + reloadingTime;
+                availableAttackTime = Time.timeSinceLevelLoad + reloadingTime / reloadingTimeDivider;
 
                 return true;
             }
@@ -162,11 +168,11 @@ public class Weapon
 
         if (projectilePool == null)
         {
-            human.Damage(damageRate * Mathf.Clamp(Time.timeSinceLevelLoad - previousAttackTime, 0, reloadingTime), ownerHuman);
+            human.Damage(damageRate * Mathf.Clamp(Time.timeSinceLevelLoad - previousAttackTime, 0, reloadingTime) * damageMultiplier, ownerHuman);
         }
         else
         {
-            projectilePool.Eject().Launch(human.transform.position + Random.insideUnitSphere * 0.2f, projectileSpeed, () => human.Damage(damage, ownerHuman));
+            projectilePool.Eject().Launch(human.transform.position + Random.insideUnitSphere * 0.2f, projectileSpeed, () => human.Damage(damage * damageMultiplier, ownerHuman));
         }
 
         if (attackVFX)
@@ -183,6 +189,24 @@ public class Weapon
         {
             AttackImmediate(human);
         }
+    }
+
+    public void SetDamageMultiplier(float multiplier)
+    {
+        if (animationRelated)
+        {
+            damageMultiplier = multiplier;
+        }
+        else
+        {
+            reloadingTimeDivider = multiplier;
+        }
+    }
+
+    public void ResetDamageMultiplier()
+    {
+        damageMultiplier = 1f;
+        reloadingTimeDivider = 1f;
     }
 
     public void Lower()

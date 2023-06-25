@@ -1,7 +1,7 @@
 package wisdom.library.data.framework.network.core;
 
-import wisdom.library.data.framework.network.api.IWisdomNetwork;
-import wisdom.library.data.framework.network.listener.IWisdomResponseListener;
+import wisdom.library.data.framework.network.api.IInternalRequestListener;
+import wisdom.library.data.framework.network.api.INetwork;
 import wisdom.library.data.framework.network.request.Method;
 import wisdom.library.data.framework.network.request.WisdomRequest;
 import wisdom.library.data.framework.network.request.WisdomRequestExecutorTask;
@@ -9,7 +9,7 @@ import wisdom.library.data.framework.network.utils.NetworkUtils;
 
 import org.json.JSONObject;
 
-public class WisdomNetwork implements IWisdomNetwork {
+public class WisdomNetwork implements INetwork {
 
     public static final int WISDOM_INTERNAL_ERROR = -1;
     public static final int WISDOM_INTERNAL_MALFORMED_URL = -2;
@@ -72,29 +72,26 @@ public class WisdomNetwork implements IWisdomNetwork {
         return mReadTimeout;
     }
 
-    public void sendAsync(String url, JSONObject body, IWisdomResponseListener listener) {
-        sendAsync(url, body, mConnectTimeout, mReadTimeout, listener);
-    }
-
-    @Override
-    public void sendAsync(String url, JSONObject body, int connectTimeout, int readTimeout, IWisdomResponseListener listener) {
-        WisdomRequest request = new WisdomRequest(url, Method.POST, body);
+    public void sendAsync(String key, String url, JSONObject body, IInternalRequestListener listener) {
+        WisdomRequest request = new WisdomRequest(key, url, Method.POST, body, listener);
         request.setHeader("Content-Type", "application/json");
-        request.setResponseListener(listener);
-        request.setConnectTimeout(connectTimeout);
-        request.setReadTimeout(readTimeout);
+        sendAsync(request);
+    }
+    
+    @Override
+    public void sendAsync(WisdomRequest request) {
         WisdomRequestExecutorTask requestTask = new WisdomRequestExecutorTask(request, mNetworkUtils);
         mDispatcher.dispatch(requestTask);
     }
 
     @Override
-    public int send(String url, JSONObject body) {
-        return send(url, body, mConnectTimeout, mReadTimeout);
+    public int send(String key, String url, JSONObject body, IInternalRequestListener listener) {
+        return send(key, url, body, mConnectTimeout, mReadTimeout, listener);
     }
 
     @Override
-    public int send(String url, JSONObject body, int connectTimeout, int readTimeout) {
-        WisdomRequest request = new WisdomRequest(url, Method.POST, body);
+    public int send(String key, String url, JSONObject body, int connectTimeout, int readTimeout, IInternalRequestListener listener) {
+        WisdomRequest request = new WisdomRequest(key, url, Method.POST, body, listener);
         request.setHeader("Content-Type", "application/json");
         request.setConnectTimeout(connectTimeout);
         request.setReadTimeout(readTimeout);

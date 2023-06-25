@@ -8,6 +8,8 @@ public class BattlePathSettings
     public Transform pathContainer;
     public Transform stagesContainer;
     [Space]
+    public StatBoosterSettings statBoosterSettings;
+    [Space]
     public CameraViewData battleView;
     public CameraViewData finishView;
     [Space]

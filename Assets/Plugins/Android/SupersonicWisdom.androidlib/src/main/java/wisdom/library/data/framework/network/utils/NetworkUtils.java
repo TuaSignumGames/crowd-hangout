@@ -5,24 +5,80 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.NetworkRequest;
 import android.os.Build;
+import android.provider.Settings;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import wisdom.library.api.listener.IWisdomConnectivityListener;
+import wisdom.library.util.SdkLogger;
+import wisdom.library.util.SwUtils;
 
 public class NetworkUtils {
-    private Context mContext;
+    public static final String KEY_IS_AVAILABLE = "isAvailable";
+    public static final String KEY_IS_FLIGHT_MODE = "isFlightMode";
+    
+    private Context _context;
+
+    public boolean isAvailable;
+    private List<IWisdomConnectivityListener> mConnectivityListeners;
+    
+    private ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
+        @Override
+        public void onAvailable(Network network) {
+            super.onAvailable(network);
+            isAvailable = true;
+            notifyConnectivityListeners();
+            SdkLogger.log("Network is available!");
+        }
+
+        @Override
+        public void onLost( Network network) {
+            super.onLost(network);
+            isAvailable = false;
+            notifyConnectivityListeners();
+            
+            SdkLogger.log("Network is unavailable!");
+        }
+    };
+
+    NetworkRequest networkRequest = new NetworkRequest.Builder()
+        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+        .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+        .build();
+
+    public boolean isFlightMode(){
+        return Settings.System.getInt(_context.getContentResolver(),
+            Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+    }
 
     public NetworkUtils(Context context) {
-        mContext = context.getApplicationContext();
+        this._context = context.getApplicationContext();
+        
+        mConnectivityListeners = new ArrayList<IWisdomConnectivityListener>();
+        registerToConnectivityManager();
+    }
+
+    private void registerToConnectivityManager() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) _context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback);
     }
 
     public boolean isNetworkAvailable() {
-        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) _context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Network network = cm.getActiveNetwork();
+            Network network = connectivityManager.getActiveNetwork();
             if (network == null) {
                 return false;
             }
 
-            NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
             if (capabilities == null) {
                 return false;
             }
@@ -34,8 +90,29 @@ public class NetworkUtils {
 
             return ((isWifiNetwork || isCellular || isEthernet) && internetReachable);
         } else {
-            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
             return (networkInfo != null && networkInfo.isConnected());
+        }
+    }
+
+    public void registerToNetworkChanges(IWisdomConnectivityListener listener) {
+        mConnectivityListeners.add(listener);
+    }
+
+    public void unregisterToNetworkChanges(IWisdomConnectivityListener listener) {
+        mConnectivityListeners.remove(listener);
+    }
+    
+    private void notifyConnectivityListeners(){
+        if(mConnectivityListeners == null) return;
+        
+        for (IWisdomConnectivityListener listener : mConnectivityListeners) {
+            if (listener != null) {
+                JSONObject connection = new JSONObject();
+                SwUtils.addToJson(connection, NetworkUtils.KEY_IS_AVAILABLE, isAvailable);
+                SwUtils.addToJson(connection, NetworkUtils.KEY_IS_FLIGHT_MODE, isFlightMode());
+                listener.onConnectionStatusChanged(connection.toString());
+            }
         }
     }
 }

@@ -30,6 +30,7 @@ public class IdentifiersGetter {
         public String getAppSetIdentifier() {
             return appSetIdentifier;
         }
+        
     }
 
     private static final String TAG = IdentifiersGetter.class.getSimpleName();
@@ -83,9 +84,10 @@ public class IdentifiersGetter {
                             if (idObject != null) {
                                 advertisingId = idObject.toString();
                             }
+                            
                         } catch (Throwable gmsAdsThrowable) {
                             // Possible "ClassNotFoundException" or "NoClassDefFoundError"
-                            SdkLogger.error(TAG, "Failed to fetch Ad ID / App Set ID", gmsAdsThrowable);
+                            SdkLogger.error(TAG, "Failed to fetch Ad ID / App Set ID ", gmsAdsThrowable);
 
                             try {
                                 boolean isAdIdProviderAvailable = false;

@@ -456,6 +456,7 @@ MonoBehaviour:
     placementRange:
       min: 0.5
       max: 0.6
+      length: 0
     fittingRangeNumber: 0
     verticalShift: 0
     capsule:
@@ -478,9 +479,11 @@ MonoBehaviour:
       impulseMagnitudeRange:
         min: 0
         max: 0
+        length: 0
       angularMomentumRange:
         min: 0
         max: 0
+        length: 0
       externalImpulseFactor: 0
       gravityModifier: 1
     collectiblePullingSpeed: 25
@@ -490,9 +493,11 @@ MonoBehaviour:
       impulseMagnitudeRange:
         min: 10
         max: 20
+        length: 0
       angularMomentumRange:
         min: 90
         max: 720
+        length: 0
       externalImpulseFactor: 2.5
       gravityModifier: 1
   humanContainer: {fileID: 84780432828401576}

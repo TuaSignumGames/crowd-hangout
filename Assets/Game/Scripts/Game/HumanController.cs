@@ -46,6 +46,7 @@ public class HumanController : MonoBehaviour
 
     private float targetSpeed;
     private float actualSpeed;
+    private float targetSpeedMultiplier;
 
     private float targetFacingAngle;
 
@@ -80,6 +81,7 @@ public class HumanController : MonoBehaviour
     public static int animatorRunningHash;
     public static int animatorAttackingHash;
     public static int animatorSpeedFactorHash;
+    public static int animatorSpeedMultiplierHash;
     public static int animatorAttackIdHash;
     public static int animatorDefeatIdHash;
 
@@ -120,6 +122,7 @@ public class HumanController : MonoBehaviour
 
         defaultContainer = LevelGenerator.Instance.transform;
 
+        targetSpeedMultiplier = 1f;
         targetFacingAngle = -90f;
 
         ai = new HumanAI(this);
@@ -281,7 +284,7 @@ public class HumanController : MonoBehaviour
             {
                 facingDirection = motionVector.GetPlanarDirection(Axis.Y);
 
-                targetSpeed = motionVector.GetPlanarSqrMagnitude(Axis.Y) > targetPointSqrRadius ? motionSettings.runSpeed : 0;
+                targetSpeed = motionVector.GetPlanarSqrMagnitude(Axis.Y) > targetPointSqrRadius ? motionSettings.runSpeed * targetSpeedMultiplier : 0;
 
                 targetFacingAngle = 90f - new Vector3(1, 0, 0).GetPlanarAngleTo(facingDirection, Axis.Y);
 
@@ -577,6 +580,20 @@ public class HumanController : MonoBehaviour
         }
     }
 
+    public void SetSpeedMultiplier(float multiplier)
+    {
+        targetSpeedMultiplier = multiplier;
+
+        components.animator.SetFloat(animatorSpeedMultiplierHash, multiplier);
+    }
+
+    public void ResetSpeedMultiplier()
+    {
+        targetSpeedMultiplier = 1f;
+
+        components.animator.SetFloat(animatorSpeedMultiplierHash, 1f);
+    }
+
     public void SetActive(bool isActive, bool includeCollider)
     {
         enabled = isActive;
@@ -646,6 +663,7 @@ public class HumanController : MonoBehaviour
         animatorRunningHash = Animator.StringToHash("IsRunning");
         animatorAttackingHash = Animator.StringToHash("IsAttacking");
         animatorSpeedFactorHash = Animator.StringToHash("SpeedFactor");
+        animatorSpeedMultiplierHash = Animator.StringToHash("SpeedMultiplier");
         animatorAttackIdHash = Animator.StringToHash("AttackAnimationID");
         animatorDefeatIdHash = Animator.StringToHash("DefeatAnimationID");
     }

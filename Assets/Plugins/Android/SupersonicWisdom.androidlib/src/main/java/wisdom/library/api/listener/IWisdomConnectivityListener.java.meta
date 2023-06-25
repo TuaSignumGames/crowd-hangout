@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Plugins/Android/SupersonicWisdom.androidlib/src/main/java/wisdom/library/api/listener/IWisdomConnectivityListener.java.meta
+guid: 45f2c8fa3479b4f9dab18590dc5a9a63
+||||||| 91cea3e50:Assets/Plugins/Android/SupersonicWisdom.androidlib/src/main/java/com/supersonic/wisdom/library/data/framework/network/api/IWisdomConnectivityListener.java.meta
+guid: 2ec0d6c9c788e401e96484f539bea919
+=======
+guid: 39b773b527bd1469f8b37da6c2dfb7a7
+>>>>>>> rc/7.3:Assets/Plugins/Android/SupersonicWisdom.androidlib/src/main/java/wisdom/library/data/framework/network/api/IWisdomConnectivityListener.java.meta
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

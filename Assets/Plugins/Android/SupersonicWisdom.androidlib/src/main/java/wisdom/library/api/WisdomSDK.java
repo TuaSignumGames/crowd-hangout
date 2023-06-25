@@ -2,7 +2,9 @@ package wisdom.library.api;
 
 import android.app.Activity;
 
+import wisdom.library.api.listener.IWisdomConnectivityListener;
 import wisdom.library.api.listener.IWisdomInitListener;
+import wisdom.library.api.listener.IWisdomRequestListener;
 import wisdom.library.api.listener.IWisdomSessionListener;
 import wisdom.library.api.dto.WisdomConfigurationDto;
 
@@ -90,6 +92,15 @@ public class WisdomSDK {
 
         return appSetIdentifier;
     }
+    
+    public static String getAppInstallSource() {
+        String appInstallSource = "";
+        if (getInstance().isInitialized()) {
+            appInstallSource = getInstance().getAppInstallSource();
+        }
+
+        return appInstallSource;
+    }
 
     public static void trackEvent(String eventName, String customsJson, String extraJson) {
         if (getInstance().isInitialized()) {
@@ -117,9 +128,27 @@ public class WisdomSDK {
         }
     }
 
+    public static void registerWebRequestListener(IWisdomRequestListener listener) {
+        if (getInstance().isInitialized()) {
+            getInstance().registerWebRequestListener(listener);
+        }
+    }
+    
+    public static void unregisterWebRequestListener(IWisdomRequestListener listener) {
+        if (getInstance().isInitialized()) {
+            getInstance().unregisterWebRequestListener(listener);
+        }
+    }
+
     public static void destroy() {
         if (getInstance().isInitialized()) {
             getInstance().destroy();
+        }
+    }
+
+    public static void sendRequest(String requestJsonString) {
+        if (getInstance().isInitialized()) {
+            getInstance().sendRequest(requestJsonString);
         }
     }
     
@@ -127,5 +156,27 @@ public class WisdomSDK {
         if (getInstance().isInitialized()) {
             getInstance().requestRateUsPopup();
         }
+    }
+
+    public static void registerConnectivityListener(IWisdomConnectivityListener listener) {
+        if (getInstance().isInitialized()) {
+            getInstance().registerConnectivityListener(listener);
+        }
+    }
+
+    public static void unregisterConnectivityListener(IWisdomConnectivityListener listener){
+        if (getInstance().isInitialized()) {
+            getInstance().unregisterConnectivityListener(listener);
+        }
+    }
+    
+    public static String getConnectionStatus(){
+        String networkStatusJson = "";
+        
+        if (getInstance().isInitialized()) {
+             networkStatusJson = getInstance().getConnectionStatus();
+        }
+        
+        return networkStatusJson;
     }
 }

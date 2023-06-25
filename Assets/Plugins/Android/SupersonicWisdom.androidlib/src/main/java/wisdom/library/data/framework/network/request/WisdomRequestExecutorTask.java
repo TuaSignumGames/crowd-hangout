@@ -1,23 +1,27 @@
 package wisdom.library.data.framework.network.request;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import wisdom.library.data.framework.network.utils.NetworkUtils;
 
 import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import static wisdom.library.data.framework.network.core.WisdomNetwork.WISDOM_INTERNAL_ERROR;
@@ -46,7 +50,10 @@ public class WisdomRequestExecutorTask implements Runnable {
     }
 
     private void executeRequestAsync(WisdomRequest request) {
+        request.startTime = System.currentTimeMillis();
+        
         if (!mNetworkUtils.isNetworkAvailable()) {
+            request.endTime = System.currentTimeMillis();
             request.onResponseFailed(WISDOM_INTERNAL_NO_INTERNET, WISDOM_NO_INTERNET_CONNECTION_MSG);
             return;
         }
@@ -57,6 +64,7 @@ public class WisdomRequestExecutorTask implements Runnable {
         BufferedWriter streamWriter = null;
         InputStream inputStream = null;
         InputStreamReader streamReader = null;
+        StringBuilder responseSb = new StringBuilder();
 
         String errorMessage = "";
         try {
@@ -97,10 +105,13 @@ public class WisdomRequestExecutorTask implements Runnable {
             if (connection.getDoInput()) {
                 inputStream = connection.getInputStream();
                 streamReader = new InputStreamReader(inputStream);
-                char buff[] = new char[WISDOM_READ_BUFFER_SIZE];
-                StringBuilder sb = new StringBuilder();
-                while (streamReader.read(buff) > -1) {
-                    sb.append(buff);
+
+                try (Reader reader = new BufferedReader(new InputStreamReader
+                    (inputStream, Charset.forName(WISDOM_REQUEST_ENCODING)))) {
+                    int c = 0;
+                    while ((c = reader.read()) != -1) {
+                        responseSb.append((char) c);
+                    }
                 }
             }
 
@@ -138,12 +149,13 @@ public class WisdomRequestExecutorTask implements Runnable {
             connection.disconnect();
         }
 
+        request.endTime = System.currentTimeMillis();
+        
         if (responseCode < WISDOM_RESPONSE_CODE_OK || responseCode >= WISDOM_RESPONSE_CODE_BAD_REQUEST) {
             request.onResponseFailed(responseCode, errorMessage);
         } else {
-            request.onResponseSuccess();
+            request.onResponseSuccess(responseSb.toString());
         }
-
     }
 
     public int executeRequest() {

@@ -7428,6 +7428,63 @@ MonoBehaviour:
   battlePathSettings:
     pathContainer: {fileID: 107428567}
     stagesContainer: {fileID: 1124046544}
+    statBoosterSettings:
+      motionSpeedBoosterData:
+        stepsCount: 500
+        multiplier: 2
+        multiplicationCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 2
+            outSlope: 2
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+      damageRateBoosterData:
+        stepsCount: 5000
+        multiplier: 6
+        multiplicationCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 2
+            outSlope: 2
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+      incrementationTimeout: 0.5
+      decrementationSpeed: 10
     battleView:
       position: {x: 1, y: 0, z: -40}
       translationSpace: 1
@@ -7817,22 +7874,18 @@ MonoBehaviour:
     - title: Sandbox
       startStep:
         blocksCount: 5
-        elementType: 11
+        elementType: 14
       cycle:
       - blocksCount: 5
-        elementType: 8
-      - blocksCount: 5
-        elementType: 7
-      - blocksCount: 5
         elementType: 14
       - blocksCount: 5
         elementType: 14
       - blocksCount: 5
-        elementType: 1
+        elementType: 15
       endStep:
-        blocksCount: 5
+        blocksCount: 3
         elementType: 0
-      cyclesCount: 1
+      cyclesCount: 3
     landscapes:
     - title: Plain
       patterns:
@@ -14922,8 +14975,41 @@ MonoBehaviour:
   ballSettings:
     processor: {fileID: 1779204877}
     rigidbody: {fileID: 1779204876}
-    speed: 10
+    speed: 13
     acceleration: 50
+    angularSpeedCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.7
+        inSlope: 1.2778311
+        outSlope: 1.2778311
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.07973422
+      - serializedVersion: 3
+        time: 0.5
+        value: 1
+        inSlope: -0.01397205
+        outSlope: -0.01397205
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.23920268
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.4
+        inSlope: -3.172698
+        outSlope: -3.172698
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.096345544
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
     bumpImpulse: 15
     bumpDampingFactor: 0.15
     suspensionContainer: {fileID: 838087752}

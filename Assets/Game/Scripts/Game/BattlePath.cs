@@ -6,6 +6,8 @@ public class BattlePath
 {
     public static BattlePath Instance;
 
+    public BattlePathSettings settings;
+
     public GameObject gameObject;
 
     public Transform transform;
@@ -13,6 +15,10 @@ public class BattlePath
     public List<BattlePathStage> stages;
 
     private Crowd playerCrew;
+
+    private float stepCounter;
+    private float decrementationDelta;
+    private float statsResettingTime;
 
     private int activeStageIndex;
 
@@ -30,15 +36,19 @@ public class BattlePath
 
     public bool IsBattleActive => isBattleActive;
 
-    public BattlePath(GameObject pathGameObject)
+    public BattlePath(GameObject pathGameObject, BattlePathSettings battlePathSettings)
     {
         Instance = this;
+
+        settings = battlePathSettings;
 
         gameObject = pathGameObject;
 
         transform = gameObject.transform;
 
         stages = new List<BattlePathStage>();
+
+        decrementationDelta = settings.statBoosterSettings.decrementationSpeed * Time.fixedDeltaTime;
     }
 
     public void Update()
@@ -75,6 +85,22 @@ public class BattlePath
                     }
                 }
             }
+
+            if (InputManager.touch)
+            {
+                UIStatBoosterPoint.Instance.transform.position = InputManager.touchPosition;
+
+                TryIncreasePlayerCrewStats();
+            }
+            else
+            {
+                if (stepCounter > 0 && Time.timeSinceLevelLoad > statsResettingTime)
+                {
+                    stepCounter -= decrementationDelta;
+
+                    UpdatePlayerCrewStatMultipliers(stepCounter);
+                }
+            }
         }
         else
         {
@@ -84,9 +110,22 @@ public class BattlePath
 
     public void Enter(Crowd playerCrowd)
     {
-        this.playerCrew = playerCrowd;
+        playerCrew = playerCrowd;
+
+        UIStatBoosterPoint.Instance.SetVisible(true);
 
         isBattleActive = true;
+    }
+
+    public void TryIncreasePlayerCrewStats()
+    {
+        UpdatePlayerCrewStatMultipliers(++stepCounter);
+
+        UIStatBoosterPoint.Instance.Pulse();
+
+        AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.Selection);
+
+        statsResettingTime = Time.timeSinceLevelLoad + settings.statBoosterSettings.incrementationTimeout;
     }
 
     public BattlePathStage DefineStage(Vector3 position)
@@ -128,6 +167,14 @@ public class BattlePath
     {
         isBattleActive = false;
 
+        UIStatBoosterPoint.Instance.SetVisibleImmediate(false);
+
         LevelGenerator.Instance.FinishBattle();
+    }
+
+    private void UpdatePlayerCrewStatMultipliers(float multiplicationStep)
+    {
+        playerCrew.MultiplyMotionSpeed(settings.statBoosterSettings.motionSpeedBoosterData.GetMultiplier(multiplicationStep));
+        playerCrew.MultiplyDamageRate(settings.statBoosterSettings.damageRateBoosterData.GetMultiplier(multiplicationStep));
     }
 }
