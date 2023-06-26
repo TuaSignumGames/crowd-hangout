@@ -3698,12 +3698,12 @@ MonoBehaviour:
       initialLevelNumber: 1
       availableStructureIndices: 00000000
       availableLandscapeIndices: 00000000
-    - title: Level 4-7
+    - title: Level 4-5
       initialLevelNumber: 4
       availableStructureIndices: 0000000001000000
       availableLandscapeIndices: 0000000001000000
-    - title: Level 8-11
-      initialLevelNumber: 8
+    - title: Level 6-11
+      initialLevelNumber: 6
       availableStructureIndices: 0100000002000000030000000400000005000000
       availableLandscapeIndices: 0000000001000000
     - title: Level 12+
@@ -7393,8 +7393,6 @@ MonoBehaviour:
     humanCollectibles:
     - populationValue: 0
       prefab: {fileID: 84780433877696196, guid: 111df833fdab14e3bb2174076155915c, type: 3}
-    - populationValue: 9999999
-      prefab: {fileID: 7058858665493366268, guid: 9e3a91f64f92d4bec99f74edebac0241, type: 3}
     - populationValue: 10
       prefab: {fileID: 7820228730557124958, guid: d892654380983430dbbb3767f2fdc365, type: 3}
     populationCurve:
@@ -7430,7 +7428,7 @@ MonoBehaviour:
     stagesContainer: {fileID: 1124046544}
     statBoosterSettings:
       motionSpeedBoosterData:
-        stepsCount: 500
+        stepsCount: 10000
         multiplier: 2
         multiplicationCurve:
           serializedVersion: 2
@@ -7457,8 +7455,8 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
       damageRateBoosterData:
-        stepsCount: 5000
-        multiplier: 6
+        stepsCount: 30000
+        multiplier: 4
         multiplicationCurve:
           serializedVersion: 2
           m_Curve:
@@ -7483,8 +7481,8 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-      incrementationTimeout: 0.5
-      decrementationSpeed: 10
+      incrementationTimeout: 1.5
+      decrementationSpeed: 500
     battleView:
       position: {x: 1, y: 0, z: -40}
       translationSpace: 1

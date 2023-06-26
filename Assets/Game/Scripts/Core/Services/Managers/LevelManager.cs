@@ -60,13 +60,15 @@ public class LevelManager : Service<LevelManager>
     {
         if (!_isLevelStarted)
         {
+            _isLevelStarted = true;
+
             StartCoroutine(LevelStartingCoroutine());
 
-#if !UNITY_EDITOR
+//#if !UNITY_EDITOR
 
             SupersonicWisdom.Api.NotifyLevelStarted(LevelNumber, null);
 
-#endif
+//#endif
 
         }
     }
@@ -82,7 +84,7 @@ public class LevelManager : Service<LevelManager>
 
             SwitchLevelEntities(false);
 
-#if !UNITY_EDITOR
+//#if !UNITY_EDITOR
 
             if (_isLevelPassed)
             {
@@ -93,7 +95,7 @@ public class LevelManager : Service<LevelManager>
                 SupersonicWisdom.Api.NotifyLevelFailed(LevelNumber, null);
             }
 
-#endif
+//#endif
 
             AppManager.Instance.PlayHaptic(_isLevelPassed ? MoreMountains.NiceVibrations.HapticTypes.Success : MoreMountains.NiceVibrations.HapticTypes.Failure);
 
@@ -192,8 +194,6 @@ public class LevelManager : Service<LevelManager>
     private IEnumerator LevelStartingCoroutine()
     {
         // TODO Pre-start code
-
-        _isLevelStarted = true;
 
         _levelStartTime = Time.timeSinceLevelLoad;
 

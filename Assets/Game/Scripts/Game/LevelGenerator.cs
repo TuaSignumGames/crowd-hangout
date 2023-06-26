@@ -2,9 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// - Integrate WisdomSDK 
-// - Check progression events 
-
 public enum LevelElementType
 {
     None, EnvironmentLake, EnvironmentWind, ObstacleBumperStatic, ObstacleBumperDynamic, ObstacleConfusion, DangerLava, DangerUpperSpikes, DangerPendulumBlade, DangerPatrol,

@@ -2915,6 +2915,7 @@ MonoBehaviour:
     placementRange:
       min: 0
       max: 0
+      length: 0
     fittingRangeNumber: 1
     verticalShift: 2
     capsule:
@@ -2937,21 +2938,25 @@ MonoBehaviour:
       impulseMagnitudeRange:
         min: 0
         max: 0
+        length: 0
       angularMomentumRange:
         min: 90
         max: 720
+        length: 0
       externalImpulseFactor: 0.3
       gravityModifier: 1
     collectiblePullingSpeed: 25
-    collectiblePullingDelay: 0
+    collectiblePullingDelay: 0.6
     collectibleScatteringSettings:
       impulseRatio: {x: 1, y: 10, z: 1}
       impulseMagnitudeRange:
         min: 0
         max: 0
+        length: 0
       angularMomentumRange:
         min: 90
         max: 720
+        length: 0
       externalImpulseFactor: 2.5
       gravityModifier: 1
   humanContainer: {fileID: 3762160643071450838}

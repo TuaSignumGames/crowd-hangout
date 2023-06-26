@@ -38,9 +38,7 @@ public class HumanballProcessor : MonoBehaviour
 
     private float swingAngularSpeed;
     private float swingAngularSpeedDelta;
-    private float swingAngularAccelerationIncrement;
-
-    private float forceAreaDampingFactor;
+    private float swingAngularSpeedDeltaIncrement;
 
     private float springValue;
     private float tensionValue;
@@ -50,7 +48,6 @@ public class HumanballProcessor : MonoBehaviour
 
     private bool isGrounded;
     private bool isJumped;
-    private bool inForceArea;
 
     private bool isPropellerActive;
 
@@ -318,7 +315,7 @@ public class HumanballProcessor : MonoBehaviour
 
         if (assignedRope.SwingHorizontalRange.length > 0)
         {
-            assignedRope.Data.swingContainer.localEulerAngles += new Vector3(0, 0, ballData.angularSpeedCurve.Evaluate((transform.position.x - assignedRope.SwingHorizontalRange.min) / assignedRope.SwingHorizontalRange.length) * swingAngularSpeedDelta);
+            assignedRope.Data.swingContainer.localEulerAngles += new Vector3(0, 0, swingAngularSpeedDeltaIncrement = ballData.angularSpeedCurve.Evaluate((transform.position.x - assignedRope.SwingHorizontalRange.min) / assignedRope.SwingHorizontalRange.length) * swingAngularSpeedDelta);
         }
 
         velocityDelta = Transform.position - previousPosition;
@@ -464,8 +461,7 @@ public class HumanballProcessor : MonoBehaviour
             if (InputManager.touchPresent)
             {
                 //ApplyForce((-externalForceArea.Force + new Vector3(externalForceArea.Data.forceMagnitude / 6f, 0, 0)) / structure.humansCount / 6f);
-
-                ApplyForce((-externalForceArea.Force - Physics.gravity + new Vector3(externalForceArea.Data.forceMagnitude / 6f, 0)) / structure.humansCount);
+                //ApplyForce((-externalForceArea.Force - Physics.gravity + new Vector3(externalForceArea.Data.forceMagnitude / 6f, 0)) / structure.humansCount);
             }
             else
             {
@@ -501,10 +497,12 @@ public class HumanballProcessor : MonoBehaviour
     {
         if (collision.gameObject.layer == 7)
         {
+            /*
             if (transform.position.y > LevelGenerator.Instance.GetBlockPair(transform.position).Position.y)
             {
                 UnstickHuman(structure.RegisteredHumans.GetRandom());
             }
+            */
         }
     }
 

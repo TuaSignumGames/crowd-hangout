@@ -35,12 +35,12 @@ public class AppManager : Service<AppManager>
             PlayerPrefs.SetInt("APP_FLF", 1);
         }
 
-#if !UNITY_EDITOR
+//#if !UNITY_EDITOR
 
         SupersonicWisdom.Api.AddOnReadyListener(LoadGameScene);
         SupersonicWisdom.Api.Initialize();
 
-#endif
+//#endif
 
         _isVibrationActive = IsVibrationActive;
 

@@ -88,13 +88,9 @@ public class RopeProcessor
         {
             if (swingHorizontalRange.length == 0)
             {
-                //assignedBall.Transform.SetParent(ropeData.swingContainer);
+                assignedBall.Transform.SetParent(ropeData.swingContainer);
 
                 swingHorizontalRange = new FloatRange(point.x - targetRopeLenght, point.x + targetRopeLenght);
-
-                AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
-
-                //Debug.Log(" - Rope is connected");
             }
         }
 

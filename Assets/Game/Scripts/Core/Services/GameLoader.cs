@@ -28,7 +28,7 @@ public class GameLoader : MonoBehaviour
 
 //#if UNITY_EDITOR
 
-        AppManager.Instance.LoadGameScene();
+        //AppManager.Instance.LoadGameScene();
 
 //#endif
 

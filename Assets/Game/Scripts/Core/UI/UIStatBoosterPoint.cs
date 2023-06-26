@@ -22,6 +22,10 @@ public class UIStatBoosterPoint : MonoBehaviour
 
     private RectTransform rectTransform;
 
+    private Pool<Animation> wavesPool;
+
+    private Animation actualWave;
+
     private Vector2 motionSpeedFieldOffset;
     private Vector2 damageRateFieldOffset;
 
@@ -51,6 +55,8 @@ public class UIStatBoosterPoint : MonoBehaviour
 
         fieldSizeLimit = 1f + pulseMagnitude;
 
+        GenerateWavesPool(10);
+
         SetVisibleImmediate(false);
     }
 
@@ -75,9 +81,30 @@ public class UIStatBoosterPoint : MonoBehaviour
         damageRateFieldTransform.localScale = new Vector3(fieldSize, fieldSize, fieldSize);
     }
 
+    private void GenerateWavesPool(int size)
+    {
+        List<Animation> waveInstanceAnimations = new List<Animation>();
+
+        waveInstanceAnimations.Add(waveAnimation);
+
+        for (int i = 0; i < size - 1; i++)
+        {
+            waveInstanceAnimations.Add(Instantiate(waveAnimation, waveAnimation.transform.parent.parent));
+            waveInstanceAnimations.GetLast().transform.localScale = Vector3.zero;
+        }
+
+        wavesPool = new Pool<Animation>(waveInstanceAnimations);
+    }
+
     public void Pulse()
     {
-        waveAnimation.Play();
+        //waveAnimation.Play();
+
+        actualWave = wavesPool.Eject();
+
+        actualWave.transform.position = InputManager.touchPosition;
+
+        actualWave.Play();
 
         fieldSize = Mathf.Clamp(fieldSize + pulseMagnitude, 0, fieldSizeLimit);
     }
@@ -139,6 +166,8 @@ public class UIStatBoosterPoint : MonoBehaviour
         SetDamageRateValue(0);
 
         waveAnimation.Stop();
+
+        waveAnimation.transform.localScale = Vector3.zero;
 
         motionSpeedFieldTransform.localScale = Vector3.zero;
         damageRateFieldTransform.localScale = Vector3.zero;

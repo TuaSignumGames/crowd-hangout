@@ -16,9 +16,14 @@ public class BattlePath
 
     private Crowd playerCrew;
 
+    private Vector3 previousTouchPosition;
+
     private float stepCounter;
     private float decrementationDelta;
     private float statsResettingTime;
+
+    private float drawPathLenght;
+    private float drawPathIncrement;
 
     private int activeStageIndex;
 
@@ -85,12 +90,51 @@ public class BattlePath
                     }
                 }
             }
-
+            /*
             if (InputManager.touch)
             {
                 UIStatBoosterPoint.Instance.transform.position = InputManager.touchPosition;
 
                 TryIncreasePlayerCrewStats();
+            }
+            else
+            {
+                if (stepCounter > 0 && Time.timeSinceLevelLoad > statsResettingTime)
+                {
+                    stepCounter -= decrementationDelta;
+
+                    UpdatePlayerCrewStatMultipliers(stepCounter);
+                }
+            }
+            */
+
+            if (InputManager.touch)
+            {
+                previousTouchPosition = InputManager.touchPosition;
+            }
+
+            if (InputManager.touchPresent)
+            {
+                UIStatBoosterPoint.Instance.transform.position = InputManager.touchPosition;
+
+                drawPathIncrement = (InputManager.touchPosition - previousTouchPosition).GetPlanarMagnitude(Axis.Z);
+
+                drawPathLenght += drawPathIncrement;
+
+                if (drawPathIncrement > 5f)
+                {
+                    stepCounter++;
+
+                    TryIncreasePlayerCrewStats();
+                }
+                else if (stepCounter > 0 && Time.timeSinceLevelLoad > statsResettingTime)
+                {
+                    stepCounter -= decrementationDelta;
+
+                    UpdatePlayerCrewStatMultipliers(stepCounter);
+                }
+
+                previousTouchPosition = InputManager.touchPosition;
             }
             else
             {
@@ -123,7 +167,7 @@ public class BattlePath
 
         UIStatBoosterPoint.Instance.Pulse();
 
-        AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.Selection);
+        //AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.Selection);
 
         statsResettingTime = Time.timeSinceLevelLoad + settings.statBoosterSettings.incrementationTimeout;
     }
