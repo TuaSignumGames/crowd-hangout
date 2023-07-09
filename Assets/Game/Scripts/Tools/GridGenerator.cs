@@ -50,6 +50,11 @@ public class GridGenerator : MonoBehaviour
 
     public void Generate()
     {
+        if (transform.childCount > 0)
+        {
+            Clear();
+        }
+
         if (cellPrefabs.Count > 0)
         {
             elements = new GameObject[numericSize.x * numericSize.y];
