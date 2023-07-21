@@ -7,47 +7,43 @@
 
 #import "SwWisdomNetworkManager.h"
 #import "SwWisdomRequest.h"
-#import "SwConnectivityManager.h"
 
 @implementation SwWisdomNetworkManager {
     SwWisdomNetworkDispatcher *dispatcher;
     SwWisdomRequestExecutorTask *currentTask;
-    SwConnectivityManager *connectivity;
+    SwNetworkUtils *networkUtils;
 }
 
 @synthesize connectTimeout, readTimeout;
 
-- (id)initWithNetworkUtils:(SwConnectivityManager *)connectivityManager {
+- (id)initWithNetworkUtils:(SwNetworkUtils *)utils {
     if (!(self = [super init])) return nil;
-    connectivity = connectivityManager;
+    networkUtils = utils;
     
     return self;
 }
 
-- (void)sendAsync:(NSString *)key
-              url:(NSString *)url
+- (void)sendAsync:(NSString *)url
          withBody:(NSData *)body
-         callback:(OnNetworkResponse)callback {
+         callback:(OnEventsStoredRemotely)callback {
     
-    [self sendAsync:key url:url withBody:body connectTimeout:connectTimeout readTimeout:readTimeout callback:callback];
+    [self sendAsync:url withBody:body connectTimeout:connectTimeout readTimeout:readTimeout callback:callback];
 }
 
-- (void)sendAsync:(NSString *)key
-              url:(NSString *)url
+- (void)sendAsync:(NSString *)url
          withBody:(NSData *)body
    connectTimeout:(NSTimeInterval)requestTimeout
       readTimeout:(NSTimeInterval)resourceTimeout
-         callback:(OnNetworkResponse)callback {
+         callback:(OnEventsStoredRemotely)callback {
     SwWisdomRequest *request = [[SwWisdomRequest alloc] initWithUrl:url method:POST body:body];
     [request addHeader:@"Content-Type" value:@"application/json"];
     [request setConnectTimeout:requestTimeout];
     [request setReadTimeout:resourceTimeout];
-    [request setKey:key];
 
     if (callback) {
         [request responseCallback:callback];
     }
-    SwWisdomRequestExecutorTask *task = [[SwWisdomRequestExecutorTask alloc] initWithRequest:request andWithNetworkUtils:connectivity];
+    SwWisdomRequestExecutorTask *task = [[SwWisdomRequestExecutorTask alloc] initWithRequest:request andWithNetworkUtils:networkUtils];
     [SwWisdomNetworkDispatcher dispatch:task];
 }
 

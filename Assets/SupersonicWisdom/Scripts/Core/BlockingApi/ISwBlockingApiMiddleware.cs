@@ -6,8 +6,7 @@ namespace SupersonicWisdomSDK
     {
         #region --- Public Methods ---
 
-        IEnumerator PrepareForGameStarted();
-        IEnumerator ProcessTimeBasedGameStarted();
+        IEnumerator ProcessGameStarted ();
         IEnumerator ProcessLevelCompleted(long level, string levelName);
         IEnumerator ProcessLevelFailed(long level, string levelName);
         IEnumerator ProcessLevelRevived(long level, string levelName);

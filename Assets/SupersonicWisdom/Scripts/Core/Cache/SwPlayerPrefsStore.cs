@@ -20,34 +20,22 @@ namespace SupersonicWisdomSDK
 
         public bool GetBoolean(string key, bool defaultValue = false)
         {
-            var value = PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) == 1;
-            SwInfra.Logger.Log($"SwPlayerPrefsStore | GetBoolean | {key} | {value}");
-            
-            return value;
+            return PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) == 1;
         }
 
         public float GetFloat(string key, float defaultValue = 0f)
         {
-            var value = PlayerPrefs.GetFloat(key, defaultValue);
-            SwInfra.Logger.Log($"SwPlayerPrefsStore | GetFloat | {key} | {value}");
-            
-            return value;
+            return PlayerPrefs.GetFloat(key, defaultValue);
         }
 
         public int GetInt(string key, int defaultValue = 0)
         {
-            var value = PlayerPrefs.GetInt(key, defaultValue);
-            SwInfra.Logger.Log($"SwPlayerPrefsStore | GetInt | {key} | {value}");
-            
-            return value;
+            return PlayerPrefs.GetInt(key, defaultValue);
         }
 
         public string GetString(string key, string defaultValue = "")
         {
-            var value = PlayerPrefs.GetString(key, defaultValue);
-            SwInfra.Logger.Log($"SwPlayerPrefsStore | GetString | {key} | {value}");
-            
-            return value;
+            return PlayerPrefs.GetString(key, defaultValue);
         }
 
         public bool HasKey(string key)

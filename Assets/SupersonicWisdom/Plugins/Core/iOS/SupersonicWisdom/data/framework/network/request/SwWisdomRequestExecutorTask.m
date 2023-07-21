@@ -7,7 +7,6 @@
 
 #define STATUS_CODE_NO_INTERNET -6
 #import "SwWisdomRequestExecutorTask.h"
-#import "SwConnectivityManager.h"
 
 @implementation SwWisdomRequestExecutorTask {
     SwWisdomRequest *wisdomRequest;
@@ -16,12 +15,12 @@
     NSString *requestId;
     NSString *cachedRequestBody;
     NSData *responseData;
-    SwConnectivityManager *connectivity;
+    SwNetworkUtils *networkUtils;
 }
 
 @synthesize bgTaskId;
 
-- (id)initWithRequest:(SwWisdomRequest *)request andWithNetworkUtils:(SwConnectivityManager *)connectivityManager {
+- (id)initWithRequest:(SwWisdomRequest *)request andWithNetworkUtils:(SwNetworkUtils *)utils {
     if (!(self = [super init])) return nil;
     bgTaskId = UIBackgroundTaskInvalid;
     wisdomRequest = request;
@@ -30,14 +29,14 @@
     [sessionConfig setTimeoutIntervalForRequest:[request getConnectTimeout]];
     [sessionConfig setTimeoutIntervalForResource:[request getReadTimeout]];
     session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:self delegateQueue:nil];
-    connectivity = connectivityManager;
+    networkUtils = utils;
     
     return self;
 }
 
 - (void)executeRequestAsync {
     
-    if (![connectivity isNetworkAvailable]) {
+    if (![networkUtils isNetworkAvailable]) {
         [wisdomRequest onResponseFailedWithError:@"NO_INTERNET" statusCode:STATUS_CODE_NO_INTERNET response:nil];
         return;
     }
@@ -65,7 +64,7 @@
 }
 
 - (NSInteger)executeRequest {
-    if (![connectivity isNetworkAvailable]) {
+    if (![networkUtils isNetworkAvailable]) {
         [wisdomRequest onResponseFailedWithError:@"NO_INTERNET" statusCode:STATUS_CODE_NO_INTERNET response:nil];
         return STATUS_CODE_NO_INTERNET;
     }

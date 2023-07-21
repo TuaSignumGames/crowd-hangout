@@ -13,11 +13,5 @@ namespace SupersonicWisdomSDK
         public string[] defineSymbols;
 
         #endregion
-
-
-        public override string ToString()
-        {
-            return name;
-        }
     }
 }

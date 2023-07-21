@@ -7,12 +7,12 @@
 
 #import <Foundation/Foundation.h>
 #import "SwEventsRemoteApi.h"
-#import "SwNetworkCallbacks.h"
+#import "SwEventsRemoteStorageDelegate.h"
 
 @interface SwEventsRemoteDataSource : NSObject
 
 - (id)initWithApi:(SwEventsRemoteApi *)api;
-- (void)sendEventAsync:(NSDictionary *)details withResponseCallback:(OnNetworkResponse)callback;
-- (void)sendEventsAsync:(NSArray *)events withResponseCallback:(OnNetworkResponse)callback;
+- (void)sendEventAsync:(NSDictionary *)details withResponseCallback:(OnEventsStoredRemotely)callback;
+- (void)sendEventsAsync:(NSArray *)events withResponseCallback:(OnEventsStoredRemotely)callback;
 
 @end

@@ -1,93 +1,83 @@
-﻿using System.Collections;
-using System.Globalization;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SupersonicWisdomSDK
 {
-    internal class SwTimerManager : ISwReadyEventListener
+    internal class SwTimerManager : ISwGameProgressionListener
     {
         #region --- Constants ---
-        
-        private const int PLAYTIME_TICK_INTERVAL = 1;
-        private const int SAVE_PLAYTIME_INTERVAL = 5;
-        private const string ACCUMULATED_SESSIONS_PLAYTIME = "AccumulatedSessionsPlaytime";
+
+        // Playtime count will invoke a tick each 6 seconds (60/10 =6) 
+        // in order to support timer configuration for time based games with values like 1.1, 1.2, 1.3 etc.
+        private const int PlaytimeTickInterval = 6;
 
         #endregion
 
 
         #region --- Members ---
 
-        protected readonly ISwTimer _currentSessionPlaytimeStopWatch;
-        private readonly float _previousSessionsPlaytimeInSeconds;
-        private readonly SwCoreMonoBehaviour _mono;
+        protected readonly ISwTimer _playtimeStopWatch;
 
         #endregion
 
 
         #region --- Properties ---
 
-        public ISwTimerListener CurrentSessionPlaytimeStopWatch
+        public ISwTimerListener PlaytimeStopWatch
         {
-            get { return _currentSessionPlaytimeStopWatch; }
+            get { return _playtimeStopWatch; }
         }
 
-        public float AllSessionsPlaytime
-        {
-            get { return _previousSessionsPlaytimeInSeconds + _currentSessionPlaytimeStopWatch?.Elapsed ?? 0; }
-        }
+        protected bool IsDuringPlaytime { get; private set; }
 
         #endregion
 
 
         #region --- Construction ---
 
-        public SwTimerManager(SwCoreMonoBehaviour mono)
+        public SwTimerManager(MonoBehaviour mono)
         {
-            _mono = mono;
-            _currentSessionPlaytimeStopWatch = SwStopWatch.Create(mono.gameObject, $"{ETimers.CurrentSessionPlaytimeMinutes}", true, PLAYTIME_TICK_INTERVAL);
-            float.TryParse(SwInfra.KeyValueStore.GetString(ACCUMULATED_SESSIONS_PLAYTIME, "0"), NumberStyles.Float, CultureInfo.InvariantCulture, out _previousSessionsPlaytimeInSeconds);
-            _mono.ApplicationPausedEvent += OnApplicationPaused;
-        }
-
-        ~SwTimerManager()
-        {
-            _mono.ApplicationPausedEvent -= OnApplicationPaused;
-        }
-
-        public void OnSwReady()
-        {
-            _currentSessionPlaytimeStopWatch.StartTimer();
-            _mono.StartCoroutine(SavePlaytimeRepeating());
+            _playtimeStopWatch = SwStopWatch.Create(mono.gameObject, $"{ETimers.PlaytimeMinutes}", true, PlaytimeTickInterval);
         }
 
         #endregion
 
 
         #region --- Public Methods ---
-
-        private void OnApplicationPaused(bool isPaused)
+        
+        public void OnTimeBasedGameStarted ()
         {
-            if (!isPaused) return;
-
-            SavePlaytime();
+            IsDuringPlaytime = true;
+            _playtimeStopWatch.StartTimer();
         }
 
-        private IEnumerator SavePlaytimeRepeating()
+        public void OnLevelCompleted(long level, string levelName, long attempts, long revives)
         {
-            var waitForSavePlaytimeInterval = new WaitForSeconds(SAVE_PLAYTIME_INTERVAL);
-            
-            while (true)
-            {
-                yield return waitForSavePlaytimeInterval;
-                
-                SavePlaytime();
-            }
+            IsDuringPlaytime = false;
+            _playtimeStopWatch.PauseTimer();
         }
 
-        private void SavePlaytime()
+        public void OnLevelFailed(long level, string levelName, long attempts, long revives)
         {
-            // F symbolizes float format - #.## 
-            SwInfra.KeyValueStore.SetString(ACCUMULATED_SESSIONS_PLAYTIME, AllSessionsPlaytime.ToString("F", CultureInfo.InvariantCulture));
+            IsDuringPlaytime = false;
+            _playtimeStopWatch.PauseTimer();
+        }
+
+        public void OnLevelRevived(long level, string levelName, long attempts, long revives)
+        {
+            IsDuringPlaytime = true;
+            _playtimeStopWatch.ResumeTimer();
+        }
+
+        public void OnLevelSkipped(long level, string levelName, long attempts, long revives)
+        {
+            IsDuringPlaytime = false;
+            _playtimeStopWatch.PauseTimer();
+        }
+
+        public void OnLevelStarted(long level, string levelName, long attempts, long revives)
+        {
+            IsDuringPlaytime = true;
+            _playtimeStopWatch.StartTimer();
         }
 
         #endregion
@@ -95,6 +85,6 @@ namespace SupersonicWisdomSDK
 
     internal enum ETimers
     {
-        CurrentSessionPlaytimeMinutes,
+        PlaytimeMinutes
     }
 }

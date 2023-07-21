@@ -13,7 +13,7 @@ namespace SupersonicWisdomSDK
 
         #region --- Construction ---
 
-        public SwStage1Tracker(SwCoreNativeAdapter wisdomCoreNativeAdapter, SwCoreUserData coreUserData, ISwWebRequestClient webRequestClient, SwTimerManager timerManager) : base(wisdomCoreNativeAdapter, coreUserData, webRequestClient, timerManager)
+        public SwStage1Tracker(SwNativeAdapter wisdomNativeAdapter, SwUserData userData, ISwWebRequestClient webRequestClient, SwTimerManager timerManager) : base(wisdomNativeAdapter, userData, webRequestClient, timerManager)
         { }
 
         #endregion

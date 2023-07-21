@@ -1,7 +1,7 @@
 package wisdom.library.data.framework.remote;
 
-import wisdom.library.data.framework.network.api.IInternalRequestListener;
-import wisdom.library.data.framework.network.api.INetwork;
+import wisdom.library.data.framework.network.api.IWisdomNetwork;
+import wisdom.library.data.framework.network.listener.IWisdomResponseListener;
 import wisdom.library.domain.events.StoredEvent;
 import wisdom.library.domain.mapper.ListStoredEventJsonMapper;
 
@@ -13,13 +13,11 @@ public class EventsRemoteApi {
 
     private final String ANALYTICS_URL;
     private final String ANALYTICS_BULK_URL;
-    private final String EVENT = "event";
-    
 
-    private INetwork mNetwork;
+    private IWisdomNetwork mNetwork;
     private ListStoredEventJsonMapper mListJsonMapper;
 
-    public EventsRemoteApi(INetwork network,
+    public EventsRemoteApi(IWisdomNetwork network,
                            String subdomain,
                            ListStoredEventJsonMapper listJsonMapper) {
 
@@ -34,17 +32,17 @@ public class EventsRemoteApi {
         }
     }
 
-    public void sendEventAsync(JSONObject details, IInternalRequestListener listener) {
-        mNetwork.sendAsync(EVENT, ANALYTICS_URL, details, listener);
+    public void sendEventAsync(JSONObject details, IWisdomResponseListener listener) {
+        mNetwork.sendAsync(ANALYTICS_URL, details, listener);
     }
 
-    public int sendEvents(List<StoredEvent> events, IInternalRequestListener listener) {
+    public int sendEvents(List<StoredEvent> events) {
         JSONObject json = mListJsonMapper.map(events);
-        return mNetwork.send(EVENT, ANALYTICS_BULK_URL, json, listener);
+        return mNetwork.send(ANALYTICS_BULK_URL, json);
     }
 
-    public void sendEventsAsync(List<StoredEvent> events, IInternalRequestListener listener) {
+    public void sendEventsAsync(List<StoredEvent> events, IWisdomResponseListener listener) {
         JSONObject json = mListJsonMapper.map(events);
-        mNetwork.sendAsync(EVENT, ANALYTICS_BULK_URL, json, listener);
+        mNetwork.sendAsync(ANALYTICS_BULK_URL, json, listener);
     }
 }

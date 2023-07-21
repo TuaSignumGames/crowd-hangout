@@ -6,13 +6,13 @@ namespace SupersonicWisdomSDK
     {
         #region --- Mono Override ---
 
-        protected override void Update()
+        protected override void Update ()
         {
             if (SwUtils.IsRunningOnDevice() && Input.touchCount > 0 || !SwUtils.IsRunningOnDevice() && Input.GetMouseButton(0))
             {
-                if (IsEnabled || IsPaused || DidFinish)
+                if (IsEnabled || DidFinish)
                 {
-                    SwInfra.Logger.Log($"SwNoTouchTimer | StartTimer due to touch | {Name}");
+                    SwInfra.Logger.Log($"SwTimer | StartTimer due to touch | {Name}");
                     StartTimer();
 
                     return;

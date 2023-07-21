@@ -8,7 +8,7 @@
 #import "SwEventsQueue.h"
 #import "SwEventsSyncOperation.h"
 #import "SwEventsTablesMergeOperation.h"
-#import "SwConnectivityManager.h"
+#import "SwNetworkUtils.h"
 #import "SwConstants.h"
 
 #define MAX_RETRIES 10

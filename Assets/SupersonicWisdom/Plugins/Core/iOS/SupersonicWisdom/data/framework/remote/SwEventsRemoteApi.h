@@ -7,13 +7,13 @@
 
 #import <Foundation/Foundation.h>
 #import "SwWisdomNetwork.h"
-#import "SwNetworkCallbacks.h"
+#import "SwEventsRemoteStorageDelegate.h"
 #import "SwListStoredEventJsonMapper.h"
 
 @interface SwEventsRemoteApi : NSObject
 
 - (id)initWithNetwork:(id<SwWisdomNetwork>)network subdomain:(NSString *)subdomain storedEventsMapper:(SwListStoredEventJsonMapper *)listMapper;
-- (void)sendEventAsync:(NSDictionary *)details withResponseCallback:(OnNetworkResponse)callback;
-- (void)sendEventsAsync:(NSArray *)events withResponseCallback:(OnNetworkResponse)callback;
+- (void)sendEventAsync:(NSDictionary *)details withResponseCallback:(OnEventsStoredRemotely)callback;
+- (void)sendEventsAsync:(NSArray *)events withResponseCallback:(OnEventsStoredRemotely)callback;
 
 @end

@@ -39,7 +39,7 @@ namespace SupersonicWisdomSDK
                 throw new Exception("Missing mandatory GetInstance method inside class: " + containerClassQualifiedName);
             }
 
-            return (ISwContainer) getInstanceMethod.Invoke(null, new object[] { initParamsDictionary ?? new Dictionary<string, object>() });
+            return (ISwContainer)getInstanceMethod.Invoke(null, new object[] { initParamsDictionary ?? new Dictionary<string, object>() });
         }
 
         public static void InitContainerAsync(ISwContainer container, ISwAsyncCatchableRunnable customInitAsync)

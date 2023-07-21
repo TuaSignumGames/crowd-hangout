@@ -11,10 +11,3 @@
 + (void)onSessionEnded:(NSString *)sessionId;
 
 @end
-
-@protocol SwConnectivityStatusCallback <NSObject>
-
-@required
-- (void)onConnectivityStatusChanged:(BOOL)isAvailable;
-
-@end

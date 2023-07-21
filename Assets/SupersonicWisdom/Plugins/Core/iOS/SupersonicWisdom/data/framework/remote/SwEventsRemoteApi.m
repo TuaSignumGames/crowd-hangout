@@ -7,10 +7,8 @@
 
 #import "SwEventsRemoteApi.h"
 #import "SwStoredEvent.h"
-#import "SwConnectivityManager.h"
+#import "SwNetworkUtils.h"
 #import "SwUtils.h"
-
-#define SW_EVENT_KEY @"event"
 
 @implementation SwEventsRemoteApi {
     NSString *AnalyticsBulkUrl;
@@ -39,16 +37,16 @@
     return self;
 }
 
-- (void)sendEventAsync:(NSDictionary *)event withResponseCallback:(OnNetworkResponse)callback {
+- (void)sendEventAsync:(NSDictionary *)event withResponseCallback:(OnEventsStoredRemotely)callback {
     NSError *error;
     NSDictionary *body = event;
     NSData *jsonData = [SwUtils dataWithJSONObject:body error:&error];
-    [networkApi sendAsync:SW_EVENT_KEY url:AnalyticsUrl withBody:jsonData callback:callback];
+    [networkApi sendAsync:AnalyticsUrl withBody:jsonData callback:callback];
 }
 
-- (void)sendEventsAsync:(NSArray *)events withResponseCallback:(OnNetworkResponse)callback {
+- (void)sendEventsAsync:(NSArray *)events withResponseCallback:(OnEventsStoredRemotely)callback {
     NSData *jsonData = [storedEventListMapper map:events];
-    [networkApi sendAsync:SW_EVENT_KEY url:AnalyticsBulkUrl withBody:jsonData callback:callback];
+    [networkApi sendAsync:AnalyticsBulkUrl withBody:jsonData callback:callback];
 }
 
 @end

@@ -18,7 +18,7 @@ namespace SupersonicWisdomSDK
         {
             var ignoreThis = self.Add(addition);
         }
-
+        
         internal static void ForEach<TValue>(this HashSet<TValue> self, Action<TValue> action)
         {
             foreach (var item in self)
@@ -130,6 +130,37 @@ namespace SupersonicWisdomSDK
             return true;
         }
 
+        /// <summary>
+        ///     Merge one dictionary into another.
+        ///     The last source keys will override the first source keys, in case of conflicts.
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="sources"></param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns></returns>
+        internal static Dictionary<TKey, TValue> SwClone<TKey, TValue>(this Dictionary<TKey, TValue> self)
+        {
+            var copied = new Dictionary<TKey, TValue>();
+            copied.SwMerge(self);
+
+            return copied;
+        }
+
+        /// <summary>
+        ///     Merge one dictionary into another.
+        ///     The last source keys will override the first source keys, in case of conflicts.
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="sources"></param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns></returns>
+        internal static Dictionary<TKey, TValue> SwCloneMerged<TKey, TValue>(this Dictionary<TKey, TValue> self, params Dictionary<TKey, TValue>[] sources)
+        {
+            return self.SwClone().SwMerge(sources);
+        }
+        
         internal static bool SwIsValidEmailAddress(this string self)
         {
             var emailAddressRegex = new Regex(@"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$");
@@ -146,7 +177,7 @@ namespace SupersonicWisdomSDK
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
         /// <returns></returns>
-        internal static Dictionary<TKey, TValue> SwMerge<TKey, TValue>(this Dictionary<TKey, TValue> self, bool overwriteValue, params Dictionary<TKey, TValue>[] sources)
+        internal static Dictionary<TKey, TValue> SwMerge<TKey, TValue>(this Dictionary<TKey, TValue> self, params Dictionary<TKey, TValue>[] sources)
         {
             foreach (var source in sources)
             {
@@ -154,10 +185,7 @@ namespace SupersonicWisdomSDK
                 {
                     foreach (var keyValuePair in source)
                     {
-                        if (overwriteValue || !self.ContainsKey(keyValuePair.Key))
-                        {
-                            self[keyValuePair.Key] = keyValuePair.Value;
-                        }
+                        self[keyValuePair.Key] = keyValuePair.Value;
                     }
                 }
             }
@@ -183,18 +211,15 @@ namespace SupersonicWisdomSDK
         internal static string SwToString<TSource>(this IEnumerable<TSource> source, string delimiter = ", ")
         {
             var stringBuilder = new StringBuilder();
-
-            var isDictionary = source is IDictionary;
-            stringBuilder.Append(isDictionary ? "{" : "[");
+            stringBuilder.Append("[");
             
             foreach (var element in source)
             {
                 stringBuilder.Append(element?.ToString() ?? "null");
                 stringBuilder.Append(delimiter);
             }
-
-            var closingChar = isDictionary ? "}" : "]";
-            stringBuilder = stringBuilder.Append(closingChar).Replace(delimiter + closingChar, closingChar);
+            
+            stringBuilder = stringBuilder.Append("]").Replace(delimiter + "]", "]");
             
             return stringBuilder.ToString();
         }
@@ -220,18 +245,12 @@ namespace SupersonicWisdomSDK
 
         internal static long SwTimestampMilliseconds(this DateTime self)
         {
-            var epochTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            return (long) (self - epochTime).TotalMilliseconds;
-        }
-        
-        internal static long SwTicksMilliseconds(this DateTime self)
-        {
             return self.Ticks / TimeSpan.TicksPerMillisecond;
         }
 
         internal static long SwTimestampSeconds(this DateTime self)
         {
-            return self.SwTimestampMilliseconds() / 1000;
+            return self.Ticks / TimeSpan.TicksPerSecond;
         }
 
         internal static Dictionary<string, object> SwToJsonDictionary(this string self)

@@ -25,7 +25,7 @@ namespace SupersonicWisdomSDK
 
         public void Reset ()
         {
-            _creationTime = DateTime.Now.SwTicksMilliseconds();
+            _creationTime = DateTime.Now.SwTimestampMilliseconds();
         }
 
         #endregion
@@ -35,7 +35,7 @@ namespace SupersonicWisdomSDK
 
         public long Measure ()
         {
-            var now = DateTime.Now.SwTicksMilliseconds();
+            var now = DateTime.Now.SwTimestampMilliseconds();
 
             return now - _creationTime;
         }

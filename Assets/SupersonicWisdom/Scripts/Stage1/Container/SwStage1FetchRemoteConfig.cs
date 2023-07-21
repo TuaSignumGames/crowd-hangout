@@ -7,16 +7,16 @@ namespace SupersonicWisdomSDK
     {
         #region --- Members ---
 
-        private readonly SwStage1ConfigManager _configManager;
+        private readonly SwStage1RemoteConfigRepository _remoteConfigRepository;
 
         #endregion
 
 
         #region --- Construction ---
 
-        public SwStage1FetchRemoteConfig(SwStage1ConfigManager configManager)
+        public SwStage1FetchRemoteConfig(SwStage1RemoteConfigRepository remoteConfigRepository)
         {
-            _configManager = configManager;
+            _remoteConfigRepository = remoteConfigRepository;
         }
 
         #endregion
@@ -26,7 +26,7 @@ namespace SupersonicWisdomSDK
 
         public IEnumerator Run ()
         {
-            yield return _configManager.Fetch();
+            yield return _remoteConfigRepository.Fetch();
         }
 
         #endregion

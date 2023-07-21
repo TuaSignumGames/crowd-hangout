@@ -26,8 +26,6 @@ public class MotionSimulator
 
     private bool isGrounded;
 
-    public float groundFriction = 0;
-
     public bool enabled = true;
     public bool translationEnabled = true;
     public bool rotationEnabled = true;
@@ -36,18 +34,16 @@ public class MotionSimulator
 
     public Transform Transform => transform;
 
-    public float GroundHeight => groundCoordY;
-
     public bool IsGrounded => isGrounded;
 
-    public MotionSimulator(Transform transform, MonoUpdateType updateType, float gravityModifier = 1f)
+    public MotionSimulator(Transform transform, MonoUpdateType updateType)
     {
         this.transform = transform;
 
         position = transform.position;
         eulerAngles = transform.eulerAngles;
 
-        Gravity = Physics.gravity * gravityModifier;
+        Gravity = Physics.gravity;
 
         useFixedUpdate = updateType == MonoUpdateType.FixedUpdate;
 
@@ -57,7 +53,7 @@ public class MotionSimulator
         }
     }
 
-    public MotionSimulator(Transform transform, float groundHeight, MonoUpdateType updateType, float gravityModifier = 1f)
+    public MotionSimulator(Transform transform, float groundHeight, MonoUpdateType updateType)
     {
         this.transform = transform;
 
@@ -66,7 +62,7 @@ public class MotionSimulator
         position = transform.position;
         eulerAngles = transform.eulerAngles;
 
-        Gravity = Physics.gravity * gravityModifier;
+        Gravity = Physics.gravity;
 
         useGround = true;
 
@@ -103,20 +99,6 @@ public class MotionSimulator
                 isGrounded = transform.position.y <= groundCoordY;
 
                 transform.position = new Vector3(transform.position.x, isGrounded ? groundCoordY : transform.position.y, transform.position.z);
-
-                if (isGrounded && groundFriction > 0 && velocity.sqrMagnitude > 0)
-                {
-                    if (velocity.sqrMagnitude > 0.01f)
-                    {
-                        velocity -= velocity.normalized * groundFriction * velocity.magnitude * Time.fixedDeltaTime;
-                        angularVelocity -= angularVelocity.normalized * groundFriction * angularVelocity.magnitude * Time.fixedDeltaTime;
-                    }
-                    else
-                    {
-                        velocity = Vector3.zero;
-                        angularVelocity = Vector3.zero;
-                    }
-                }
             }
         }
     }

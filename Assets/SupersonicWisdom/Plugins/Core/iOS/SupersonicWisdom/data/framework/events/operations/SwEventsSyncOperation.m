@@ -75,7 +75,7 @@
     }
     
     [eventsRepository updateSyncEventAttempts:events];
-    [eventsRepository sendEventsAsync:events withResponseCallback:^(NSString *key, BOOL successfully, NSInteger responseCode, NSData *responseBody) {
+    [eventsRepository sendEventsAsync:events withResponseCallback:^(BOOL successfully, NSInteger responseCode) {
         if ([self isCancelled]) {
             [self completeOperation];
             return;

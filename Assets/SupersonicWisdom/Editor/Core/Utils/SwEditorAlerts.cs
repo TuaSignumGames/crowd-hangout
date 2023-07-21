@@ -9,7 +9,7 @@ namespace SupersonicWisdomSDK.Editor
 
         #region --- Package import ---
 
-        public static void AlertWelcomeMessage()
+        public static void AlertWelcomeMessage ()
         {
             if (EditorUtility.DisplayDialog(SwEditorConstants.UI.WELCOME_TITLE, SwEditorConstants.UI.WELCOME_MESSAGE, SwEditorConstants.UI.ButtonTitle.GoToSettings))
             {

@@ -1,12 +1,11 @@
 namespace SupersonicWisdomSDK
 {
-    public enum SwWebRequestError
+    internal enum SwWebRequestError
     {
         None,
         Http,
         Network,
         Timeout,
-        InvalidUrl,
-        Unknown,
+        InvalidUrl
     }
 }

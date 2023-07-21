@@ -19,8 +19,6 @@ public class Humanball
     private HumanballCell closestCell;
     private HumanballCell availableCell;
 
-    private List<HumanController> registeredHumans;
-
     private float cellSqrDistance;
     private float minCellSqrDistance;
 
@@ -30,8 +28,6 @@ public class Humanball
     private int filledLayersCount;
 
     private int counter;
-
-    private bool isTriggerColliderRequired;
 
     public int humansCount;
 
@@ -49,15 +45,11 @@ public class Humanball
     public HumanballCell[] FilledCells => filledCells == null ?  GetFilledCells().ToArray() : filledCells.ToArray();
     public HumanballCell[] UsedCells => usedCells.ToArray();
 
-    public HumanController[] RegisteredHumans => registeredHumans.ToArray();
-
     public Humanball()
     {
         layers = new List<HumanballLayer>();
 
         usedCells = new List<HumanballCell>();
-
-        registeredHumans = new List<HumanController>();
     }
 
     public Humanball(List<HumanballLayer> layers)
@@ -65,8 +57,6 @@ public class Humanball
         this.layers = new List<HumanballLayer>(layers);
 
         usedCells = new List<HumanballCell>();
-
-        registeredHumans = new List<HumanController>();
 
         cellsCount = GetAvailableCellsCount();
 
@@ -135,12 +125,6 @@ public class Humanball
                     filledLayersCount = 1;
 
                     usedCells.Add(availableCell);
-                    registeredHumans.Add(human);
-
-                    if (isTriggerColliderRequired)
-                    {
-                        human.components.collider.isTrigger = true;
-                    }
 
                     humansCount++;
 
@@ -166,12 +150,6 @@ public class Humanball
                     filledLayersCount = i + 1;
 
                     usedCells.Add(availableCell);
-                    registeredHumans.Add(human);
-
-                    if (isTriggerColliderRequired)
-                    {
-                        human.components.collider.isTrigger = true;
-                    }
 
                     humansCount++;
 
@@ -183,19 +161,12 @@ public class Humanball
         return null;
     }
 
-    public void RegisterHuman(HumanController human)
-    {
-        registeredHumans.Add(human);
-    }
-
     public void RemoveHuman(HumanController human)
     {
         for (int i = 0; i < layers.Count; i++)
         {
             if (layers[i].TryRemoveHuman(human))
             {
-                registeredHumans.Remove(human);
-
                 humansCount--;
 
                 if (humansCount <= 0)
@@ -321,16 +292,6 @@ public class Humanball
         }
 
         return new Vector3(midpoint.x / filledCells.Count, midpoint.y / filledCells.Count, 0);
-    }
-
-    public void SetHumanColliderAsTriggers(bool isTrigger)
-    {
-        isTriggerColliderRequired = isTrigger;
-
-        for (int i = 0; i < registeredHumans.Count; i++)
-        {
-            registeredHumans[i].components.collider.isTrigger = isTrigger;
-        }
     }
 
     private void CheckForPlanarClosestCell(HumanballCell cell, Vector3 point, Axis planeAxis)

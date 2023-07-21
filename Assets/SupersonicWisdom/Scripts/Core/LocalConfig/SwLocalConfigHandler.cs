@@ -8,11 +8,16 @@ namespace SupersonicWisdomSDK
     {
         #region --- Members ---
 
-        public readonly Dictionary<string, object> ConfigValues;
+        public Dictionary<string, object> LocalConfigValues;
 
-        public SwLocalConfigHandler(ISwLocalConfigProvider[] localConfigProviders)
+        #endregion
+
+
+        #region --- Public Methods ---
+
+        public void Setup(ISwLocalConfigProvider[] configProviders)
         {
-            ConfigValues = ResolveLocalConfigFromProviders(localConfigProviders);
+            LocalConfigValues = ResolveLocalConfigFromSetters(configProviders);
         }
 
         #endregion
@@ -20,21 +25,21 @@ namespace SupersonicWisdomSDK
 
         #region --- Private Methods ---
 
-        private Dictionary<string, object> ResolveLocalConfigFromProviders(ISwLocalConfigProvider[] configProviders)
+        private Dictionary<string, object> ResolveLocalConfigFromSetters(ISwLocalConfigProvider[] configProviders)
         {
             var arrayLength = configProviders.Length;
 
             if (arrayLength == 0) return new Dictionary<string, object>();
 
-            var localConfigValues = new Dictionary<string, object>[arrayLength];
+            var defaultConfigValues = new Dictionary<string, object>[arrayLength];
 
             for (var i = 0; i < arrayLength; i++)
             {
                 var config = configProviders[i].GetLocalConfig();
-                localConfigValues[i] = config.LocalConfigValues;
+                defaultConfigValues[i] = config.LocalConfigValues;
             }
 
-            var configToMerge = new Dictionary<string, object>().SwMerge(true, localConfigValues);
+            var configToMerge = new Dictionary<string, object>().SwMerge(defaultConfigValues);
             SwInfra.Logger.Log("SwLocalConfigHandler | ResolveLocalConfigFromSetters | " + $"Resolved {configToMerge.Count} pairs");
 
             return configToMerge;

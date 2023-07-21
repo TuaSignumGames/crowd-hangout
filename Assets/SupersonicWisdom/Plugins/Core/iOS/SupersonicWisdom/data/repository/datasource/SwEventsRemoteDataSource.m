@@ -17,11 +17,11 @@
     return self;
 }
 
-- (void)sendEventAsync:(NSDictionary *)details withResponseCallback:(OnNetworkResponse)callback {
+- (void)sendEventAsync:(NSDictionary *)details withResponseCallback:(OnEventsStoredRemotely)callback {
     [remoteApi sendEventAsync:details withResponseCallback:callback];
 }
 
-- (void)sendEventsAsync:(NSArray *)events withResponseCallback:(OnNetworkResponse)callback {
+- (void)sendEventsAsync:(NSArray *)events withResponseCallback:(OnEventsStoredRemotely)callback {
     [remoteApi sendEventsAsync:events withResponseCallback:callback];
 }
 

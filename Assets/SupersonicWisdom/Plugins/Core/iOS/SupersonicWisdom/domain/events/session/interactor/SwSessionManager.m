@@ -6,16 +6,12 @@
 //
 
 #import "SwSessionManager.h"
-#import "SwNetworkCallbacks.h"
+#import "SwEventsRemoteStorageDelegate.h"
 #import "../../../../domain/utils/SwUtils.h"
 
 #define SESSION_EVENT_NAME @"Session"
 #define START_SESSION_EVENT @"StartSession"
 #define END_SESSION_EVENT @"FinishSession"
-#define MEGA_SESSION_COUNTER @"megaSessionCounter"
-#define SESSION_IN_MEGA_COUNTER @"sessionInMegaCounter"
-#define SESSION_COUNTER @"sessionCounter"
-#define SW_PREFS_PREFIX @"sw_"
 #define CUSTOM1 @"custom1"
 #define CUSTOM2 @"custom2"
 
@@ -25,9 +21,6 @@
     NSTimeInterval sessionEndTime;
     NSNumber *sessionDurationTime;
     BOOL isSessionInitialized;
-    NSInteger mMegaSessionsCounter;
-    NSInteger mSessionsInMegaSessionCounter;
-    NSInteger mTotalSessionsCounter;
     
     id<SwEventsRepositoryProtocol> eventRepository;
     id<SwEventMetadataManagement> eventMetadataManager;
@@ -35,7 +28,6 @@
     id<SwEventsReporterProtocol> eventsReporter;
     NSMutableArray *sessionDelegates;
     id<SwEventsQueueProtocol> syncEventQueue;
-    NSUserDefaults *mUserDefaults;
 }
 
 static NSString *megaSessionId;
@@ -48,8 +40,7 @@ static NSString *megaSessionId;
             EventsRepo:(id<SwEventsRepositoryProtocol>)eventsRepo
        MetadataManager:(id<SwEventMetadataManagement>)metadataManager
  ConversionDataManager:(id<SwConversionDataManagement>)conversionDataManager
-            EventQueue:(id<SwEventsQueueProtocol>)queue
-           UserDefault:(NSUserDefaults *)prefs {
+            EventQueue:(id<SwEventsQueueProtocol>)queue {
     if (!(self = [super init])) return nil;
     sessionDelegates = [NSMutableArray array];
     eventsReporter = repoter;
@@ -58,23 +49,8 @@ static NSString *megaSessionId;
     eventConversionDataManager = conversionDataManager;
     syncEventQueue = queue;
     isSessionInitialized = NO;
-    mUserDefaults = prefs;
-    [self loadSessionData];
-    mSessionsInMegaSessionCounter = 0;
-    mMegaSessionsCounter++;
-    [self saveSessionData];
 
     return self;
-}
-
-- (void)loadSessionData {
-    mMegaSessionsCounter = [mUserDefaults integerForKey:[NSString stringWithFormat:@"%@%@", SW_PREFS_PREFIX, MEGA_SESSION_COUNTER]];
-    mTotalSessionsCounter = [mUserDefaults integerForKey:[NSString stringWithFormat:@"%@%@", SW_PREFS_PREFIX, SESSION_COUNTER]];
-}
-
-- (void)saveSessionData {
-    [mUserDefaults setInteger:mMegaSessionsCounter forKey:[NSString stringWithFormat:@"%@%@", SW_PREFS_PREFIX, MEGA_SESSION_COUNTER]];
-    [mUserDefaults setInteger:mTotalSessionsCounter forKey:[NSString stringWithFormat:@"%@%@", SW_PREFS_PREFIX, SESSION_COUNTER]];
 }
 
 - (NSString *)getSessionId {
@@ -88,10 +64,6 @@ static NSString *megaSessionId;
 - (void)openSession {
     currentSessionId = [[NSUUID UUID] UUIDString];
     sessionStartTime = [[NSDate date] timeIntervalSince1970];
-    mSessionsInMegaSessionCounter++;
-    mTotalSessionsCounter++;
-    
-    [self saveSessionData];
 }
 
 - (void)closeSession {
@@ -116,7 +88,10 @@ static NSString *megaSessionId;
 - (void)startSession {
     [syncEventQueue startQueue];
     [self openSession];
-    NSDictionary *customs = [self createCustomsDictionray:START_SESSION_EVENT duration:@"0"];
+    NSDictionary *customs =@{ CUSTOM1     : START_SESSION_EVENT,
+                              CUSTOM2   : @"0",
+                            };
+    
     NSDictionary *event = [SwUtils createEvent:SESSION_EVENT_NAME sessionId:currentSessionId megaSessionId:megaSessionId conversionData:[eventConversionDataManager conversionData] metdadata:[[eventMetadataManager get] get] customs:[SwUtils toJsonString:customs] extra:@"{}"];
     
     [eventsReporter reportEvent:event];
@@ -126,24 +101,16 @@ static NSString *megaSessionId;
 - (void)endSession {
     [self closeSession];
     NSString *duration = [sessionDurationTime stringValue];
-    NSDictionary *customs = [self createCustomsDictionray:END_SESSION_EVENT duration:duration];
+    NSDictionary *customs =@{ CUSTOM1     : END_SESSION_EVENT,
+                              CUSTOM2    : duration,
+                            };
+    
     NSDictionary *event = [SwUtils createEvent:SESSION_EVENT_NAME sessionId:currentSessionId megaSessionId:megaSessionId conversionData:[eventConversionDataManager conversionData] metdadata:[[eventMetadataManager get] get] customs:[SwUtils toJsonString:customs] extra:@"{}"];
     
     [eventsReporter reportEvent:event];
     [self onSessionEnded:currentSessionId];
     [self resetSession];
     [syncEventQueue stopQueue];
-}
-
-- (NSDictionary *)createCustomsDictionray:(NSString *)eventName duration:(NSString *)duration{
-    NSDictionary *customs =@{ CUSTOM1     : eventName,
-                              CUSTOM2    : duration,
-                              MEGA_SESSION_COUNTER : [NSNumber numberWithInteger:mMegaSessionsCounter],
-                              SESSION_IN_MEGA_COUNTER : [NSNumber numberWithInteger:mSessionsInMegaSessionCounter],
-                              SESSION_COUNTER : [NSNumber numberWithInteger:mTotalSessionsCounter],
-                            };
-    
-    return customs;
 }
 
 - (void)initializeSessionWith:(SwEventMetadataDto *)metadata {

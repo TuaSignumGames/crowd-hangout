@@ -5,8 +5,4 @@ namespace SupersonicWisdomSDK
     public delegate void OnSessionStarted(string sessionId);
 
     public delegate void OnSessionEnded(string sessionId);
-
-    public delegate void OnWebResponse(string response);
-    
-    public delegate void OnConnectivityStatusChanged(string connectionStatus);
 }

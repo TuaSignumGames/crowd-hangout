@@ -6,7 +6,6 @@
 //
 
 #import "SwWisdomSDK.h"
-#import "SWSDKLogger.h"
 
 __strong SwSDK *sharedInstance;
 
@@ -25,14 +24,10 @@ typedef struct _SwWisdomConfigurationStruct {
 extern "C" {
     typedef void (*OnSessionStarted)(const char*);
     typedef void (*OnSessionEnded)(const char*);
-    typedef void (*OnWebResponse)(const char*);
-    typedef void (*OnConnectivityStatusChanged)(const char*);
 }
 
 static OnSessionStarted onSessionStartedCallback;
 static OnSessionEnded onSessionEndedCallback;
-static OnWebResponse onWebResponseCallback;
-static OnConnectivityStatusChanged onConnectivityStatusChangedCallback;
 
 extern "C" {
     
@@ -106,14 +101,6 @@ extern "C" {
         onSessionEndedCallback = callback;
     }
     
-    void registerWebRequestCallback(OnWebResponse callback){
-        onWebResponseCallback = callback;
-    }
-
-    void registerConnectivityListener(OnConnectivityStatusChanged callback){
-        onConnectivityStatusChangedCallback = callback;
-    }
-
     void unregisterSessionStartedCallback() {
         onSessionStartedCallback = NULL;
     }
@@ -122,39 +109,11 @@ extern "C" {
         onSessionEndedCallback = NULL;
     }
 
-    void unregisterWebRequestCallback(OnWebResponse callback){
-        onWebResponseCallback = NULL;
-    }
-
-    void unregisterConnectivityListener(OnConnectivityStatusChanged callback){
-        onConnectivityStatusChangedCallback = NULL;
-    }
-
-    void sendRequest(const char* requestJson){
-        NSString *requesttJsonStr;
-        if (requestJson)                 requesttJsonStr = [NSString stringWithUTF8String:requestJson];
-        
-        [SwWisdomSDK sendRequest:requesttJsonStr];
-    }
-
-    char* getConnectionStatus(){
-        NSString *connectionStatus = [SwWisdomSDK getConnectionStatus];
-        const char* connectionStatusString = [connectionStatus UTF8String];
-        if (connectionStatusString == NULL)
-            return NULL;
-
-        char* res = (char*)malloc(strlen(connectionStatusString) + 1);
-        strcpy(res, connectionStatusString);
-
-        return res;
-    }
-
     void destroy() {
         [SwWisdomSDK destroy];
     }
 }
 
-#import "SwUtils.h"
 @implementation SwWisdomSDK
 
 + (void)load {
@@ -164,7 +123,6 @@ extern "C" {
 + (void)initSdkWithConfig:(SwWisdomConfigurationDto *)configuration {
     [sharedInstance initSdkWithConfig:configuration];
     [sharedInstance registerSessionDelegate:[SwWisdomSDK self]];
-    [sharedInstance registerConnectivityDelegate:[SwWisdomSDK self]];
 }
 
 + (BOOL)toggleBlockingLoader:(BOOL)shouldPresent {
@@ -228,26 +186,6 @@ extern "C" {
     if (onSessionEndedCallback) {
         onSessionEndedCallback([sessionId cStringUsingEncoding:NSUTF8StringEncoding]);
     }
-}
-
-+ (void)onConnectivityStatusChanged:(BOOL)isAvailable {
-    if (onConnectivityStatusChangedCallback) {
-        onConnectivityStatusChangedCallback([[sharedInstance getConnectionStatus] cStringUsingEncoding:NSUTF8StringEncoding]);
-    }
-}
-
-+ (void)sendRequest:(NSString *)requestJsonString {
-    if (isInitialized()) {
-        [sharedInstance sendRequest:requestJsonString withResponseCallback:^(NSString *response) {
-            if(onWebResponseCallback){
-                onWebResponseCallback([response cStringUsingEncoding:NSUTF8StringEncoding]);
-            }
-        }];
-    }
-}
-
-+ (NSString *)getConnectionStatus {
-    return [sharedInstance getConnectionStatus];
 }
 
 @end

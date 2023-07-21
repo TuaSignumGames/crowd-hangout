@@ -4,13 +4,10 @@ namespace SupersonicWisdomSDK.Editor
     {
         #region --- Constants ---
 
-        public const string ASSETS = "Assets";
+        internal const string ASSETS = "Assets";
         public const string EMPTY_STRINGIFIED_JSON = "{}";
         public const string DEFAULT_STAGE_INTEGRATION_GUIDE_URL = "https://assets.mobilegamestats.com/docs/supersonic-default-stage-update-integration-guide.pdf";
         public const string DEFAULT_CHANGE_LOG_URL = "https://assets.mobilegamestats.com/docs/wisdom-latest-release-notes.pdf";
-        public const string IAP_ASSEMBLY_FULL_NAME = "UnityEngine.Purchasing";
-        public const string UNITY_MOBILE_NOTIFICATIONS_ASSEMBLY_FULL_NAME = "Unity.Notifications";
-        public const string UNITY_MOBILE_NOTIFICATIONS_PACKAGE_VERSION = "2.1.1";
 
         #endregion
 
@@ -38,7 +35,6 @@ namespace SupersonicWisdomSDK.Editor
             internal const string TEMP_AUTH_TOKEN = "Sw.TempToken"; // Should be saved for a small period
             internal const string UPDATED_SDK_STAGE_NUMBER = "Sw.UpdatedSdkStageNumber";
             internal const string UPDATED_SDK_VERSION_ID = "Sw.UpdatedSdkVersionId";
-            internal const string LastTimeMinimumEditorVersionMessageShown = "Sw.LastTimeMinimumEditorVersionMessageShown";
 
             #endregion
         }
@@ -82,10 +78,6 @@ namespace SupersonicWisdomSDK.Editor
             public const string VERIFY_GA_SETTINGS = "The following GameAnalytics Advanced Settings should be set to true:\nSend Version\nSubmit Errors\n";
             public const string WELCOME_MESSAGE = "Please go to settings window and Login with your Supersonic platform credentials to automatically retrieve the relevant credential IDs";
             public const string WELCOME_TITLE = "Welcome to Supersonic Wisdom SDK!";
-            public const string UNITY_MINIMUM_VERSION_MESSAGE =
-                "Your Unity Version is not supported by Wisdom.\nPlease update to Unity {0} LTS.";
-            public const string MINIMUM_EDITOR_VERSION_URL = "https://unity.com/releases/editor/archive#download-archive-{0}";
-            public const string NATIVE = "Native";
 
             #endregion
 
@@ -122,7 +114,6 @@ namespace SupersonicWisdomSDK.Editor
                 public const string Ok = "OK";
                 public const string SetToTrueAndSave = "Set to true & Save";
                 public const string Thanks = "Thanks";
-                public const string UPDATE = "Update";
 
                 #endregion
             }

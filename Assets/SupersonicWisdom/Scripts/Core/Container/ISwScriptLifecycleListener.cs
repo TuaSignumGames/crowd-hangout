@@ -8,16 +8,17 @@ namespace SupersonicWisdomSDK
 
         void OnApplicationPause(bool pauseStatus);
 
-        void OnApplicationQuit();
+        void OnApplicationQuit ();
 
         #endregion
 
 
         #region --- Public Methods ---
 
-        void OnAwake();
-        void OnStart();
-        void OnUpdate();
+        void OnAwake ();
+        void OnStart ();
+
+        void OnUpdate ();
 
         #endregion
     }

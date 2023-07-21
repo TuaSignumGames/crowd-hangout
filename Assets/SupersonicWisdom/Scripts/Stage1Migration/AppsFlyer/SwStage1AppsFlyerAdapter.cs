@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using AppsFlyerSDK;
+using UnityEngine;
 
 namespace SupersonicWisdomSDK
 {
@@ -9,22 +10,21 @@ namespace SupersonicWisdomSDK
     {
         #region --- Constants ---
 
-        public const string APPSFLYER_INIT_INTERNAL_EVENT_NAME = "AppsFlyerInit";
+        public const string AppsFlyerInitInternalEventName = "AppsFlyerInit";
 
         #endregion
     }
 
-    internal class SwStage1AppsFlyerAdapter : ISwReadyEventListener, ISwAppsFlyerListener, ISwLocalConfigProvider, ISwAdapter, ISwCoreConfigListener
+    internal class SwStage1AppsFlyerAdapter : ISwReadyEventListener, ISwAppsFlyerListener, ISwLocalConfigProvider, ISwAdapter
     {
         #region --- Constants ---
 
         /// <summary>
         ///     This key is read by Wisdom Native. Do not rename it.
         /// </summary>
-        private const string APPS_FLYER_CONVERSION_DATA_KEY = "AFConversionData";
+        private const string AppsFlyerConversionDataKey = "AFConversionData";
 
-        private const string APPS_FLYER_DEV_KEY = "nYwfftoacbopmuszWBPGnd";
-        private const string APPS_FLYER_DOMAIN = "appsFlyerDomain";
+        private const string AppsFlyerDevKey = "nYwfftoacbopmuszWBPGnd";
 
         #endregion
 
@@ -52,16 +52,6 @@ namespace SupersonicWisdomSDK
         #endregion
 
 
-        #region --- Properties ---
-
-        public Tuple<EConfigListenerType, EConfigListenerType> ListenerType
-        {
-            get { return new Tuple<EConfigListenerType, EConfigListenerType>(EConfigListenerType.FinishWaitingForRemote, EConfigListenerType.FinishWaitingForRemote); }
-        }
-
-        #endregion
-
-
         #region --- Construction ---
 
         public SwStage1AppsFlyerAdapter(SwAppsFlyerEventDispatcher eventDispatcher, SwStage1UserData userData, SwSettingsManager<SwSettings> settingsManager, SwCoreTracker tracker)
@@ -77,7 +67,7 @@ namespace SupersonicWisdomSDK
 
         #region --- Public Methods ---
 
-        public virtual void Init()
+        public virtual void Init ()
         {
             if (_didInitAppsFlyer)
             {
@@ -98,13 +88,14 @@ namespace SupersonicWisdomSDK
 
                 AppsFlyer.setIsDebug(_settingsManager.Settings.enableDebug);
                 AppsFlyer.setCurrencyCode("USD");
-                AppsFlyer.initSDK(APPS_FLYER_DEV_KEY, _settingsManager.Settings.IosAppId, _eventDispatcher);
-                SwInternalEvent.Invoke(SwStage1AppsFlyerConstants.APPSFLYER_INIT_INTERNAL_EVENT_NAME);
+                AppsFlyer.initSDK(AppsFlyerDevKey, _settingsManager.Settings.IosAppId, _eventDispatcher);
+                SwInternalEvent.Invoke(SwStage1AppsFlyerConstants.AppsFlyerInitInternalEventName);
                 AppsFlyer.startSDK();
-
+                
                 _userData.AppsFlyerId = AppsFlyer.getAppsFlyerId();
                 _didInitAppsFlyer = true;
                 _sdkStatus = _didInitAppsFlyer.ToString();
+
             }
             catch (Exception e)
             {
@@ -113,7 +104,7 @@ namespace SupersonicWisdomSDK
             }
         }
 
-        public Dictionary<string, string> CreateEventValues()
+        public Dictionary<string, string> CreateEventValues ()
         {
             var organizationAdvertisingId = _userData.OrganizationAdvertisingId;
             var eventValues = new Dictionary<string, string>();
@@ -132,18 +123,18 @@ namespace SupersonicWisdomSDK
             return eventValues;
         }
 
-        public SwLocalConfig GetLocalConfig()
+        public SwLocalConfig GetLocalConfig ()
         {
             return new SwStage1AppsFlyerLocalConfig();
         }
-
+        
         public SwAdapterData GetAdapterStatusAndVersion()
         {
             var adapterData = new SwAdapterData
             {
                 adapterName = nameof(AppsFlyer),
                 adapterStatus = _sdkStatus,
-                adapterVersion = AppsFlyer.getSdkVersion(),
+                adapterVersion = AppsFlyer.getSdkVersion()
             };
 
             return adapterData;
@@ -172,10 +163,10 @@ namespace SupersonicWisdomSDK
             AppsFlyer.AFLog("didReceiveConversionData", conversionData);
 
             // This key is being read in wisdom native for it to be sent in all events
-            SwInfra.KeyValueStore.SetString(APPS_FLYER_CONVERSION_DATA_KEY, conversionData);
+            SwInfra.KeyValueStore.SetString(AppsFlyerConversionDataKey, conversionData);
         }
 
-        public void OnSwReady()
+        public void OnSwReady ()
         {
             IsSwReady = true;
             TrackConversionDataFailIfNeeded();
@@ -186,18 +177,12 @@ namespace SupersonicWisdomSDK
             _appsFlyerHostname = appsflyerHostname;
         }
 
-        public void OnConfigResolved(ISwCoreInternalConfig config, ISwConfigManagerState state)
-        {
-            var appsFlyerHostname = config.GetValue(APPS_FLYER_DOMAIN, SwStage1AppsFlyerLocalConfig.APPS_FLYER_DEFAULT_DOMAIN_DEFAULT_VALUE);
-            SetHost(appsFlyerHostname);
-        }
-
         #endregion
 
 
         #region --- Private Methods ---
 
-        protected void AnonymizeIfNeeded()
+        protected void AnonymizeIfNeeded ()
         {
             if (!DidApplyAppsFlyerAnonymize && ShouldAnonymizeAppsFlyer != null)
             {
@@ -216,10 +201,10 @@ namespace SupersonicWisdomSDK
 
         protected void SendEvent(string eventName, Dictionary<string, string> eventValues)
         {
-            AppsFlyer.sendEvent(eventName, CreateEventValues().SwMerge(true, eventValues));
+            AppsFlyer.sendEvent(eventName, CreateEventValues().SwMerge(eventValues));
         }
 
-        private void TrackConversionDataFailIfNeeded()
+        private void TrackConversionDataFailIfNeeded ()
         {
             if (!_didTrackConversionDataFail && IsSwReady && !string.IsNullOrEmpty(_conversionDataFailError))
             {

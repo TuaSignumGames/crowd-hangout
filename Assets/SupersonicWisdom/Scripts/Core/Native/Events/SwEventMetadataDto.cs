@@ -29,7 +29,6 @@ namespace SupersonicWisdomSDK
         public string attStatus;
         public string noAds;
         public string products;
-        public string configStatus;
 #if UNITY_IOS
         public string sandbox;
         public string idfv;

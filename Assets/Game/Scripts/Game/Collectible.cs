@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Multicollectible;
 
 public enum CollectiblePlacementType { Any, Ground, Ceiling }
 
@@ -43,7 +42,7 @@ public class Collectible : MonoBehaviour
             case CollectiblePlacementType.Ceiling: this.placementFactor = 1f; break;
         }
 
-        transform.position = new Vector3(blockPair.groundBlock.transform.position.x, Mathf.Lerp(blockPair.groundBlock.transform.position.y, blockPair.ceilingBlock.transform.position.y, this.placementFactor));
+        transform.position = new Vector3(blockPair.floorBlock.transform.position.x, Mathf.Lerp(blockPair.floorBlock.transform.position.y, blockPair.ceilBlock.transform.position.y, this.placementFactor));
     }
 
     public virtual void UpdatePlacement(BlockPair blockPair)
@@ -58,12 +57,10 @@ public class Collectible : MonoBehaviour
 
     protected virtual IEnumerator CollectingCoroutine()
     {
-        collectibleSettings.capsule.Break();
-
         return null;
     }
 
-    protected virtual void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == 8)
         {
@@ -82,7 +79,6 @@ public class Collectible : MonoBehaviour
         public int fittingRangeNumber;
         public float verticalShift;
         [Space]
-        public MulticollectibleCapsule capsule;
         public Collider collider;
     }
 }

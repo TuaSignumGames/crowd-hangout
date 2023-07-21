@@ -11,7 +11,7 @@ namespace SupersonicWisdomSDK
 
         #region --- Members ---
 
-        private readonly SwCoreNativeAdapter _coreNativeAdapter;
+        private readonly SwNativeAdapter _nativeAdapter;
 
         #endregion
 
@@ -25,9 +25,9 @@ namespace SupersonicWisdomSDK
 
         #region --- Construction ---
 
-        public SwLoader(SwCoreNativeAdapter wisdomCoreNativeAdapter)
+        public SwLoader(SwNativeAdapter wisdomNativeAdapter)
         {
-            _coreNativeAdapter = wisdomCoreNativeAdapter;
+            _nativeAdapter = wisdomNativeAdapter;
         }
 
         #endregion
@@ -37,7 +37,7 @@ namespace SupersonicWisdomSDK
 
         public bool Hide ()
         {
-            if (!_coreNativeAdapter.ToggleBlockingLoader(false)) return false;
+            if (!_nativeAdapter.ToggleBlockingLoader(false)) return false;
             IsVisible = false;
 
             OnBlockingLoaderVisibilityChangedEvent?.Invoke(IsVisible);
@@ -47,7 +47,7 @@ namespace SupersonicWisdomSDK
 
         public bool Show ()
         {
-            if (!_coreNativeAdapter.ToggleBlockingLoader(true)) return false;
+            if (!_nativeAdapter.ToggleBlockingLoader(true)) return false;
             IsVisible = true;
 
             OnBlockingLoaderVisibilityChangedEvent?.Invoke(IsVisible);

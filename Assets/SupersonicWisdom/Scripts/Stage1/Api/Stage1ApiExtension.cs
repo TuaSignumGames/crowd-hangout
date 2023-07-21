@@ -54,11 +54,10 @@ namespace SupersonicWisdomSDK
         ///     exposed via `SupersonicWisdom.Api.AddOnLoadedListener`
         /// </summary>
         /// <param name="onLoadedCallback"></param>
-        /// todo: remove on version 8.x.x
-        [PublicAPI] [Obsolete("AddOnLoadedListener is deprecated, please use AddRemoteConfigListener instead.")]
+        [PublicAPI]
         public static void AddOnLoadedListener(this SwApi self, OnLoaded onLoadedCallback)
         {
-            self.RunWhenContainerIsReady(() => { Container.ConfigManager.AddOnLoadedListener(onLoadedCallback); });
+            self.RunWhenContainerIsReady(() => { Container.RemoteConfigRepository.AddOnLoadedListener(onLoadedCallback); });
         }
 
         [PublicAPI]
@@ -70,31 +69,31 @@ namespace SupersonicWisdomSDK
         [PublicAPI]
         public static bool DidLoad(this SwApi self)
         {
-            return self.GetWithContainerOrDefault(() => Container.ConfigManager.DidResolve, false);
+            return self.GetWithContainerOrDefault(() => Container.RemoteConfigRepository.DidResolve(), false);
         }
 
         [PublicAPI]
         public static int GetConfigValue(this SwApi self, string key, int defaultVal)
         {
-            return self.WasInitialized ? Container.ConfigManager.Config.GetValue(key, defaultVal) : defaultVal;
+            return self.WasInitialized ? Container.ConfigAccessor.GetConfigValue(key, defaultVal) : defaultVal;
         }
 
         [PublicAPI]
         public static float GetConfigValue(this SwApi self, string key, float defaultVal)
         {
-            return self.WasInitialized ? Container.ConfigManager.Config.GetValue(key, defaultVal) : defaultVal;
+            return self.WasInitialized ? Container.ConfigAccessor.GetConfigValue(key, defaultVal) : defaultVal;
         }
 
         [PublicAPI]
         public static string GetConfigValue(this SwApi self, string key, string defaultVal)
         {
-            return self.WasInitialized ? Container.ConfigManager.Config.GetValue(key, defaultVal) : defaultVal;
+            return self.WasInitialized ? Container.ConfigAccessor.GetConfigValue(key, defaultVal) : defaultVal;
         }
 
         [PublicAPI]
         public static bool GetConfigValue(this SwApi self, string key, bool defaultVal)
         {
-            return self.WasInitialized ? Container.ConfigManager.Config.GetValue(key, defaultVal) : defaultVal;
+            return self.WasInitialized ? Container.ConfigAccessor.GetConfigValue(key, defaultVal) : defaultVal;
         }
 
         [PublicAPI]
@@ -106,7 +105,7 @@ namespace SupersonicWisdomSDK
         [PublicAPI]
         public static string GetGroup(this SwApi self)
         {
-            return self.GetWithContainerOrDefault(() => Container.ConfigManager.Config.ab.group, "");
+            return self.GetWithContainerOrDefault(() => Container.RemoteConfigRepository.GetAb().group, "");
         }
 
         [PublicAPI]
@@ -228,22 +227,6 @@ namespace SupersonicWisdomSDK
                 self.HandleUnsupportedLevelBasedApiCall(nameof(NotifyLevelStarted));
             }
         }
-        
-        /// <summary>
-        ///     Notifies the SDK about game started.
-        /// </summary>
-        [PublicAPI]
-        public static void NotifyTimeBasedGameStarted(this SwApi self, Action action)
-        {
-            if (Container.Settings.isTimeBased)
-            {
-                self.RunWithContainerOrThrow(() => Container.BlockingApiHandler.NotifyTimeBasedGameStarted(action), "NotifyGameStarted");
-            }
-            else
-            {
-                self.HandleUnsupportedTimeBasedApiCall(nameof(NotifyTimeBasedGameStarted));
-            }
-        }
 
         [PublicAPI]
         public static void RemoveOnFacebookInitCompleteListener(this SwApi self, OnFacebookInitComplete listener)
@@ -257,11 +240,10 @@ namespace SupersonicWisdomSDK
             self.RunWhenContainerIsReady(() => { Container.GameAnalyticsAdapter.OnGameAnalyticsInitEvent -= listener; });
         }
 
-        // todo: remove on version 8.x.x
-        [PublicAPI] [Obsolete("RemoveOnLoadedListener is deprecated, please use RemoveRemoteConfigListener instead.")]
+        [PublicAPI]
         public static void RemoveOnLoadedListener(this SwApi self, OnLoaded listener)
         {
-            self.RunWhenContainerIsReady(() => { Container.ConfigManager.RemoveOnLoadedListener(listener); });
+            self.RunWhenContainerIsReady(() => { Container.RemoteConfigRepository.RemoveOnLoadedListener(listener); });
         }
 
         [PublicAPI]
@@ -286,12 +268,6 @@ namespace SupersonicWisdomSDK
         {
             self.LogInvocationWarning(
                 $"SupersonicWisdom.Api.{fnName} is not supported for time based games, if this game is level based please uncheck the 'Time Based Game' checkbox in the SupersonicWisdomSDK settings");
-        }
-
-        private static void HandleUnsupportedTimeBasedApiCall(this SwApi self, string fnName)
-        {
-            self.LogInvocationWarning(
-                $"SupersonicWisdom.Api.{fnName} is not supported for level based games, if this game is time based please check the 'Time Based Game' checkbox in the SupersonicWisdomSDK settings");
         }
         
         internal static void AddInternalListener(this SwApi self, OnInternal v)
@@ -321,12 +297,12 @@ namespace SupersonicWisdomSDK
 
         private static string GetUserIdWithContainer ()
         {
-            return Container.CoreUserData.Uuid;
+            return Container.UserData.Uuid;
         }
 
         private static bool IsNewUserWithContainer ()
         {
-            return Container.CoreUserData.IsNew;
+            return Container.UserData.IsNew;
         }
 
         private static bool IsReadyWithContainer ()

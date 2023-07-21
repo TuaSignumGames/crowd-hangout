@@ -6,16 +6,16 @@ namespace SupersonicWisdomSDK
     {
         #region --- Members ---
 
-        private readonly SwCoreUserData _coreUserData;
+        private readonly SwUserData _userData;
 
         #endregion
 
 
         #region --- Construction ---
 
-        public SwStage1SessionListener(SwCoreUserData coreUserData)
+        public SwStage1SessionListener(SwUserData userData)
         {
-            _coreUserData = coreUserData;
+            _userData = userData;
         }
 
         #endregion
@@ -41,15 +41,15 @@ namespace SupersonicWisdomSDK
 
         private void UpdateUserStateOnStartSession(string sessionId)
         {
-            _coreUserData.ModifyUserStateSync(mutableUserState =>
+            _userData.ModifyUserStateSync(mutableUserState =>
             {
-                _coreUserData.UpdateAge(mutableUserState);
+                _userData.UpdateAge(mutableUserState);
                 mutableUserState.SessionId = sessionId;
                 mutableUserState.todaySessionsCount++;
                 mutableUserState.totalSessionsCount++;
             });
 
-            _coreUserData.AfterUserStateChangeInternal(SwUserStateChangeReason.SessionStart, true);
+            _userData.AfterUserStateChangeInternal(SwUserStateChangeReason.SessionStart, true);
         }
 
         #endregion

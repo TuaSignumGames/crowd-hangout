@@ -4,15 +4,13 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static PlayerController;
 
-public class HumanballProcessor : MonoBehaviour
+public class HumanballProcessor
 {
     private BallSettings ballData;
 
     private RopeProcessor assignedRope;
 
     private Humanball structure;
-
-    private ForceArea externalForceArea;
 
     private SpringEvaluator springEvaluator;
     private PulseEvaluator pulseEvaluator;
@@ -23,36 +21,26 @@ public class HumanballProcessor : MonoBehaviour
     private Vector3 previousPosition;
     private Vector3 velocityDelta;
 
-    private Vector3 areaForce;
-
     private Vector2 tensionDeformation;
 
     private float ropeThrowingAngle;
 
     private float linearSpeed;
+    private float linearAccelerationDelta;
 
-    private float baseSpeedLimit;
-    private float actualSpeedLimit;
-
-    private float jumpImpulseMagnitude;
+    private float speedLimit;
 
     private float swingAngularSpeed;
     private float swingAngularSpeedDelta;
-    private float swingAngularSpeedDeltaIncrement;
 
     private float springValue;
     private float tensionValue;
 
-    private bool isActive;
     private bool isLaunched;
 
-    private bool isGrounded;
-    private bool isJumped;
-
-    private bool isPropellerActive;
-
-    [HideInInspector]
     public bool isAccidented;
+
+    public bool isActive = true;
 
     public BallSettings Data => ballData;
 
@@ -62,31 +50,22 @@ public class HumanballProcessor : MonoBehaviour
 
     public Humanball Structure => structure;
 
-    public ForceArea ExternalForceArea => externalForceArea;
-
     public Vector3 Velocity => velocityDelta / Time.fixedDeltaTime;
 
-    public bool IsGrounded => isGrounded;
+    //public bool IsGrounded => isGrounded;
 
     public HumanballProcessor(BallSettings settings, int cellsCount)
-    {
-        Initialize(settings, cellsCount);
-    }
-
-    public void Initialize(BallSettings settings, int cellsCount)
     {
         ballData = settings;
 
         springEvaluator = new SpringEvaluator(ballData.elasticitySettings);
         pulseEvaluator = new PulseEvaluator(Transform, ballData.pulsingSettings.retrievalFactor, ballData.pulsingSettings.clickValue * 2f);
 
+        linearAccelerationDelta = ballData.acceleration * Time.fixedDeltaTime;
+
         tensionDeformation = ballData.tensionRatio * ballData.tensionMultiplier;
 
-        baseSpeedLimit = ballData.speed;
-
         InitializeBallStructure(cellsCount);
-
-        isActive = true;
 
         //PlayerController.Instance.humanCountMarker.SetValue(structure.humansCount.ToString());
 
@@ -123,8 +102,6 @@ public class HumanballProcessor : MonoBehaviour
 
         structure = new Humanball(structureLayers);
 
-        structure.RegisterHuman(HumanController.selectedHuman);
-
         structure.humansCount = 1;
 
         PlayerController.Instance.humanCountMarker.SetValue(structure.humansCount.ToString());
@@ -137,51 +114,40 @@ public class HumanballProcessor : MonoBehaviour
         ropeThrowingAngle = assignedRope.Data.throwingAngle - 90f;
     }
 
-    public void OnUpdate()
+    public void Update()
     {
         if (isActive)
         {
-            if (isPropellerActive)
+            if (assignedRope.IsConnected)
             {
-                Rigidbody.velocity = Transform.up * linearSpeed;
-                Rigidbody.angularVelocity = new Vector3();
-            }
-            else
-            {
-                if (assignedRope.IsConnected)
+                Transform.up = Vector3.Lerp(Transform.up, assignedRope.Direction, 0.1f);
+
+                if (isLaunched)
                 {
-                    Transform.up = Vector3.Lerp(Transform.up, assignedRope.Direction, 0.1f);
+                    tensionValue = Mathf.Lerp(tensionValue, 1f, 0.1f);
 
-                    if (isLaunched)
-                    {
-                        tensionValue = Mathf.Lerp(tensionValue, 1f, 0.1f);
-
-                        springEvaluator.SetValue(tensionValue);
-                    }
-                    else
-                    {
-                        assignedRope.Data.swingContainer.localEulerAngles = new Vector3(0, 0, Mathf.Sin(6.28f * Time.timeSinceLevelLoad / 4f) * 6f);
-                    }
+                    springEvaluator.SetValue(tensionValue);
                 }
                 else
                 {
-                    if (structure.FilledLayersCount < 2)
-                    {
-                        ballData.rigidbody.angularVelocity = new Vector3();
-
-                        Transform.eulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Transform.eulerAngles.z, ropeThrowingAngle, 0.1f));
-                    }
-
-                    tensionValue = 0;
+                    assignedRope.Data.swingContainer.localEulerAngles = new Vector3(0, 0, Mathf.Sin(6.28f * Time.timeSinceLevelLoad / 4f) * 6f);
                 }
             }
-
-            if (!isJumped)
+            else
             {
-                actualSpeedLimit = Mathf.Lerp(actualSpeedLimit, baseSpeedLimit, ballData.bumpDampingFactor);
+                if (structure.FilledLayersCount < 2)
+                {
+                    ballData.rigidbody.angularVelocity = new Vector3();
+
+                    Transform.eulerAngles = new Vector3(0, 0, Mathf.LerpAngle(Transform.eulerAngles.z, ropeThrowingAngle, 0.1f));
+                }
+
+                tensionValue = 0;
             }
 
-            Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, actualSpeedLimit);
+            speedLimit = Mathf.Lerp(speedLimit, ballData.speed, ballData.bumpDampingFactor);
+
+            Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, speedLimit);
 
             springEvaluator.Update(ref springValue);
 
@@ -189,18 +155,11 @@ public class HumanballProcessor : MonoBehaviour
         }
     }
 
-    public void OnLateUpdate()
+    public void LateUpdate()
     {
         structure.LateUpdate();
 
         pulseEvaluator.Update();
-
-        if (isJumped && Rigidbody.velocity.y < 0)
-        {
-            isJumped = false;
-
-            actualSpeedLimit = baseSpeedLimit;
-        }
     }
 
     public HumanballCell ReserveCell(HumanController humanController)
@@ -243,32 +202,6 @@ public class HumanballProcessor : MonoBehaviour
         PlayerController.Instance.humanCountMarker.SetValue(structure.humansCount.ToString());
     }
 
-    public void DropHumans(int count)
-    {
-        HumanController human = null;
-
-        Vector3 humanballMidpoint = structure.GetActiveCellsMidpoint();
-
-        for (int i = 0; i < count; i++)
-        {
-            human = structure.UsedCells[Random.Range(0, structure.UsedCells.Length)].Human;
-
-            if (human && human != HumanController.selectedHuman)
-            {
-                UnstickHuman(human);
-
-                human.MotionSimulator.groundFriction = 10f;
-
-                human.Drop((human.transform.position - humanballMidpoint).normalized * Random.Range(5f, 10f), Random.insideUnitSphere.normalized * Random.Range(90f, 720f));
-            }
-        }
-    }
-
-    public void DropHumans(float percentage)
-    {
-        DropHumans(Mathf.FloorToInt(structure.humansCount * Mathf.Clamp01(percentage)));
-    }
-
     public void StickWeapon(HumanController humanController, int weaponID)
     {
         humanController.SetWeapon(weaponID);
@@ -291,8 +224,6 @@ public class HumanballProcessor : MonoBehaviour
 
             Transform.SetParent(assignedRope.Data.swingContainer);
 
-            structure.SetHumanColliderAsTriggers(true);
-
             previousPosition = Transform.position;
         }
         
@@ -301,7 +232,7 @@ public class HumanballProcessor : MonoBehaviour
             swingAngularSpeed = ballData.speed / assignedRope.Length * 57.325f;
             swingAngularSpeedDelta = swingAngularSpeed * Time.fixedDeltaTime;
         }
-
+        
         /*
         linearSpeed = Mathf.Clamp(linearSpeed + linearAccelerationDelta, -ballData.speed, ballData.speed);
 
@@ -309,14 +240,7 @@ public class HumanballProcessor : MonoBehaviour
         swingAngularSpeedDelta = swingAngularSpeed * Time.fixedDeltaTime;
         */
 
-        //assignedRope.Data.swingContainer.localEulerAngles += new Vector3(0, 0, swingAngularSpeedDelta);
-
-        //print($" Min: {assignedRope.SwingHorizontalRange.min} / Max: {assignedRope.SwingHorizontalRange.max} / Length: {assignedRope.SwingHorizontalRange.length}");
-
-        if (assignedRope.SwingHorizontalRange.length > 0)
-        {
-            assignedRope.Data.swingContainer.localEulerAngles += new Vector3(0, 0, swingAngularSpeedDeltaIncrement = ballData.angularSpeedCurve.Evaluate((transform.position.x - assignedRope.SwingHorizontalRange.min) / assignedRope.SwingHorizontalRange.length) * swingAngularSpeedDelta);
-        }
+        assignedRope.Data.swingContainer.localEulerAngles += new Vector3(0, 0, swingAngularSpeedDelta);
 
         velocityDelta = Transform.position - previousPosition;
 
@@ -329,34 +253,17 @@ public class HumanballProcessor : MonoBehaviour
     {
         ballData.rigidbody.isKinematic = false;
 
-        structure.SetHumanColliderAsTriggers(false);
-
         ballData.rigidbody.velocity = Velocity;
         ballData.rigidbody.angularVelocity = new Vector3(0, 0, swingAngularSpeed / 30f);
 
         swingAngularSpeedDelta = 0;
     }
 
-    public void Fly(Vector3 direction, float speed)
-    {
-        linearSpeed = speed; // Mathf.Lerp(linearSpeed, speed, 0.2f);
-
-        Transform.up = Vector3.Lerp(Transform.up, direction, 0.1f);
-    }
-
     public void Jump(float height)
     {
         if (height > 0)
         {
-            isJumped = true;
-            isGrounded = false;
-
-            jumpImpulseMagnitude = Mathf.Sqrt(2 * -Physics.gravity.y * height);
-            actualSpeedLimit = jumpImpulseMagnitude;
-
-            pulseEvaluator.Click(ballData.pulsingSettings.clickValue);
-
-            Rigidbody.velocity = new Vector3(0, jumpImpulseMagnitude, 0);
+            Rigidbody.velocity = new Vector3(0, Mathf.Sqrt(2 * -Physics.gravity.y * height) * 1.5f, 0);
         }
     }
 
@@ -366,30 +273,17 @@ public class HumanballProcessor : MonoBehaviour
 
         Release();
 
-        actualSpeedLimit = ballData.speed * 3f;
+        speedLimit = ballData.speed * 3f;
 
         Rigidbody.velocity += (Transform.position - contactPoint).normalized * ballData.bumpImpulse;
 
         AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
     }
 
-    public void ApplyForce(Vector3 force)
-    {
-        Rigidbody.AddForce(force);
-    }
-
-    public void SetPropellerMode(bool enabled)
-    {
-        isPropellerActive = enabled;
-
-        Transform.up = Vector3.right;
-    }
-
     public void UpdateContainerOrientation(Vector3 connectionPoint)
     {
         ballData.structureContainer.SetParent(null);
         ballData.suspensionContainer.SetParent(null);
-        ballData.attributesContainer.SetParent(null);
 
         ropeConnectionCell = structure.GetPlanarClosestFilledCell(connectionPoint, Axis.Z);
 
@@ -400,7 +294,6 @@ public class HumanballProcessor : MonoBehaviour
 
         ballData.structureContainer.SetParent(ballData.suspensionContainer);
         ballData.suspensionContainer.SetParent(ballData.rigidbody.transform);
-        ballData.attributesContainer.SetParent(ballData.rigidbody.transform);
 
         previousPosition = Transform.position;
     }
@@ -414,117 +307,5 @@ public class HumanballProcessor : MonoBehaviour
         ballData.suspensionContainer.SetParent(ballData.rigidbody.transform);
 
         previousPosition = Transform.position;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.layer == 7)
-        {
-            if (PlayerController.Instance.powerUpSettings.propeller.IsActive)
-            {
-                LevelGenerator.Instance.FractureBlock(other.gameObject, PlayerController.Instance.powerUpSettings.propeller.screwTransform.position);
-
-                linearSpeed *= 5f;
-            }
-            else
-            {
-                Bump(transform.position);
-
-                if (transform.position.y > LevelGenerator.Instance.GetBlockPair(transform.position).Position.y)
-                {
-                    UnstickHuman(structure.RegisteredHumans.GetRandom());
-                }
-            }
-        }
-
-        if (other.gameObject.layer == 11)
-        {
-            if (PlayerController.Instance.powerUpSettings.propeller.IsActive)
-            {
-                other.gameObject.SetActive(false);
-
-                ParticleSystem dangerFractureVFX = WorldManager.environmentSettings.particles.dangerFracturePool.Eject();
-
-                dangerFractureVFX.transform.position = other.gameObject.transform.position;
-
-                dangerFractureVFX.Play();
-            }
-        }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.gameObject.layer == 10)
-        {
-            externalForceArea = WorldManager.environmentSettings.TryGetForceArea(other);
-
-            if (InputManager.touchPresent)
-            {
-                //ApplyForce((-externalForceArea.Force + new Vector3(externalForceArea.Data.forceMagnitude / 6f, 0, 0)) / structure.humansCount / 6f);
-                //ApplyForce((-externalForceArea.Force - Physics.gravity + new Vector3(externalForceArea.Data.forceMagnitude / 6f, 0)) / structure.humansCount);
-            }
-            else
-            {
-                ApplyForce(externalForceArea.Force / structure.humansCount);
-            }
-
-            if (other.tag == "LAV")
-            {
-                structure.RegisteredHumans.GetRandom().Damage(1f);
-            }
-        }
-
-        if (other.gameObject.layer == 11)
-        {
-            if (!PlayerController.Instance.powerUpSettings.propeller.IsActive)
-            {
-                Bump(transform.position);
-
-                UnstickHuman(structure.RegisteredHumans.GetRandom());
-            }
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.layer == 10)
-        {
-            externalForceArea = null;
-        }
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.layer == 7)
-        {
-            /*
-            if (transform.position.y > LevelGenerator.Instance.GetBlockPair(transform.position).Position.y)
-            {
-                UnstickHuman(structure.RegisteredHumans.GetRandom());
-            }
-            */
-        }
-    }
-
-    private void OnCollisionStay(Collision collision)
-    {
-        if (collision.gameObject.layer == 7)
-        {
-            if (externalForceArea == null && !PlayerController.Instance.powerUpSettings.propeller.IsActive)
-            {
-                isGrounded = collision.gameObject.transform.position.y < Transform.position.y;
-            }
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.layer == 7)
-        {
-            if (isJumped)
-            {
-                isGrounded = false;
-            }
-        }
     }
 }

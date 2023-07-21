@@ -26,11 +26,6 @@ public class MulticollectibleCapsule
         this.destructionVFX = destructionVFX;
         this.scatterData = scatterData;
 
-        Initialize();
-    }
-
-    public void Initialize()
-    {
         debrisMotionSimulators = new List<MotionSimulator>();
     }
 
@@ -47,83 +42,59 @@ public class MulticollectibleCapsule
 
     public void Break()
     {
-        Break(scatterData);
+        capsule.SetActive(false);
+
+        for (int i = 0; i < debris.Length; i++)
+        {
+            debris[i].SetActive(true);
+
+            debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate));
+
+            fractureVector = debrisMotionSimulators[i].Transform.position - capsule.transform.position;
+
+            debrisMotionSimulators[i].velocity = fractureVector.normalized.Multiplied(scatterData.impulseRatio);
+            debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * scatterData.angularMomentumRange.Value;
+        }
+
+        if (destructionVFX)
+        {
+            destructionVFX.Play(true);
+        }
+
+        AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
+
+        isBroken = true;
     }
 
     public void Break(Vector3 externalImpulse)
     {
-        Break(scatterData, externalImpulse);
+        capsule.SetActive(false);
+
+        for (int i = 0; i < debris.Length; i++)
+        {
+            debris[i].SetActive(true);
+
+            debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate));
+
+            fractureVector = debrisMotionSimulators[i].Transform.position - capsule.transform.position;
+
+            debrisMotionSimulators[i].velocity = externalImpulse * scatterData.externalImpulseFactor + fractureVector.normalized.Multiplied(scatterData.impulseRatio);
+            debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * scatterData.angularMomentumRange.Value;
+        }
+
+        if (destructionVFX)
+        {
+            destructionVFX.Play(true);
+        }
+
+        AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
+
+        isBroken = true;
     }
 
     public void BreakPartially(Vector3 externalImpulse, Vector3 destructionOrigin, float destructionRadius)
     {
-        BreakPartially(scatterData, externalImpulse, destructionOrigin, destructionRadius);
-    }
-
-    public void Break(ScatterData scatterData)
-    {
-        if (capsule)
-        {
-            capsule.SetActive(false);
-        }
-
-        for (int i = 0; i < debris.Length; i++)
-        {
-            debris[i].SetActive(true);
-
-            debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate, scatterData.gravityModifier));
-
-            fractureVector = debrisMotionSimulators[i].Transform.position - capsule.transform.position;
-
-            debrisMotionSimulators[i].velocity = fractureVector.normalized.Multiplied(scatterData.impulseRatio) * scatterData.impulseMagnitudeRange.Value;
-            debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * scatterData.angularMomentumRange.Value;
-        }
-
-        if (destructionVFX)
-        {
-            destructionVFX.Play(true);
-        }
-
-        AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
-
-        isBroken = true;
-    }
-
-    public void Break(ScatterData scatterData, Vector3 externalImpulse)
-    {
-        if (capsule)
-        {
-            capsule.SetActive(false);
-        }
-
-        for (int i = 0; i < debris.Length; i++)
-        {
-            debris[i].SetActive(true);
-
-            debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate, scatterData.gravityModifier));
-
-            fractureVector = debrisMotionSimulators[i].Transform.position - capsule.transform.position;
-
-            debrisMotionSimulators[i].velocity = externalImpulse * scatterData.externalImpulseFactor + fractureVector.normalized.Multiplied(scatterData.impulseRatio) * scatterData.impulseMagnitudeRange.Value;
-            debrisMotionSimulators[i].angularVelocity = Random.insideUnitSphere.normalized * scatterData.angularMomentumRange.Value;
-        }
-
-        if (destructionVFX)
-        {
-            destructionVFX.Play(true);
-        }
-
-        AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
-
-        isBroken = true;
-    }
-
-    public void BreakPartially(ScatterData scatterData, Vector3 externalImpulse, Vector3 destructionOrigin, float destructionRadius)
-    {
-        if (capsule)
-        {
-            capsule.SetActive(false);
-        }
+        capsule.SetActive(false);
 
         float sqrDestructionRadius = destructionRadius * destructionRadius;
         float sqrDistanceToFracture = 0;
@@ -136,11 +107,11 @@ public class MulticollectibleCapsule
 
             if (sqrDistanceToFracture < sqrDestructionRadius && Random.Range(0, 1f) < (1f - (sqrDistanceToFracture / sqrDestructionRadius)))
             {
-                debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate, scatterData.gravityModifier));
+                debrisMotionSimulators.Add(new MotionSimulator(debris[i].transform, MonoUpdateType.FixedUpdate));
 
                 fractureVector = debrisMotionSimulators.GetLast().Transform.position - capsule.transform.position;
 
-                debrisMotionSimulators.GetLast().velocity = externalImpulse * scatterData.externalImpulseFactor + fractureVector.normalized.Multiplied(scatterData.impulseRatio) * scatterData.impulseMagnitudeRange.Value;
+                debrisMotionSimulators.GetLast().velocity = externalImpulse * scatterData.externalImpulseFactor + fractureVector.normalized.Multiplied(scatterData.impulseRatio);
                 debrisMotionSimulators.GetLast().angularVelocity = Random.insideUnitSphere.normalized * scatterData.angularMomentumRange.Value;
             }
         }

@@ -1,14 +1,33 @@
 namespace SupersonicWisdomSDK
 {
-    internal static class SwStoreKeys
+    internal class SwStoreKeys
     {
         #region --- Properties ---
 
-        public static string InitialConfig = "SupersonicWisdomConfig";
-        public static string CustomUuid = "SupersonicWisdomCustomUuid";
-        public static string InstallDate = "SupersonicWisdomInstallDate";
-        public static string InstallTime = "SupersonicWisdomInstallTime";
-        public static string LatestSuccessfulConfigResponse = "SupersonicWisdomLatestConfig";
+        public string Config
+        {
+            get { return "SupersonicWisdomConfig"; }
+        }
+
+        public string CustomUuid
+        {
+            get { return "SupersonicWisdomCustomUuid"; }
+        }
+
+        public string InstallDate
+        {
+            get { return "SupersonicWisdomInstallDate"; }
+        }
+
+        public string InstallTime
+        {
+            get { return "SupersonicWisdomInstallTime"; }
+        }
+
+        public string LatestSuccessfulConfigResponse
+        {
+            get { return "SupersonicWisdomLatestConfig"; }
+        }
 
         #endregion
     }

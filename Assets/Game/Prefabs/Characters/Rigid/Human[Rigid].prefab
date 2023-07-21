@@ -75,8 +75,8 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 381102904024630285}
-  m_Material: {fileID: 13400000, guid: e7494dc14cbfb4e318489c516bfade42, type: 2}
-  m_IsTrigger: 0
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.5, y: 0.8, z: 0.3}
@@ -117,12 +117,12 @@ MonoBehaviour:
     skinMaterial: {fileID: 2100000, guid: a1557c96280594424ba225b39ab49919, type: 2}
     impactVFX: {fileID: 2288019555575076631}
   motionSettings:
-    runSpeed: 8
+    runSpeed: 6
     speedLerpingFactor: 0.15
     turnLerpingFactor: 0.2
     targetPointRadius: 0.2
   weaponSettings:
-  - title: Fist[P:8]
+  - title: Fist  [P:8]
     weaponContainer: {fileID: 6196655106733567505}
     weaponModel: {fileID: 0}
     ammoContainer: {fileID: 0}
@@ -138,7 +138,7 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 0}
-  - title: Bat[P:10]
+  - title: Bat  [P:10]
     weaponContainer: {fileID: 5002936460844173615}
     weaponModel: {fileID: 4373479425591376124}
     ammoContainer: {fileID: 0}
@@ -154,7 +154,7 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 0}
-  - title: Brick[P:12]
+  - title: Brick  [P:12]
     weaponContainer: {fileID: 3429199240765688056}
     weaponModel: {fileID: 7447150962484643364}
     ammoContainer: {fileID: 7463677023535137702}
@@ -170,7 +170,7 @@ MonoBehaviour:
     animationName: Shot-Throw
     keyframeTime: 0.54
     attackVFX: {fileID: 0}
-  - title: Bow[P:15]
+  - title: Bow  [P:15]
     weaponContainer: {fileID: 5652893008443664743}
     weaponModel: {fileID: 8866199217812137040}
     ammoContainer: {fileID: 2862717599313583601}
@@ -186,7 +186,7 @@ MonoBehaviour:
     animationName: Shot-Bow
     keyframeTime: 1.39
     attackVFX: {fileID: 0}
-  - title: Pistol[P:18]
+  - title: Pistol  [P:18]
     weaponContainer: {fileID: 6702893980190087776}
     weaponModel: {fileID: 1633066646947184436}
     ammoContainer: {fileID: 2074564833369408583}
@@ -202,7 +202,7 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 3364544254698358871}
-  - title: Rifle[P:20]
+  - title: Rifle  [P:20]
     weaponContainer: {fileID: 7692074514500365887}
     weaponModel: {fileID: 7784078876880965072}
     ammoContainer: {fileID: 1148832322333219703}
@@ -218,12 +218,12 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 7560757168807600987}
-  - title: AK[P:25]
+  - title: AK  [P:25]
     weaponContainer: {fileID: 6113200975160171124}
     weaponModel: {fileID: 6984221268682583114}
     ammoContainer: {fileID: 8902783578381812959}
     damageRate: 25
-    reloadingTime: 0.1
+    reloadingTime: 0.2
     attackDistance: 13
     parabolaHeight: 0
     projectileSpeed: 30
@@ -234,7 +234,7 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 392227314702766939}
-  - title: AR[P:30]
+  - title: AR  [P:30]
     weaponContainer: {fileID: 1087849034247035176}
     weaponModel: {fileID: 678878297822511608}
     ammoContainer: {fileID: 8782860110760478519}
@@ -250,7 +250,7 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 1858966421438232894}
-  - title: MG[P:50]
+  - title: MG  [P:50]
     weaponContainer: {fileID: 2010242087336658420}
     weaponModel: {fileID: 3124975935779912704}
     ammoContainer: {fileID: 2498501284245186146}
@@ -266,7 +266,7 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 6768503558947413412}
-  - title: Snipe[P:60]
+  - title: Snipe  [P:60]
     weaponContainer: {fileID: 5144247701632660959}
     weaponModel: {fileID: 4211186143169583184}
     ammoContainer: {fileID: 8069652107406077708}
@@ -282,7 +282,7 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 6631081880609808557}
-  - title: Grenade[P:80]
+  - title: Grenade  [P:80]
     weaponContainer: {fileID: 6332381708442063528}
     weaponModel: {fileID: 4078667986338721682}
     ammoContainer: {fileID: 4174932333036043079}
@@ -298,7 +298,7 @@ MonoBehaviour:
     animationName: Shot-Throw
     keyframeTime: 0.54
     attackVFX: {fileID: 3364544254698358871}
-  - title: Firegun[P:100]
+  - title: Firegun  [P:100]
     weaponContainer: {fileID: 8613084343064516235}
     weaponModel: {fileID: 8799029970763752760}
     ammoContainer: {fileID: 7909030947818995549}
@@ -314,7 +314,6 @@ MonoBehaviour:
     animationName: 
     keyframeTime: 0
     attackVFX: {fileID: 6083653219476209525}
-  pitchAxis: {x: 0.8, y: 0, z: 0.1}
   rigSettings:
     bones:
     - title: Head
@@ -596,76 +595,6 @@ MonoBehaviour:
         space: 1
       - position: {x: -0, y: 0.0045421473, z: 2.7939677e-11}
         rotation: {x: 312.42358, y: 0.000018057493, z: -0.000019511222}
-        scale: {x: 1, y: 0.9999999, z: 0.99999994}
-        space: 1
-    additionalPoses:
-    - boneTransformDatas:
-      - position: {x: 0, y: 0.0012828411, z: -3.9115547e-10}
-        rotation: {x: 343.65582, y: 0, z: 0}
-        scale: {x: 1, y: 1, z: 1}
-        space: 1
-      - position: {x: 0, y: 0.0019257846, z: -2.3283066e-11}
-        rotation: {x: 32.623005, y: 343.14493, z: 352.94968}
-        scale: {x: 1, y: 0.99999994, z: 0.99999994}
-        space: 1
-      - position: {x: 0, y: 0.002484075, z: 0}
-        rotation: {x: 359.6321, y: 0, z: 0}
-        scale: {x: 1, y: 1, z: 1}
-        space: 1
-      - position: {x: 0, y: 0.002690537, z: 3.7252902e-11}
-        rotation: {x: 347.51636, y: 355.6994, z: 1.0578454}
-        scale: {x: 1, y: 0.9999999, z: 0.99999994}
-        space: 1
-      - position: {x: -0.0027148323, y: 0.0011944539, z: -0.00017395758}
-        rotation: {x: 339.31177, y: 17.84559, z: 117.76227}
-        scale: {x: 1, y: 1, z: 1}
-        space: 1
-      - position: {x: 0.0027148323, y: 0.0011944539, z: -0.00017395758}
-        rotation: {x: 321.31512, y: 276.23657, z: 240.19286}
-        scale: {x: 1, y: 1, z: 1}
-        space: 1
-      - position: {x: 5.7742e-10, y: 0.0028197612, z: 7.741619e-11}
-        rotation: {x: 31.190878, y: 102.85529, z: 73.86596}
-        scale: {x: 1, y: 1, z: 1}
-        space: 1
-      - position: {x: -5.7742e-10, y: 0.0028197612, z: 7.741619e-11}
-        rotation: {x: 65.8318, y: 291.7687, z: 289.59006}
-        scale: {x: 1, y: 1, z: 1}
-        space: 1
-      - position: {x: 8.2422047e-10, y: 0.0025652007, z: 1.222361e-10}
-        rotation: {x: 353.1985, y: 67.39586, z: 336.7545}
-        scale: {x: 0.99999994, y: 1, z: 0.99999994}
-        space: 1
-      - position: {x: -8.2422047e-10, y: 0.0025652007, z: 1.222361e-10}
-        rotation: {x: 339.8759, y: 320.3125, z: 37.375397}
-        scale: {x: 0.99999994, y: 1, z: 0.99999994}
-        space: 1
-      - position: {x: 0.00009840042, y: 0.0012858935, z: 0.0076606474}
-        rotation: {x: 70.18031, y: 172.36281, z: 172.00235}
-        scale: {x: 1, y: 1, z: 1}
-        space: 1
-      - position: {x: -0.0014919697, y: 0.00010598677, z: 0.00041511454}
-        rotation: {x: 59.593723, y: 185.65707, z: 216.8699}
-        scale: {x: 1, y: 0.99999994, z: 0.99999994}
-        space: 1
-      - position: {x: 0.0014919697, y: 0.00010598677, z: 0.00041511454}
-        rotation: {x: 34.971592, y: 185.59238, z: 151.20586}
-        scale: {x: 1, y: 0.99999994, z: 0.99999994}
-        space: 1
-      - position: {x: 0, y: 0.004206641, z: -7.450581e-11}
-        rotation: {x: 46.128345, y: 8.510365, z: 5.648632}
-        scale: {x: 1, y: 0.9999999, z: 0.99999994}
-        space: 1
-      - position: {x: 0, y: 0.004206641, z: -7.450581e-11}
-        rotation: {x: 47.835266, y: 346.51056, z: 350.7194}
-        scale: {x: 1, y: 0.9999999, z: 0.99999994}
-        space: 1
-      - position: {x: 0, y: 0.0045421473, z: -3.725291e-11}
-        rotation: {x: 304.9006, y: 35.04502, z: 325.8162}
-        scale: {x: 1, y: 0.9999999, z: 0.99999994}
-        space: 1
-      - position: {x: 0, y: 0.0045421473, z: -3.725291e-11}
-        rotation: {x: 298.87436, y: 269.87756, z: 88.83291}
         scale: {x: 1, y: 0.9999999, z: 0.99999994}
         space: 1
     confusingCurve:
@@ -81472,14 +81401,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.x
       value: 7.002
       objectReference: {fileID: 0}
-    - target: {fileID: -8525749739739186830, guid: a3992dd944af6482d9f78c786f806bcb, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8525749739739186830, guid: a3992dd944af6482d9f78c786f806bcb, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: -8166748822270455602, guid: a3992dd944af6482d9f78c786f806bcb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -82916,7 +82837,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 32a3f249a152b438c9e1d3b98390c8aa, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
-      objectReference: {fileID: 2100000, guid: f1778998d598c42d79b21a1822552a42, type: 2}
+      objectReference: {fileID: 2100000, guid: 56d782aa5096241aabc5082bfb9033ae, type: 2}
     - target: {fileID: -7511558181221131132, guid: 32a3f249a152b438c9e1d3b98390c8aa, type: 3}
       propertyPath: m_Materials.Array.data[2]
       value: 

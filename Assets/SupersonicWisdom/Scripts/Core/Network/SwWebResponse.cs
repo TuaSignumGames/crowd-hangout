@@ -1,19 +1,14 @@
 using System;
 using JetBrains.Annotations;
-using UnityEngine;
+using UnityEngine.Networking;
 
 namespace SupersonicWisdomSDK
 {
     [Serializable]
-    public class SwWebResponse
+    internal class SwWebResponse
     {
         #region --- Members ---
-        
-        /// <summary>
-        ///     Request unique key (guid)
-        /// </summary>
-        public string key;
-        
+
         /// <summary>
         ///     Did response resolved (both success/fail)
         /// </summary>
@@ -35,16 +30,12 @@ namespace SupersonicWisdomSDK
         /// </summary>
         public long code;
 
-        public long iteration;
-        public long cap;
-        public long time;
-        public bool isReachedCap;
-
         public SwWebRequestError error;
-        public string dataString;
+        private bool _didComputeText;
+        private string _text;
 
         #endregion
-        
+
 
         #region --- Properties ---
 
@@ -67,26 +58,15 @@ namespace SupersonicWisdomSDK
         {
             get
             {
-                if(string.IsNullOrEmpty(dataString))
+                if (!_didComputeText)
                 {
-                    dataString = data != null ? System.Text.Encoding.UTF8.GetString(data, 0, data.Length) : null;
+                    _text = data != null ? System.Text.Encoding.UTF8.GetString(data, 0, data.Length) : null;
+                    _didComputeText = true;
                 }
 
-                return dataString;
+                return _text;
             }
         }
-
-        public SwWebResponse() { }
-        
-#if UNITY_EDITOR
-        public SwWebResponse(string dataString, bool isDone = true, SwWebRequestError error = SwWebRequestError.None, int code = 200)
-        {
-            this.dataString = dataString;
-            this.isDone = isDone;
-            this.error = error;
-            this.code = code;
-        }
-#endif
 
         #endregion
     }

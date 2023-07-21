@@ -60,7 +60,7 @@ namespace SupersonicWisdomSDK
         [SerializeField] public bool isTimeBased;
         [SerializeField] public bool enableManagedInterstitialAds;
         [SerializeField] public bool enableManagedBannerAds;
-        [SerializeField] public bool enableManagedRateUsPopup = false;
+        [SerializeField] public bool enableManagedRateUsPopup = true;
 
         // RV ads are loaded automatically and shown on demand via API invocation.
         // This fixed property is for writing consistent ads strategy code and avoid treating RV ads as a special case

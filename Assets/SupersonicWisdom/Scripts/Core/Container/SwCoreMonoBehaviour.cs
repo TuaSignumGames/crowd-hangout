@@ -3,28 +3,8 @@ using UnityEngine;
 
 namespace SupersonicWisdomSDK
 {
-    /// <summary>
-    /// Note: Although it is natural that <seealso cref="SwCoreMonoBehaviour"/> will be
-    /// the first to get `Update()` events, we want to ensure that it will be the earliest notified
-    /// component in Wisdom. So we forced the order prioritization with <seealso cref="DefaultExecutionOrder"/>,
-    /// this object should be the first to get notified.
-    ///
-    /// For example: <seealso cref="SupersonicWisdomSDK.SwNotificationsManager"/> should operate before all <seealso cref="SupersonicWisdomSDK.SwTimer"/> objects do.
-    /// </summary>
-    [DefaultExecutionOrder(0)]
     internal abstract class SwCoreMonoBehaviour : MonoBehaviour, ISwMainThreadRunner
     {
-        #region --- Events ---
-
-        internal event Action AwakeEvent;
-        internal event Action StartEvent;
-        internal event Action UpdateEvent;
-        internal event Action ApplicationQuitEvent;
-        internal event Action<bool> ApplicationPausedEvent;
-
-        #endregion
-
-
         #region --- Members ---
 
         private static bool _hasInstance;
@@ -57,7 +37,7 @@ namespace SupersonicWisdomSDK
 
         #region --- Public Methods ---
 
-        public new T GetComponent<T>()
+        public new T GetComponent<T> ()
         {
             var component = base.GetComponent<T>();
 
@@ -92,7 +72,7 @@ namespace SupersonicWisdomSDK
 
         #region MonoBehavior Implementation
 
-        private void Awake()
+        private void Awake ()
         {
             if (_hasInstance)
             {
@@ -105,43 +85,33 @@ namespace SupersonicWisdomSDK
 
             DontDestroyOnLoad(gameObject);
             LifecycleListener.OnAwake();
-            AwakeEvent?.Invoke();
         }
 
-        private void Start()
+        private void Start ()
         {
-            if (!_hasInstance) return;
-            
-            LifecycleListener.OnStart();
-            StartEvent?.Invoke();
+            if (_hasInstance) LifecycleListener.OnStart();
         }
 
-        private void Update()
+        private void Update ()
         {
-            if (!_hasInstance) return;
-
-            _mainThreadActionsQueue.Run();
-            LifecycleListener.OnUpdate();
-            UpdateEvent?.Invoke();
+            if (_hasInstance)
+            {
+                _mainThreadActionsQueue.Run();
+                LifecycleListener.OnUpdate();
+            }
         }
 
         private void OnApplicationPause(bool pauseStatus)
         {
-            if (!_hasInstance) return;
-
-            LifecycleListener.OnApplicationPause(pauseStatus);
-            ApplicationPausedEvent?.Invoke(pauseStatus);
+            if (_hasInstance) LifecycleListener.OnApplicationPause(pauseStatus);
         }
 
-        private void OnApplicationQuit()
+        private void OnApplicationQuit ()
         {
-            if (!_hasInstance) return;
-            
-            LifecycleListener.OnApplicationQuit();
-            ApplicationQuitEvent?.Invoke();
+            if (_hasInstance) LifecycleListener.OnApplicationQuit();
         }
 
-        private void OnDestroy()
+        private void OnDestroy ()
         {
             _hasInstance = false;
         }

@@ -23,13 +23,13 @@
     return self;
 }
 
-- (void)sendEventAsync:(NSDictionary *)event withResponseCallback:(OnNetworkResponse)callback {
+- (void)sendEventAsync:(NSDictionary *)event withResponseCallback:(OnEventsStoredRemotely)callback {
     @synchronized (lockObj) {
         [remoteDataSource sendEventAsync:event withResponseCallback:callback];
     }
 }
 
-- (void)sendEventsAsync:(NSArray *)events withResponseCallback:(OnNetworkResponse)callback {
+- (void)sendEventsAsync:(NSArray *)events withResponseCallback:(OnEventsStoredRemotely)callback {
     @synchronized (lockObj) {
         [remoteDataSource sendEventsAsync:events withResponseCallback:callback];
     }

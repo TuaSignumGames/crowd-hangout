@@ -5,11 +5,11 @@ using JetBrains.Annotations;
 
 namespace SupersonicWisdomSDK
 {
-    internal class SwStage1NativeAdapter : SwCoreNativeAdapter, ISwStage1ConfigListener
+    internal class SwStage1NativeAdapter : SwNativeAdapter
     {
         #region --- Construction ---
 
-        public SwStage1NativeAdapter(ISwNativeApi wisdomNativeApi, ISwSettings settings, SwCoreUserData coreUserData, [CanBeNull] ISwSessionListener[] listeners) : base(wisdomNativeApi, settings, coreUserData, listeners)
+        public SwStage1NativeAdapter(SwNativeApi wisdomNativeApi, ISwSettings settings, SwUserData userData, [CanBeNull] ISwSessionListener[] listeners) : base(wisdomNativeApi, settings, userData, listeners)
         { }
 
         #endregion
@@ -20,24 +20,13 @@ namespace SupersonicWisdomSDK
         protected override SwEventMetadataDto GetEventMetadata ()
         {
             var eventMetadata = base.GetEventMetadata();
-            var stage1UserData = (SwStage1UserData)CoreUserData;
+            var stage1UserData = (SwStage1UserData)UserData;
             eventMetadata.appsFlyerId = stage1UserData.AppsFlyerId;
 
             return eventMetadata;
         }
 
         #endregion
-
-
-        public void OnConfigResolved(ISwStage1InternalConfig swConfigAccessor, ISwConfigManagerState state)
-        {
-            // Must be before base class
-            var eventsConfiguration = swConfigAccessor.Events;
-            StoreNativeConfig(eventsConfiguration);
-            UpdateConfig();
-            
-            base.OnConfigResolved(swConfigAccessor, state);
-        }
     }
 }
 #endif

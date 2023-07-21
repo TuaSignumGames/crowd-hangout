@@ -18,8 +18,6 @@ namespace SupersonicWisdomSDK.Editor
     {
         #region --- Constants ---
 
-        private const string WISDOM_UPDATE_CONFIG_URL = "https://assets.mobilegamestats.com/docs/self-update-config-v1.json";
-        
         internal const long TOTAL_SECONDS_IN_ONE_HOUR = 60 * 60;
         internal const long RECURRING_CHECK_UPDATES_DURATION_SECONDS = TOTAL_SECONDS_IN_ONE_HOUR;
         private const int NONE_CODE = -1;
@@ -190,7 +188,7 @@ namespace SupersonicWisdomSDK.Editor
             const string previousFolderPathHidden = SwEditorUtils.SW_UPDATE_METADATA_HIDDEN_FOLDER;
 
             var previousFolderFilesList = SwFileUtils.GetFolderContent(previousFolderPathHidden, false, SwFileUtils.META_FILE_EXTENSION);
-            var previousFilesList = string.Empty;
+            var previousFilesList = "";
 
             if (previousFolderFilesList.Length > 0)
             {
@@ -231,8 +229,8 @@ namespace SupersonicWisdomSDK.Editor
                         var wisdomPackageApi = remoteUrl.Replace(SwPlatformCommunication.URLs.DOWNLOAD_WISDOM_PACKAGE, SwPlatformCommunication.URLs.WISDOM_PACKAGE_MANIFEST);
                         var (response, error, httpResponseMessage) = await SwNetworkHelper.PerformRequest(wisdomPackageApi, null, SwPlatformCommunication.CreateAuthorizationHeadersDictionary());
                         var wisdomPackageManifest = response.SwToJsonDictionary();
-                        checksum = wisdomPackageManifest.SwSafelyGet(SwEditorUtils.Keys.CHECKSUM, string.Empty).ToString();
-                    }),
+                        checksum = wisdomPackageManifest.SwSafelyGet(SwEditorUtils.Keys.CHECKSUM, "").ToString();
+                    })
                 });
             }
             catch
@@ -247,7 +245,7 @@ namespace SupersonicWisdomSDK.Editor
         {
             var (_, error, httpResponseMessage) = await SwNetworkHelper.PerformRequest(fromRemoteUrl, null, SwPlatformCommunication.CreateAuthorizationHeadersDictionary());
 
-            var fileTempUrl = string.Empty;
+            var fileTempUrl = "";
 
             if (error.IsValid && 302 == error.ResponseCode)
             {
@@ -395,7 +393,7 @@ namespace SupersonicWisdomSDK.Editor
 
         private static string CurrentStageUrl()
         {
-            if (string.IsNullOrEmpty(GameId)) return string.Empty;
+            if (string.IsNullOrEmpty(GameId)) return "";
 
             var queryString = SwUtils.SerializeToQueryString(new SwJsonDictionary
             {
@@ -432,7 +430,7 @@ namespace SupersonicWisdomSDK.Editor
 
             if (errorCode >= 0)
             {
-                var errorMessage = responseDictionary.SwSafelyGet("errorMessage", string.Empty).ToString();
+                var errorMessage = responseDictionary.SwSafelyGet("errorMessage", "").ToString();
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
@@ -466,7 +464,8 @@ namespace SupersonicWisdomSDK.Editor
 
             try
             {
-                var (jsonString, error, httpResponseMessage) = await SwNetworkHelper.PerformRequest(WISDOM_UPDATE_CONFIG_URL, null, null);
+                var updateMessageUrl = SwPlatformCommunication.URLs.WISDOM_UPDATE_CONFIG_URL;
+                var (jsonString, error, httpResponseMessage) = await SwNetworkHelper.PerformRequest(updateMessageUrl, null, null);
 
                 if (string.IsNullOrEmpty(jsonString) && error.IsValid)
                 {
@@ -497,7 +496,7 @@ namespace SupersonicWisdomSDK.Editor
 
         private static string GenerateUnityPackageRemoteUrl(int stageToDownload, long requestedVersionId)
         {
-            var apiPath = string.Empty;
+            var apiPath = "";
 
             if (requestedVersionId <= 0)
             {
@@ -508,7 +507,7 @@ namespace SupersonicWisdomSDK.Editor
             try
             {
                 var versionToDownload = SwUtils.ComputeVersionString(requestedVersionId);
-                var fileSuffix = string.Empty;
+                var fileSuffix = "";
 
                 if (SwStageUtils.MAX_STAGE_NUMBER != stageToDownload)
                 {
@@ -681,7 +680,7 @@ namespace SupersonicWisdomSDK.Editor
 
             var stageKey = $"{currentStage}-{updatedStage}";
             var stageUpdateConfiguration = _selfUpdateConfiguration.StageUpdate;
-            stageUpdateConfiguration = new SwJsonDictionary(SwJsonParser.Deserialize(stageUpdateConfiguration.SwSafelyGet(stageKey, null)?.ToString()) as Dictionary<string, object>);
+            stageUpdateConfiguration = (SwJsonDictionary) SwJsonParser.Deserialize(stageUpdateConfiguration.SwSafelyGet(stageKey, null)?.ToString());
             var bothConfiguration = _selfUpdateConfiguration.StageAndVersionUpdate;
             var versionUpdateConfiguration = _selfUpdateConfiguration.VersionUpdate;
 
@@ -697,7 +696,7 @@ namespace SupersonicWisdomSDK.Editor
             var integrationGuideUrl = (string) stageUpdateConfiguration.SwSafelyGet(integrationGuideUrlKey, SwEditorConstants.DEFAULT_STAGE_INTEGRATION_GUIDE_URL);
             SwEditorUtils.SwAccountData.IntegrationGuideUrl = integrationGuideUrl;
 
-            var additionalDescription = (string) bothConfiguration.SwSafelyGet("additionalDescription", string.Empty);
+            var additionalDescription = (string) bothConfiguration.SwSafelyGet("additionalDescription", "");
             string defaultMessageBody;
             SwJsonDictionary messageBodyConfig;
 
@@ -708,18 +707,18 @@ namespace SupersonicWisdomSDK.Editor
             }
             else if (shouldUpdateVersion) // `shouldUpdateVersion` only
             {
-                integrationGuideUrl = string.Empty;
+                integrationGuideUrl = "";
                 defaultMessageBody = $"We noticed there is a new and updated SDK for you.\nUpgrade your Wisdom package from version {SwSelfUpdateWindow.CURRENT_VERSION_PLACEHOLDER} to {SwSelfUpdateWindow.UPDATED_VERSION_PLACEHOLDER}.{SwSelfUpdateWindow.CHANGE_LOGS_LINK_PLACEHOLDER}";
                 messageBodyConfig = versionUpdateConfiguration;
             }
             else // `shouldUpdateStage` only
             {
-                changeLogUrl = string.Empty; // clear "change logs" link
+                changeLogUrl = ""; // clear "change logs" link
                 defaultMessageBody = $"Good News!\nYour game, {SwSelfUpdateWindow.APP_NAME_PLACEHOLDER}, has advanced to the next level.\nUpgrade your Wisdom package to add functionalities needed to keep progressing.";
                 messageBodyConfig = stageUpdateConfiguration;
             }
 
-            var messageBody = messageBodyConfig.SwSafelyGet("messageBody", defaultMessageBody) as string ?? string.Empty;
+            var messageBody = messageBodyConfig.SwSafelyGet("messageBody", defaultMessageBody) as string ?? "";
 
             var remindLaterButtonTitle = (string) versionUpdateConfiguration.SwSafelyGet("remindLaterButtonTitle", "Remind me later");
             var remindLaterButtonTip = (string) versionUpdateConfiguration.SwSafelyGet("remindLaterButtonTip", "We will let you know again after " + SwSelfUpdateWindow.CHECK_INTERVAL_HOURS_PLACEHOLDER);
@@ -843,9 +842,9 @@ namespace SupersonicWisdomSDK.Editor
 
             foreach (var backUpFile in allBackUpFiles)
             {
-                var relativePath = backUpFile.Replace(backUpFolderPath, string.Empty);
+                var relativePath = backUpFile.Replace(backUpFolderPath, "");
 
-                var destinationPath = string.Empty;
+                var destinationPath = "";
                 var assetsFolder = $"/{SwEditorConstants.ASSETS}/";
 
                 if (relativePath.StartsWith(assetsFolder))
@@ -907,7 +906,7 @@ namespace SupersonicWisdomSDK.Editor
 
                 if (!fileInfo.Exists) continue;
 
-                var destinationPath = Path.Combine(backUpFolderPath, filePath.Replace(Application.dataPath, string.Empty));
+                var destinationPath = Path.Combine(backUpFolderPath, filePath.Replace(Application.dataPath, ""));
 
                 try
                 {

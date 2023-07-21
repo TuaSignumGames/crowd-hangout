@@ -4,15 +4,18 @@ namespace SupersonicWisdomSDK
 {
     internal abstract class SwNativeBridge
     {
+        #region --- Construction ---
+
+        #endregion
+
+
         #region --- Public Methods ---
 
-        public abstract void Destroy();
+        public abstract void Destroy ();
 
-        public abstract string GetAdvertisingId();
+        public abstract string GetAdvertisingId ();
 
-        public abstract string GetOrganizationAdvertisingId();
-        
-        public abstract string GetAppInstallSource();
+        public abstract string GetOrganizationAdvertisingId ();
 
         public abstract void InitializeSession(SwEventMetadataDto metadata);
         public abstract IEnumerator InitSdk(SwNativeConfig configuration);
@@ -35,19 +38,7 @@ namespace SupersonicWisdomSDK
 
         public abstract void UpdateWisdomConfiguration(SwNativeConfig configuration);
 
-        public abstract void UnregisterWebRequestListener(OnWebResponse callback);
-
-        public abstract void RegisterWebRequestListener(OnWebResponse callback);
-
-        public abstract void SendRequest(string requestJsonString);
-
         public abstract void RequestRateUsPopup();
-
-        public abstract void UnregisterConnectivityStatusChanged(OnConnectivityStatusChanged callback);
-        
-        public abstract void RegisterConnectivityStatusChanged(OnConnectivityStatusChanged callback);
-
-        public abstract string GetConnectionStatus();
 
         #endregion
     }

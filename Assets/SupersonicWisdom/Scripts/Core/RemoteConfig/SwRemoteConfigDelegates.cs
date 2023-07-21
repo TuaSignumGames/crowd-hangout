@@ -1,4 +1,4 @@
 namespace SupersonicWisdomSDK
 {
-    public delegate void OnLoaded(bool success, SwWebRequestError error);
+    public delegate void OnLoaded(bool success, SwRemoteConfigError error);
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -11,39 +10,34 @@ namespace SupersonicWisdomSDK
     {
         #region --- Constants ---
 
-        private const string INFRA_EVENT_TYPE = "Infra";
-        private const string PROGRESS_EVENT_TYPE = "Progress";
+        private const string InfraEventType = "Infra";
+        private const string ProgressEventType = "Progress";
 
         #endregion
 
 
         #region --- Members ---
 
-        private static readonly Dictionary<NetworkReachability, string> ConnectionDictionary = new Dictionary<NetworkReachability, string>()
+        private static readonly Dictionary<NetworkReachability, string> ConnectionDictionary = new Dictionary<NetworkReachability, string>
         {
             [NetworkReachability.NotReachable] = "offline",
             [NetworkReachability.ReachableViaLocalAreaNetwork] = "wifi",
-            [NetworkReachability.ReachableViaCarrierDataNetwork] = "carrier",
+            [NetworkReachability.ReachableViaCarrierDataNetwork] = "carrier"
         };
 
         private readonly ISwWebRequestClient _webRequestClient;
-        private readonly SwCoreNativeAdapter _wisdomCoreNativeAdapter;
+        private readonly SwNativeAdapter _wisdomNativeAdapter;
         private readonly SwTimerManager _timerManager;
-        private readonly SwCoreUserData _coreUserData;
+        private readonly SwUserData _userData;
 
         #endregion
 
 
         #region --- Properties ---
 
-        public EConfigListenerType ListenerType
-        {
-            get { return EConfigListenerType.EndOfGame; }
-        }
-
         private float PlaytimeElapsed
         {
-            get { return _timerManager?.CurrentSessionPlaytimeStopWatch?.Elapsed ?? -1f; }
+            get { return _timerManager?.PlaytimeStopWatch?.Elapsed ?? -1f; }
         }
 
         #endregion
@@ -51,10 +45,10 @@ namespace SupersonicWisdomSDK
 
         #region --- Construction ---
 
-        public SwCoreTracker(SwCoreNativeAdapter wisdomCoreNativeAdapter, SwCoreUserData coreUserData, ISwWebRequestClient webRequestClient, SwTimerManager timerManager)
+        public SwCoreTracker(SwNativeAdapter wisdomNativeAdapter, SwUserData userData, ISwWebRequestClient webRequestClient, SwTimerManager timerManager)
         {
-            _wisdomCoreNativeAdapter = wisdomCoreNativeAdapter;
-            _coreUserData = coreUserData;
+            _wisdomNativeAdapter = wisdomNativeAdapter;
+            _userData = userData;
             _webRequestClient = webRequestClient;
             _timerManager = timerManager;
         }
@@ -64,10 +58,7 @@ namespace SupersonicWisdomSDK
 
         #region --- Public Methods ---
 
-        public void OnTimeBasedGameStarted()
-        {
-            TrackGameProgressEvent(SwProgressEvent.TimeBasedGameStart);
-        }
+        public void OnTimeBasedGameStarted () { }
 
         public void OnLevelCompleted(long level, string levelName, long attempts, long revives)
         {
@@ -98,11 +89,7 @@ namespace SupersonicWisdomSDK
         {
             SwInfra.Logger.Log("SendEvent | endpoint | " + url);
 
-            if (SwTestUtils.IsRunningTests)
-            {
-                yield break;
-            }
-
+            if (SwTestUtils.IsRunningTests) yield break;
             var response = new SwWebResponse();
 
             yield return _webRequestClient.Post(url, data, response, SwConstants.DefaultRequestTimeout);
@@ -139,24 +126,14 @@ namespace SupersonicWisdomSDK
             TrackEventInternal(evt, custom1, custom2, custom3);
         }
 
-        public void TrackGameProgressEvent(SwProgressEvent progress)
-        {
-            TrackEventInternal(PROGRESS_EVENT_TYPE, $"{progress}");
-        }
-        
         public void TrackGameProgressEvent(SwProgressEvent progress, long levelNum, long attempts, float playtime = 0f, long revives = 0)
         {
-            TrackEventInternal(PROGRESS_EVENT_TYPE, $"{progress}", $"{levelNum}", $"{attempts}", $"{(int)Mathf.Round(playtime)}", $"{revives}");
+            TrackEventInternal(ProgressEventType, $"{progress}", $"{levelNum}", $"{attempts}", $"{(int)Mathf.Round(playtime)}", $"{revives}");
         }
 
-        public void TrackInfraEvent(string custom1, string custom2 = "", string custom3 = "", string custom4 = "", string custom5 = "", string custom6 = "")
+        public void TrackInfraEvent(string custom1, string custom2 = "", string custom3 = "", string custom4 = "")
         {
-            TrackEventInternal(INFRA_EVENT_TYPE, $"{custom1}", $"{custom2}", $"{custom3}", $"{custom4}", $"{custom5}", $"{custom6}");
-        }
-        
-        public void TrackInfraEvent(Dictionary<string, object> customs)
-        {
-            TrackEventWithParams(INFRA_EVENT_TYPE, customs);
+            TrackEventInternal(InfraEventType, $"{custom1}", $"{custom2}", $"{custom3}", $"{custom4}");
         }
 
         #endregion
@@ -179,7 +156,7 @@ namespace SupersonicWisdomSDK
                 custom9 = custom9,
                 custom10 = custom10,
                 custom11 = custom11,
-                custom12 = custom12,
+                custom12 = custom12
             };
         }
 
@@ -215,23 +192,15 @@ namespace SupersonicWisdomSDK
             var customsJson = JsonUtility.ToJson(eventCustoms);
             var extraJson = JsonUtility.ToJson(GetEventDetailsExtra());
 
-            _wisdomCoreNativeAdapter.TrackEvent(eventName, customsJson, extraJson);
+            _wisdomNativeAdapter.TrackEvent(eventName, customsJson, extraJson);
         }
 
-        public void TrackEventWithParams(string eventName, Dictionary<string, object> customs)
-        {
-            var customsJson = customs.SwToJsonString();
-            var extraJson = JsonUtility.ToJson(GetEventDetailsExtra());
-
-            _wisdomCoreNativeAdapter.TrackEvent(eventName, customsJson, extraJson);
-        }
-
-        protected SwEventDetailsExtra GetEventDetailsExtra()
+        protected SwEventDetailsExtra GetEventDetailsExtra ()
         {
             var eventDetailsExtra = new SwEventDetailsExtra
             {
-                lang = _coreUserData.Language,
-                country = _coreUserData.Country,
+                lang = _userData.Language,
+                country = _userData.Country
             };
 
             // The following properties are relying Unity API.

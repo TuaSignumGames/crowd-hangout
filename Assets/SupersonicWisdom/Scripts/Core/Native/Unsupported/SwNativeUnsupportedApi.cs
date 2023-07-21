@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -6,8 +5,6 @@ namespace SupersonicWisdomSDK
 {
     internal class SwNativeUnsupportedApi : SwNativeApi
     {
-        private OnWebResponse _callback;
-
         #region --- Construction ---
 
         public SwNativeUnsupportedApi(SwNativeBridge nativeBridge) : base(nativeBridge)
@@ -35,24 +32,12 @@ namespace SupersonicWisdomSDK
 
         public override string GetAdvertisingId ()
         {
-            return string.Empty;
-        }
-
-        public override string GetConnectionStatus()
-        {
-            SwInfra.Logger.Log("SwNativeUnsupportedApi | Destroy");
-            
-            return string.Empty;
+            return SystemInfo.deviceUniqueIdentifier;
         }
 
         public override string GetOrganizationAdvertisingId ()
         {
-            return string.Empty;
-        }
-
-        public override string GetAppInstallSource()
-        {
-            return "";
+            return SystemInfo.deviceUniqueIdentifier;
         }
 
         public override IEnumerator Init(SwNativeConfig configuration)
@@ -82,27 +67,6 @@ namespace SupersonicWisdomSDK
             SwInfra.Logger.Log("SwNativeUnsupportedApi | RemoveSessionStartedCallback");
         }
 
-        public override void SendRequest(string requestJsonString)
-        {
-            SwInfra.CoroutineService.StartCoroutine(SendRequestRoutine(requestJsonString));
-        }
-
-        public override void AddServerCallbacks(OnWebResponse callback)
-        {
-            SwInfra.Logger.Log($"{nameof(SwNativeUnsupportedApi)} | {nameof(AddServerCallbacks)}");
-        }
-
-        private IEnumerator SendRequestRoutine(string requestJsonString)
-        {
-            SwInfra.Logger.Log($"{nameof(SwNativeUnsupportedApi)} | {nameof(SendRequestRoutine)}");
-            yield break;
-        }
-
-        public override void RemoveServerCallbacks(OnWebResponse callback)
-        {
-            SwInfra.Logger.Log($"{nameof(SwNativeUnsupportedApi)} | {nameof(RemoveServerCallbacks)}");
-        }
-
         public override bool ToggleBlockingLoader(bool shouldPresent)
         {
             SwInfra.Logger.Log("SwNativeUnsupportedApi | ToggleBlockingLoader(" + shouldPresent + ") - returning `false`");
@@ -125,32 +89,22 @@ namespace SupersonicWisdomSDK
             SwInfra.Logger.Log($"SwNativeUnsupportedApi | RequestRateUsPopup | Not supported on platforms other than Android and iOS");
         }
 
-        public override void AddConnectivityCallbacks(OnConnectivityStatusChanged callback)
-        {
-            SwInfra.Logger.Log($"{nameof(SwNativeUnsupportedApi)} | {nameof(AddConnectivityCallbacks)} | ");
-        }
-
-        public override void RemoveConnectivityCallbacks(OnConnectivityStatusChanged callback)
-        {
-            SwInfra.Logger.Log($"{nameof(SwNativeUnsupportedApi)} | {nameof(RemoveConnectivityCallbacks)}");
-        }
-
         #endregion
 
 
         #region --- Private Methods ---
 
-        public override void ClearDelegates()
+        protected override void ClearDelegates ()
         {
             SwInfra.Logger.Log("SwNativeUnsupportedApi | clearDelegates");
         }
 
-        public override void RemoveAllSessionCallbacks()
+        protected override void RemoveAllSessionCallbacks ()
         {
             SwInfra.Logger.Log("SwNativeUnsupportedApi | RemoveAllSessionCallbacks");
         }
 
-        public override void TrackEvent(string eventName, string customsJson, string extraJson)
+        internal override void TrackEvent(string eventName, string customsJson, string extraJson)
         {
             SwInfra.Logger.Log($"SwNativeUnsupportedApi | TrackEvent | {eventName} | {customsJson} | {extraJson}");
         }

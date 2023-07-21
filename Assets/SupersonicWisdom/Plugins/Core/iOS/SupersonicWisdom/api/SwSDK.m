@@ -24,7 +24,7 @@
 #import "SwEventsReporter.h"
 #import "SwEventsQueue.h"
 #import "SdkVersion.h"
-#import "../data/framework/remote/SwRequestManager.h"
+#import "SwNetworkUtils.h"
 #import "../domain/events/dto/SwEventMetadataDto.h"
 
 #import "SWSDKLogger.h"
@@ -53,7 +53,6 @@
     SwEventMetadataLocalApi *metadataLocalApi;
     SwEventMetadataLocalDataSource *metadataLocalDataSource;
     id<SwEventMetadataManagement> metadataManger;
-    SwConnectivityManager *connectivityManager;
     
     //Conversion Data
     id<SwConversionDataRepositoryProtocol> conversionDataRepository;
@@ -64,7 +63,6 @@
     id<SwEventsReporterProtocol> eventsReporter;
     id<SwEventsQueueProtocol> syncEventsQueue;
     id<SwSessionManagement> sessionManager;
-    SwRequestManager *requestManager;
     
     BOOL isInitialized;
     NSMutableArray *delegates;
@@ -94,9 +92,11 @@
     
     SwListStoredEventJsonMapper *storedEventListMapper = [SwListStoredEventJsonMapper alloc];
     
-    connectivityManager = [SwConnectivityManager internetConnectivity];
+    SwConnectivityManager *connectivityManager = [SwConnectivityManager internetConnectivity];
+
+    SwNetworkUtils *networkUtils = [[SwNetworkUtils alloc] initWithConnectivityManger:connectivityManager];
     
-    network = [[SwWisdomNetworkManager alloc] initWithNetworkUtils:connectivityManager];
+    network = [[SwWisdomNetworkManager alloc] initWithNetworkUtils:networkUtils];
     [network setConnectTimeout:configuration.connectTimeout];
     [network setReadTimeout:configuration.readTimeout];
     
@@ -130,13 +130,10 @@
     eventsReporter = [[SwEventsReporter alloc] initWithRepository:eventsRepository];
     syncEventsQueue = [[SwEventsQueue alloc] initWith:eventsRepository withMapper:storedEventDictMapper andInterval:configuration.initialSyncInterval];
     sessionManager = [[SwSessionManager alloc] initWithReporter:eventsReporter
-                                                      EventsRepo:eventsRepository
-                                                 MetadataManager:metadataManger
-                                           ConversionDataManager:conversionDataManager
-                                                      EventQueue:syncEventsQueue
-                                                     UserDefault:prefs];
-    
-    requestManager = [[SwRequestManager alloc] initWithNetwork:network connectivityManager:connectivityManager];
+                                                     EventsRepo:eventsRepository
+                                                MetadataManager:metadataManger
+                                          ConversionDataManager:conversionDataManager
+                                                     EventQueue:syncEventsQueue];
     delegates = [NSMutableArray array];
     isInitialized = YES;
     [syncEventsQueue startQueue];
@@ -167,14 +164,6 @@
     [sessionManager unregisterSessionDelegate:delegate];
 }
 
-- (void)registerConnectivityDelegate:(id<SwConnectivityStatusCallback>)delegate {
-    [connectivityManager registerConnectivityDelegate:delegate];
-}
-
-- (void)unregisterConnectivityDelegate:(id<SwConnectivityStatusCallback>)delegate {
-    [connectivityManager unregisterConnectivityDelegate:delegate];
-}
-
 - (void)setEventMetadata:(NSString *)metadataJson {
     SwEventMetadataDto *metadata = [[SwEventMetadataDto alloc] initFromString:metadataJson];
     [metadataManger set:metadata];
@@ -197,18 +186,6 @@
      extra:extraJson];
     
     [eventsReporter reportEvent:event];
-}
-
-- (void)sendRequest:(NSString *)requestJsonString withResponseCallback:(OnSwResponse)callback{
-    [requestManager sendRequest:requestJsonString withResponseCallback:callback];
-}
-
-- (NSString *)getConnectionStatus {
-    NSDictionary *status = @{
-        @"isAvailable": @([connectivityManager isNetworkAvailable])
-    };
-    
-    return [SwUtils toJsonString:status];
 }
 
 - (NSString *)getVersion {    

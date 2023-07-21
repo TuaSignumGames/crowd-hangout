@@ -2,7 +2,7 @@ namespace SupersonicWisdomSDK
 {
     internal enum SwProgressEvent
     {
-        TimeBasedGameStart,
+        GameStart,
         LevelCompleted,
         LevelFailed,
         LevelStarted,

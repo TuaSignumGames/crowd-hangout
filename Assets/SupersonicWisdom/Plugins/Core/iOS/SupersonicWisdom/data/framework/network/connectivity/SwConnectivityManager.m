@@ -8,18 +8,10 @@
 #import "SwConnectivityManager.h"
 #import <arpa/inet.h>
 #import <SystemConfiguration/SystemConfiguration.h>
-#import "SwNetworkCallbacks.h"
-
-typedef void (*SCNetworkReachabilityCallBack)(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info);
 
 @implementation SwConnectivityManager {
     SCNetworkReachabilityRef _reachabilityRef;
-    Reachability *reachability;
-    NetworkStatus status;
-    NSMutableArray *connectivityStatusChangeDelegates;
 }
-
-@synthesize delegates;
 
 + (instancetype)internetConnectivity {
     struct sockaddr_in zeroAddress;
@@ -30,35 +22,6 @@ typedef void (*SCNetworkReachabilityCallBack)(SCNetworkReachabilityRef target, S
     return [self connectivityWithAddress: (const struct sockaddr *) &zeroAddress];
 }
 
-- (BOOL)isNetworkAvailable{
-    return status == ReachableViaWiFi || status == ReachableViaWWAN;
-}
-
-- (void)registerConnectivityDelegate:(id<SwConnectivityStatusCallback>)delegate {
-    if(connectivityStatusChangeDelegates == NULL){
-        connectivityStatusChangeDelegates = [NSMutableArray array];
-    }
-    
-    [connectivityStatusChangeDelegates addObject:delegate];
-}
-
-- (void)unregisterConnectivityDelegate:(id<SwConnectivityStatusCallback>)delegate {
-    [connectivityStatusChangeDelegates removeObject:delegate];
-}
-
-- (void)reachabilityChanged:(NSNotification *)note{
-    status = [self currentConnectivityStatus];
-    
-    [SWSDKLogger logMessage:@"SwConnectivityManager | reachabilityChanged | status = %@", status];
-    
-    for (id<SwConnectivityStatusCallback> delegate in connectivityStatusChangeDelegates) {
-        if (delegate != nil && [delegate respondsToSelector:@selector(onConnectivityStatusChanged:)]) {
-            BOOL isConnected = (status == ReachableViaWiFi || status == ReachableViaWWAN);
-            [delegate onConnectivityStatusChanged:isConnected];
-        }
-    }
-}
-
 + (instancetype)connectivityWithAddress:(const struct sockaddr *)hostAddress {
     SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, hostAddress);
     SwConnectivityManager* returnValue = NULL;
@@ -66,10 +29,6 @@ typedef void (*SCNetworkReachabilityCallBack)(SCNetworkReachabilityRef target, S
         returnValue = [[self alloc] init];
         if (returnValue != NULL) {
             returnValue->_reachabilityRef = reachability;
-            returnValue->status = [returnValue currentConnectivityStatus];
-            returnValue->reachability = [Reachability reachabilityForInternetConnection];
-            [returnValue->reachability startNotifier];
-            [[NSNotificationCenter defaultCenter] addObserver:returnValue selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
         } else {
             CFRelease(reachability);
         }

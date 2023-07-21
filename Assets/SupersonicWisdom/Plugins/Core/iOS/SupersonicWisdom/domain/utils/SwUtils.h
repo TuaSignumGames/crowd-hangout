@@ -23,6 +23,5 @@
 + (NSString *) toJsonString:(NSDictionary *) jsonDictionary;
 + (NSData *) toJsonData:(NSDictionary *) jsonDictionary;
 + (NSDictionary *) createEvent:(NSString *)eventName sessionId:(NSString *)sessionId megaSessionId:(NSString *)megaSessionId conversionData:(NSString *)conversionData metdadata:(NSString *)metadata customs:(NSString *)customs extra:(NSString *)extra;
-+ (NSDictionary *)dataToDictionary:(NSData *) data;
 
 @end

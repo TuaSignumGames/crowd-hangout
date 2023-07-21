@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace SupersonicWisdomSDK.Editor
 {
-    public static class WelcomeMessageUtils
+    public class WelcomeMessageUtils
     {
         #region --- Members ---
 
@@ -15,7 +15,7 @@ namespace SupersonicWisdomSDK.Editor
 
         #region --- Public Methods ---
 
-        public static void TryShowWelcomeMessage()
+        public static void TryShowWelcomeMessage ()
         {
             if (SwEditorUtils.SwSettings != null || _isWelcomeMessageShowed) return;
 

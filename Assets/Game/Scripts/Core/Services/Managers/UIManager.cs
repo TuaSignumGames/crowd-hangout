@@ -63,7 +63,7 @@ public class UIManager : Service<UIManager>
                 Cursor.visible = false;
 
                 _cursor.transform.position = Vector3.Lerp(_cursor.transform.position, InputManager.touchPosition, 0.3f);
-                _cursorClickContainer.localScale = new Vector3(1f, Input.GetMouseButton(0) ? 0.85f : 1f, 1f);
+                _cursorClickContainer.localScale = new Vector3(1f, Input.GetMouseButton(0) ? 0.75f : 1f, 1f);
             }
             else
             {

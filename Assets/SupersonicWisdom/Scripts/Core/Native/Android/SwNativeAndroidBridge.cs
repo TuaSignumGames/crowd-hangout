@@ -14,16 +14,12 @@ namespace SupersonicWisdomSDK
         private const string ExtraEventDetailsDtoClass = "wisdom.library.domain.events.dto.ExtraEventDetailsDto";
         private const string GetAdvertisingIdentifierMethod = "getAdvertisingIdentifier";
         private const string GetAppSetIdentifierMethod = "getAppSetIdentifier";
-        private const string GetConnectionStatusMethod = "getConnectionStatus";
-        private const string GetAppInstallSourceMethod = "getAppInstallSource";
         private const string InitializeSessionMethod = "initializeSession";
 
         //Methods
         private const string InitMethod = "init";
         private const string RegisterInitListenerMethod = "registerInitListener";
         private const string RegisterSessionListenerMethod = "registerSessionListener";
-        private const string RegisterWebRequestListenerMethod = "registerWebRequestListener";
-        private const string RegisterConnectivityListenerMethod = "registerConnectivityListener";
         private const string SetEventsMetadataMethod = "setEventsMetadata";
         private const string SwBlockingLoaderResourceRelativePathField = "blockingLoaderResourceRelativePath";
         private const string SwBlockingLoaderViewportPercentageField = "blockingLoaderViewportPercentage";
@@ -36,14 +32,11 @@ namespace SupersonicWisdomSDK
         private const string ToggleBlockingLoaderMethod = "toggleBlockingLoader";
         private const string RequestRateUsPopupMethod = "requestRateUsPopup";
         private const string TrackEventMethod = "trackEvent";
-        private const string SEND_REQUEST_METHOD = "sendRequest";
 
         //Classes
         private const string UnityPlayerClass = "com.unity3d.player.UnityPlayer";
         private const string UnregisterInitListenerMethod = "unregisterInitListener";
         private const string UnregisterSessionListenerMethod = "unregisterSessionListener";
-        private const string UnregisterWebRequestListenerMethod = "unregisterWebRequestListener";
-        private const string UnregisterConnectivityListenerMethod = "unregisterConnectivityListener";
         private const string UpdateEventsMetadataMethod = "updateEventsMetadata";
         private const string UpdateWisdomConfigurationMethod = "updateWisdomConfiguration";
         private const string WisdomConfigurationClass = "wisdom.library.api.dto.WisdomConfigurationDto";
@@ -57,8 +50,6 @@ namespace SupersonicWisdomSDK
         private readonly AndroidJavaObject _nativeSdk = new AndroidJavaClass(WisdomSDKClass);
         private readonly SwNativeAndroidInitListener _initListener;
         private readonly SwNativeAndroidSessionListener _sessionListener;
-        private readonly SwNativeAndroidWebRequestListener _webRequestListener;
-        private readonly SwNativeAndroidConnectivityListener _connectivityListener;
 
         #endregion
 
@@ -69,8 +60,6 @@ namespace SupersonicWisdomSDK
         {
             _sessionListener = new SwNativeAndroidSessionListener();
             _initListener = new SwNativeAndroidInitListener();
-            _webRequestListener = new SwNativeAndroidWebRequestListener();
-            _connectivityListener = new SwNativeAndroidConnectivityListener();
         }
 
         #endregion
@@ -78,35 +67,23 @@ namespace SupersonicWisdomSDK
 
         #region --- Public Methods ---
 
-        public override void Destroy()
+        public override void Destroy ()
         {
             _nativeSdk.CallStatic(DestroyMethod);
         }
 
-        public override string GetAdvertisingId()
+        public override string GetAdvertisingId ()
         {
             var advertisingId = _nativeSdk.CallStatic<string>(GetAdvertisingIdentifierMethod);
 
             return advertisingId;
         }
 
-        public override string GetOrganizationAdvertisingId()
+        public override string GetOrganizationAdvertisingId ()
         {
             var appSetId = _nativeSdk.CallStatic<string>(GetAppSetIdentifierMethod);
 
             return appSetId;
-        }
-        
-        public override string GetConnectionStatus()
-        {
-            var connectionStatus = _nativeSdk.CallStatic<string>(GetConnectionStatusMethod);
-
-            return connectionStatus;
-        }
-
-        public override string GetAppInstallSource()
-        {
-            return _nativeSdk.CallStatic<string>(GetAppInstallSourceMethod);
         }
 
         public override void InitializeSession(SwEventMetadataDto metadata)
@@ -128,8 +105,6 @@ namespace SupersonicWisdomSDK
             }
 
             RegisterSessionListener();
-            RegisterWebRequestListener();
-            RegisterConnectivityListener();
 
             _nativeSdk.CallStatic(UnregisterInitListenerMethod, _initListener);
         }
@@ -137,21 +112,6 @@ namespace SupersonicWisdomSDK
         public override void RegisterSessionEndedCallback(OnSessionEnded callback)
         {
             _sessionListener.OnSessionEndedEvent += callback;
-        }
-
-        public override void RegisterWebRequestListener(OnWebResponse callback)
-        {
-            _webRequestListener.OnWebResponse += callback;
-        }
-        
-        public override void RegisterConnectivityStatusChanged(OnConnectivityStatusChanged callback)
-        {
-            _connectivityListener.ConnectivityStatusChangedEvent += callback;
-        }
-
-        public override void SendRequest(string requestJsonString)
-        {
-            _nativeSdk.CallStatic(SEND_REQUEST_METHOD, requestJsonString);
         }
 
         public override void RegisterSessionStartedCallback(OnSessionStarted callback)
@@ -184,16 +144,6 @@ namespace SupersonicWisdomSDK
             _sessionListener.OnSessionStartedEvent -= callback;
         }
 
-        public override void UnregisterWebRequestListener(OnWebResponse callback)
-        {
-            _webRequestListener.OnWebResponse -= callback;
-        }
-        
-        public override void UnregisterConnectivityStatusChanged(OnConnectivityStatusChanged callback)
-        {
-            _connectivityListener.ConnectivityStatusChangedEvent -= callback;
-        }
-
         public override void UpdateEventMetadata(SwEventMetadataDto metadata)
         {
             _nativeSdk.CallStatic(UpdateEventsMetadataMethod, JsonUtility.ToJson(metadata));
@@ -203,12 +153,10 @@ namespace SupersonicWisdomSDK
         {
             _nativeSdk.CallStatic(UpdateWisdomConfigurationMethod, CreateWisdomConfig(configuration));
         }
-
         public override void RequestRateUsPopup()
         {
             _nativeSdk.CallStatic(RequestRateUsPopupMethod);
         }
-
         #endregion
 
 
@@ -248,26 +196,6 @@ namespace SupersonicWisdomSDK
         private void UnregisterSessionListener ()
         {
             _nativeSdk.CallStatic(UnregisterSessionListenerMethod, _sessionListener);
-        }
-
-        private void RegisterWebRequestListener ()
-        {
-            _nativeSdk.CallStatic(RegisterWebRequestListenerMethod, _webRequestListener);
-        }
-
-        private void UnregisterWebRequestListener ()
-        {
-            _nativeSdk.CallStatic(UnregisterWebRequestListenerMethod, _webRequestListener);
-        }
-
-        private void RegisterConnectivityListener()
-        {
-            _nativeSdk.CallStatic(RegisterConnectivityListenerMethod, _connectivityListener); 
-        }
-        
-        private void UnregisterConnectivityListener()
-        {
-            _nativeSdk.CallStatic(UnregisterConnectivityListenerMethod, _connectivityListener);
         }
 
         #endregion

@@ -39,7 +39,7 @@ namespace SupersonicWisdomSDK
         private readonly Lazy<SwBlockingSimulator> _lazySwBlockingSimulator = new Lazy<SwBlockingSimulator>(() => UnityEngine.Object.Instantiate(Resources.Load("Core/Simulators/SwBlockingSimulator", typeof(SwBlockingSimulator))) as SwBlockingSimulator);
         private readonly SwCoreTracker _tracker;
         private readonly SwSettings _settings;
-        private readonly SwCoreUserData _coreUserData;
+        private readonly SwUserData _userData;
         
         #endregion
 
@@ -57,7 +57,7 @@ namespace SupersonicWisdomSDK
 
         private bool CanNotifyRewardedVideoOpportunityMissed
         {
-            get => !_settings.isTimeBased && !_coreUserData.ImmutableUserState().isDuringLevel;
+            get => !_settings.isTimeBased && !_userData.ImmutableUserState().isDuringLevel;
         }
         
         #endregion
@@ -65,10 +65,10 @@ namespace SupersonicWisdomSDK
 
         #region --- Construction ---
 
-        internal SwBlockingApiHandler(SwSettings settings, SwCoreTracker tracker, SwCoreUserData coreUserData, ISwBlockingApiMiddleware[] blockingApiMiddlewares, ISwGameProgressionListener[] gameProgressionListeners)
+        internal SwBlockingApiHandler(SwSettings settings, SwCoreTracker tracker, SwUserData userData, ISwBlockingApiMiddleware[] blockingApiMiddlewares, ISwGameProgressionListener[] gameProgressionListeners)
         {
             _settings = settings;
-            _coreUserData = coreUserData;
+            _userData = userData;
             _tracker = tracker;
             _middlewares = blockingApiMiddlewares ?? new ISwBlockingApiMiddleware[] { };
 
@@ -91,42 +91,28 @@ namespace SupersonicWisdomSDK
 
         #region --- Public Methods ---
 
-        public void NotifyTimeBasedGameStarted(Action action)
+        public IEnumerator NotifyGameStarted ()
         {
-            SwInfra.CoroutineService.StartCoroutineWithCallback(NotifyTimeBasedGameStarted, action);
-        }
-
-        public IEnumerator NotifyTimeBasedGameStarted()
-        {
-            var waitForBlockerClose = Lock($"NotifyTimeBasedGameStarted()");
-            
-            _coreUserData.ModifyUserStateSync(mutableUserState =>
+            _userData.ModifyUserStateSync(mutableUserState =>
             {
                 mutableUserState.isDuringLevel = true;
             });
             
             try
             {
-                OnTimeBasedGameStartedEvent?.Invoke();
+                if (_settings.isTimeBased)
+                {
+                    OnTimeBasedGameStartedEvent?.Invoke();   
+                }
             }
             catch (Exception e)
             {
                 SwInfra.Logger.LogError($"SwBlockingApiHandler.NotifyGameStarted error: {e.Message}");
             }
-
+            
             foreach (var middleware in _middlewares)
             {
-                yield return middleware.ProcessTimeBasedGameStarted();
-            }
-
-            yield return Unlock(waitForBlockerClose);
-        }
-        
-        public IEnumerator PrepareForGameStarted()
-        {
-            foreach (var middleware in _middlewares)
-            {
-                yield return middleware.PrepareForGameStarted();
+                yield return middleware.ProcessGameStarted();
             }
         }
 
@@ -135,9 +121,9 @@ namespace SupersonicWisdomSDK
             var waitForBlockerClose = Lock($"NotifyLevelCompleted({level}, \"{levelName}\")");
 
             // saving state before resetting it
-            var userState = _coreUserData.ImmutableUserState();
+            var userState = _userData.ImmutableUserState();
 
-            _coreUserData.ModifyUserStateSync(mutableUserState =>
+            _userData.ModifyUserStateSync(mutableUserState =>
             {
                 mutableUserState.completedLevels = level;
                 mutableUserState.playedLevels++;
@@ -173,7 +159,7 @@ namespace SupersonicWisdomSDK
         {
             var waitForBlockerClose = Lock($"NotifyLevelFailed({level}, \"{levelName}\")");
 
-            _coreUserData.ModifyUserStateSync(mutableUserState =>
+            _userData.ModifyUserStateSync(mutableUserState =>
             {
                 mutableUserState.playedLevels++;
                 mutableUserState.consecutiveFailedLevels++;
@@ -181,7 +167,7 @@ namespace SupersonicWisdomSDK
                 mutableUserState.isDuringLevel = false;
             });
 
-            var userState = _coreUserData.ImmutableUserState();
+            var userState = _userData.ImmutableUserState();
 
             try
             {
@@ -209,13 +195,13 @@ namespace SupersonicWisdomSDK
         {
             var waitForBlockerClose = Lock($"NotifyLevelRevived({level}, \"{levelName}\")");
 
-            _coreUserData.ModifyUserStateSync(mutableUserState =>
+            _userData.ModifyUserStateSync(mutableUserState =>
             {
                 mutableUserState.levelRevives++;
                 mutableUserState.isDuringLevel = true;
             });
 
-            var userState = _coreUserData.ImmutableUserState();
+            var userState = _userData.ImmutableUserState();
 
             try
             {
@@ -244,9 +230,9 @@ namespace SupersonicWisdomSDK
             var waitForBlockerClose = Lock($"NotifyLevelSkipped({level}, \"{levelName}\")");
 
             // saving state before resetting it
-            var userState = _coreUserData.ImmutableUserState();
+            var userState = _userData.ImmutableUserState();
 
-            _coreUserData.ModifyUserStateSync(mutableUserState =>
+            _userData.ModifyUserStateSync(mutableUserState =>
             {
                 mutableUserState.completedLevels = level;
                 mutableUserState.consecutiveCompletedLevels++;
@@ -280,15 +266,14 @@ namespace SupersonicWisdomSDK
         {
             var waitForBlockerClose = Lock($"NotifyLevelStarted({level}, \"{levelName}\")");
 
-            _coreUserData.ModifyUserStateSync(mutableUserState =>
+            _userData.ModifyUserStateSync(mutableUserState =>
             {
                 mutableUserState.levelRevives = 0;
                 mutableUserState.levelAttempts++;
                 mutableUserState.isDuringLevel = true;
-                mutableUserState.lastLevelStarted = level;
             });
 
-            var userState = _coreUserData.ImmutableUserState();
+            var userState = _userData.ImmutableUserState();
 
             try
             {
@@ -298,7 +283,7 @@ namespace SupersonicWisdomSDK
             {
                 SwInfra.Logger.LogError($"SwBlockingApiHandler.NotifyLevelStarted error: {e.Message}");
             }
-
+            
             foreach (var middleware in _middlewares)
             {
                 yield return middleware.ProcessLevelStarted(level, levelName);
@@ -357,10 +342,11 @@ namespace SupersonicWisdomSDK
                 error = $"Blocking API Error: {blockingApiInvocation} was called before {CurrentRunningBlockingApiInvocation} was resolved";
                 SwInfra.Logger.LogError($"SwBlockingApiHandler | {error}");
 
-#if DEVELOPMENT_BUILD
-                // If the game was build in development mode, crash the game so that the developer will notice the issue.
-                Application.Quit(1);
-#endif
+                // For the purpose of this error to be noticed the app is crashed when in DebugBuild
+                if (Debug.isDebugBuild)
+                {
+                    Application.Quit(1);
+                }
 
                 // In case _settings.testBlockingApiInvocation = true
                 // The current popup is hidden and a new popup with the error is shown right after that.

@@ -4,7 +4,7 @@ namespace SupersonicWisdomSDK
     {
         #region --- Public Methods ---
 
-        void OnCoreUserStateChange(SwUserState newState, SwUserStateChangeReason reason);
+        void OnUserStateChange(SwUserState newState, SwUserStateChangeReason reason);
 
         #endregion
     }

@@ -1,14 +1,14 @@
 #import "SwSKAdNetwork.h"
 #import "SwTypeUtil.h"
 
-void _swUpdatePostbackConversionValue(int cv) {
-    if (@available(iOS 15.4, *)) {
-        NSInteger cvInteger = cv;
-        [SKAdNetwork updatePostbackConversionValue:cvInteger completionHandler:^(NSError * _Nullable error) {
-            NSString *errorCode = [NSString stringWithFormat: @"%ld", (long)[error code]];
-            UnitySendMessage("SupersonicWisdom","UpdatePostbackUpdateCompletedMessage", [errorCode UTF8String]);
-        }];
-    } else {
+void _swUpdatePostbackConversionValue(int cv) { if (@available(iOS 15.4, *)) {
+    NSInteger cvInteger = cv;
+    [SKAdNetwork updatePostbackConversionValue:cvInteger completionHandler:^(NSError * _Nullable error) {
+        NSString *errorCode = [NSString stringWithFormat: @"%ld", (long)[error code]];
+        UnitySendMessage("SupersonicWisdom","UpdatePostbackUpdateCompletedMessage", [errorCode UTF8String]);
+    }];
+    } 
+    else {
         if (cv == 0){ // In new API : (CV = 0) -> Initial call
             if (@available(iOS 11.3, *)) {
                [SKAdNetwork registerAppForAdNetworkAttribution];
@@ -16,7 +16,8 @@ void _swUpdatePostbackConversionValue(int cv) {
             } else {
                  // Fallback on earlier versions
           }
-       } else {
+       }
+       else{
           if (@available(iOS 14.0, *)) {
                 NSInteger cvInteger = cv;
                 [SKAdNetwork updateConversionValue:cvInteger];
@@ -25,8 +26,7 @@ void _swUpdatePostbackConversionValue(int cv) {
                 // Fallback on earlier versions
             }
         }
-    }
-}
+} }
 
 void _swUpdatePostbackConversionAndCoarseValue(int cv ,int completeCoarseValue, BOOL selectedLockWindow) {
     NSLog(@"_swUpdatePostbackConversionAndCoarseValue called with, cv: %d, completeCoarseValue: %d, selectedLockWindow: %d", cv, completeCoarseValue, selectedLockWindow);

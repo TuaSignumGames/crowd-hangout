@@ -12,32 +12,38 @@ namespace SupersonicWisdomSDK
 {
     internal abstract class SwCoreContainer : ISwContainer
     {
-        private const string READY_EVENT_NAME = "Ready";
-        
         protected readonly ISwInitParams InitParams;
         protected readonly SwCoreMonoBehaviour Mono;
         private readonly ISwAsyncCatchableRunnable _stageSpecificCustomInitRunnable;
+        private readonly SwGameBlocker _gameBlocker;
         protected internal readonly SwSettings Settings;
-        protected readonly SwCoreNativeAdapter WisdomCoreNativeAdapter;
+        protected readonly SwNativeAdapter WisdomNativeAdapter;
         protected internal readonly SwDeepLinkHandler DeepLinkHandler;
         protected internal readonly SwLocalConfigHandler LocalConfigHandler;
         protected readonly SwDevTools DevTools;
-        protected internal readonly SwCoreUserData CoreUserData;
+        protected internal readonly SwUserData UserData;
         protected readonly SwCoreTracker Tracker;
-        protected internal readonly ISwConfigManager ConfigManager;
+        protected internal readonly ISwRemoteConfigRepository RemoteConfigRepository;
+        protected internal readonly ISwConfigAccessor ConfigAccessor;
         private readonly ISwAdapter[] _swAdapters;
         private readonly ISwReadyEventListener[] _readyEventListeners;
         private readonly ISwUserStateListener[] _userStateListeners;
         private readonly ISwLocalConfigProvider[] _configProviders;
         protected internal SwTimerManager TimerManager;
+        private bool _isBlocked;
 
         protected bool WasDestroyed;
         public bool IsReady { get; private set; }
-        
+
+        private bool IsBlocked
+        {
+            get { return _isBlocked; }
+            set { _isBlocked |= value; }
+        }
 
         public event OnReady OnReadyEvent;
 
-        public SwCoreContainer(Dictionary<string, object> initParamsDictionary, SwCoreMonoBehaviour mono, ISwAsyncCatchableRunnable stageSpecificCustomInitRunnable, SwSettingsManager<SwSettings> settingsManager, ISwReadyEventListener[] readyEventListeners, ISwUserStateListener[] userStateListeners, ISwLocalConfigProvider[] configProviders, ISwAdapter[] swAdapters, SwCoreNativeAdapter wisdomCoreNativeAdapter, SwDeepLinkHandler deepLinkHandler, SwDevTools devTools, SwCoreUserData coreUserData, SwCoreTracker tracker, ISwConfigManager configManager, SwTimerManager timerManager)
+        public SwCoreContainer(Dictionary<string, object> initParamsDictionary, SwCoreMonoBehaviour mono, ISwAsyncCatchableRunnable stageSpecificCustomInitRunnable, SwSettingsManager<SwSettings> settingsManager, ISwReadyEventListener[] readyEventListeners, ISwUserStateListener[] userStateListeners, ISwLocalConfigProvider[] configProviders, ISwAdapter[] swAdapters, SwNativeAdapter wisdomNativeAdapter, SwDeepLinkHandler deepLinkHandler, SwLocalConfigHandler localConfigHandler, SwDevTools devTools, SwUserData userData, SwCoreTracker tracker, ISwRemoteConfigRepository remoteConfigRepository, ISwConfigAccessor configAccessor, SwTimerManager timerManager, SwGameBlocker gameBlocker)
         {
             // ReSharper disable VirtualMemberCallInConstructor
             InitParams = CreateInitParams();
@@ -49,25 +55,28 @@ namespace SupersonicWisdomSDK
             _swAdapters = swAdapters;
             
             Settings = settingsManager.Settings;
-            WisdomCoreNativeAdapter = wisdomCoreNativeAdapter;
+            WisdomNativeAdapter = wisdomNativeAdapter;
             DeepLinkHandler = deepLinkHandler;
+            LocalConfigHandler = localConfigHandler;
             DevTools = devTools;
-            CoreUserData = coreUserData;
+            UserData = userData;
             Tracker = tracker;
             _configProviders = configProviders;
-            ConfigManager = configManager;
+            RemoteConfigRepository = remoteConfigRepository;
+            ConfigAccessor = configAccessor;
             TimerManager = timerManager;
 
             if (userStateListeners != null)
             {
                 foreach (var userStateListener in userStateListeners)
                 {
-                    CoreUserData.OnUserStateChangeEvent += userStateListener.OnCoreUserStateChange;
+                    UserData.OnUserStateChangeEvent += userStateListener.OnUserStateChange;
                 }
             }
 
             Mono = mono;
             Mono.LifecycleListener = this;
+            _gameBlocker = gameBlocker;
         }
 
         public SwCoreMonoBehaviour GetMono ()
@@ -90,17 +99,18 @@ namespace SupersonicWisdomSDK
             SwContainerUtils.InitContainerAsync(this, _stageSpecificCustomInitRunnable);
         }
 
-        public virtual IEnumerator InitAsync()
+        public virtual IEnumerator InitAsync ()
         {
             yield return DeepLinkHandler.SetupDeepLink();
             DevTools.EnableDevtools(Debug.isDebugBuild || Settings.enableDevtools);
+            LocalConfigHandler.Setup(_configProviders);
 
-            yield return WisdomCoreNativeAdapter.InitSDK();
-            CoreUserData.Load(InitParams);
-            ConfigManager.Init(_configProviders);
+            yield return WisdomNativeAdapter.InitSDK();
+            RemoteConfigRepository.Init();
+            UserData.Load(InitParams);
 
-            yield return WisdomCoreNativeAdapter.InitNativeSession();
-            Tracker.TrackInfraEvent("AppOpen", CoreUserData.IsNew ? "first" : "");
+            yield return WisdomNativeAdapter.InitNativeSession();
+            Tracker.TrackInfraEvent("AppOpen", UserData.IsNew ? "first" : "");
         }
 
         public virtual void AfterInit(Exception exception)
@@ -116,14 +126,23 @@ namespace SupersonicWisdomSDK
 
         protected virtual IEnumerator BeforeReady ()
         {
+            IsBlocked = RemoteConfigRepository.Unavailable;
+
             yield break;
         }
 
-        protected IEnumerator NotifyReadiness()
+        protected IEnumerator NotifyReadiness ()
         {
-            if (IsReady) yield break;
+            if (IsReady || IsBlocked) yield break;
 
             yield return BeforeReady();
+            
+            if (IsBlocked)
+            {
+                _gameBlocker.ShowPopup(ConfigAccessor.GetConfigValue(SwGameBlocker.AvailabilityMessageKey, null));
+
+                yield break;
+            }
 
             IsReady = true;
 
@@ -133,8 +152,8 @@ namespace SupersonicWisdomSDK
                 {
                     readyEventListener?.OnSwReady();
                 }
-                
-                Tracker.TrackInfraEvent(READY_EVENT_NAME, GetAdapterVersionAndStatus(), WisdomCoreNativeAdapter.GetAppInstallSource());
+
+                Tracker.TrackInfraEvent("Ready", GetAdapterVersionAndStatus());
                 SwInfra.Logger.Log("SwCoreContainer | OnReadyEvent");
                 OnReadyEvent?.Invoke();
             }
@@ -145,9 +164,9 @@ namespace SupersonicWisdomSDK
             }
         }
 
-        public abstract void OnStart();
+        public abstract void OnStart ();
 
-        public virtual void OnUpdate()
+        public virtual void OnUpdate ()
         {
             DevTools.OnUpdate();
         }

@@ -31,8 +31,6 @@ public class HumanAI
 
     public HumanController TargetHuman => targetHuman;
 
-    public int ActiveRivalsCount => activeRivals.Count;
-
     public HumanAI(HumanController humanController)
     {
         hostHuman = humanController;
@@ -52,11 +50,11 @@ public class HumanAI
                 }
                 else
                 {
-                    if (behaviourMode == HumanBehaviourType.Assault && hostHuman.components.animator.enabled)
+                    if (behaviourMode == HumanBehaviourType.Assault)
                     {
                         hostHuman.MoveTo(targetHuman.transform.position);
                     }
-                    else if (hostHuman.IsFree)
+                    else
                     {
                         hostHuman.FocusOn(targetHuman.transform.position);
                     }
@@ -76,6 +74,8 @@ public class HumanAI
                     {
                         hostHuman.Stop();
                     }
+
+                    //hostHuman.AttackAnimatorListener.Reset();
                 }
 
                 if (isTargetPositionAvailable)

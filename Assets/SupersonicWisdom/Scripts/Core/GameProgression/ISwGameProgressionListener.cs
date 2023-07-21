@@ -4,7 +4,7 @@ namespace SupersonicWisdomSDK
     {
         #region --- Public Methods ---
 
-        void OnTimeBasedGameStarted();
+        void OnTimeBasedGameStarted ();
         void OnLevelCompleted(long level, string levelName, long attempts, long revives);
         void OnLevelFailed(long level, string levelName, long attempts, long revives);
         void OnLevelRevived(long level, string levelName, long attempts, long revives);

@@ -1,7 +1,5 @@
 package wisdom.library.domain.events.session.interactor;
 
-import android.content.SharedPreferences;
-
 import wisdom.library.domain.events.dto.Constants;
 import wisdom.library.util.SdkLogger;
 import wisdom.library.domain.events.IEventsQueue;
@@ -24,10 +22,6 @@ public class SessionManager implements ISessionManager, ISessionListener {
     private static final String SESSION_EVENT_NAME = "Session";
     private static final String START_SESSION_EVENT = "StartSession";
     private static final String END_SESSION_EVENT = "FinishSession";
-    private static final String MEGA_SESSION_COUNTER = "megaSessionCounter";
-    private static final String SESSION_IN_MEGA_COUNTER = "sessionInMegaCounter";
-    private static final String SESSION_COUNTER = "sessionCounter";
-    private static final String SW_PREFS_PREFIX = "sw_";
 
     private String mCurrentSessionId;
     private long mSessionStartTime;
@@ -35,55 +29,29 @@ public class SessionManager implements ISessionManager, ISessionListener {
     private long mSessionDuration;
     private boolean mIsSessionInitialized;
 
-    private final SharedPreferences mSharedPrefs;
     private IEventMetadataManager mEventMetadataManager;
     private IConversionDataManager mConversionDataManager;
     private List<ISessionListener> mSessionListeners;
     private IEventsReporter mEventsReporter;
     private IEventsQueue mEventsQueue;
-    
-    private long mMegaSessionsCounter;
-    private long mSessionsInMegaSessionCounter;
-    private long mTotalSessionsCounter;
 
     static { // Static constructor, will run once in app session lifetime. Will be reset only after app is killed (of course).
         MEGA_SESSION_ID = UUID.randomUUID().toString();
     }
 
     public SessionManager(IEventsReporter reporter, IEventMetadataManager eventMetadataManager,
-                          IConversionDataManager conversionDataManager, IEventsQueue eventsQueue, SharedPreferences sharedPref) {
+                          IConversionDataManager conversionDataManager, IEventsQueue eventsQueue) {
         mEventsReporter = reporter;
         mEventMetadataManager = eventMetadataManager;
         mConversionDataManager = conversionDataManager;
         mEventsQueue = eventsQueue;
         mIsSessionInitialized = false;
         mSessionListeners = new ArrayList<>(1);
-        mSharedPrefs = sharedPref;
-        
-        loadSessionData();
-        mSessionsInMegaSessionCounter = 0;
-        mMegaSessionsCounter++;
-        saveSessionData();
-    }
-
-    private void loadSessionData() {
-        mMegaSessionsCounter = mSharedPrefs.getLong(SW_PREFS_PREFIX + MEGA_SESSION_COUNTER, 0);
-        mTotalSessionsCounter = mSharedPrefs.getLong(SW_PREFS_PREFIX + SESSION_COUNTER, 0);
-    }
-
-    private void saveSessionData() {
-        SharedPreferences.Editor editor = mSharedPrefs.edit();
-        editor.putLong(SW_PREFS_PREFIX + MEGA_SESSION_COUNTER, mMegaSessionsCounter);
-        editor.putLong(SW_PREFS_PREFIX + SESSION_COUNTER, mTotalSessionsCounter);
-        editor.apply();
     }
 
     private void openSession() {
         mCurrentSessionId = UUID.randomUUID().toString();
         mSessionStartTime = currentTimeSeconds();
-        mSessionsInMegaSessionCounter++;
-        mTotalSessionsCounter++;
-        saveSessionData();
     }
 
     private void closeSession() {
@@ -107,7 +75,9 @@ public class SessionManager implements ISessionManager, ISessionListener {
         openSession();
         
         try {
-            JSONObject customsJson = createEventCustoms(START_SESSION_EVENT, String.valueOf(0));
+            JSONObject customsJson = new JSONObject();
+            customsJson.put(Constants.KEY_CUSTOM_1, START_SESSION_EVENT);
+            customsJson.put(Constants.KEY_CUSTOM_2, String.valueOf(0));
             JSONObject event = SwUtils.createEvent(SESSION_EVENT_NAME, mCurrentSessionId, MEGA_SESSION_ID, mConversionDataManager.getConversionData(), mEventMetadataManager.get(), customsJson.toString(), "");
             mEventsReporter.reportEvent(event);
             onSessionStarted(mCurrentSessionId);
@@ -117,20 +87,12 @@ public class SessionManager implements ISessionManager, ISessionListener {
         }
     }
 
-    private JSONObject createEventCustoms(String eventName, String sessionDuration) throws JSONException {
-        JSONObject customsJson = new JSONObject();
-        customsJson.put(Constants.KEY_CUSTOM_1, eventName);
-        customsJson.put(Constants.KEY_CUSTOM_2, sessionDuration);
-        customsJson.put(MEGA_SESSION_COUNTER, mMegaSessionsCounter);
-        customsJson.put(SESSION_IN_MEGA_COUNTER, mSessionsInMegaSessionCounter);
-        customsJson.put(SESSION_COUNTER, mTotalSessionsCounter);
-        return customsJson;
-    }
-
     private void endSession() {
         closeSession();
         try {
-            JSONObject customsJson = createEventCustoms(END_SESSION_EVENT, String.valueOf(mSessionDuration));
+            JSONObject customsJson = new JSONObject();
+            customsJson.put(Constants.KEY_CUSTOM_1, END_SESSION_EVENT);
+            customsJson.put(Constants.KEY_CUSTOM_2, String.valueOf(mSessionDuration));
             JSONObject event = SwUtils.createEvent(SESSION_EVENT_NAME, mCurrentSessionId, MEGA_SESSION_ID, mConversionDataManager.getConversionData(), mEventMetadataManager.get(), customsJson.toString(), "");
             mEventsReporter.reportEvent(event);
             

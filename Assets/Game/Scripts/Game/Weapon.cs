@@ -2,13 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum WeaponType { Fist, Bat, Brick, Bow, Pistol, Rifle, AK, AR, MG, Snipe, Grenade, Firegun }
-
 [System.Serializable]
 public class Weapon
 {
+    [HideInInspector]
     public string title;
-    [Space]
+
     public GameObject weaponContainer;
     public GameObject weaponModel;
     [Space]
@@ -44,9 +43,6 @@ public class Weapon
 
     private float damage;
 
-    private float damageMultiplier;
-    private float reloadingTimeDivider;
-
     private float previousAttackTime;
     private float availableAttackTime;
 
@@ -70,14 +66,11 @@ public class Weapon
 
         damage = damageRate * reloadingTime;
 
-        damageMultiplier = 1f;
-        reloadingTimeDivider = 1f;
-
         sqrAttackDistance = attackDistance * attackDistance;
 
         if (ammoContainer && projectileSpeed > 0)
         {
-            ammoPoolSize = Mathf.CeilToInt(attackDistance / (projectileSpeed * reloadingTime)) * 5 + 1;
+            ammoPoolSize = Mathf.CeilToInt(attackDistance / (projectileSpeed * reloadingTime)) + 1;
 
             projectilePool = new Pool<Projectile>(GenerateProjectiles(ammoPoolSize));
         }
@@ -134,11 +127,11 @@ public class Weapon
 
                 if (projectilePool == null)
                 {
-                    human.Damage(damage * damageMultiplier, ownerHuman);
+                    human.Damage(damage, ownerHuman);
                 }
                 else
                 {
-                    projectilePool.Eject().Launch(human.transform.position + Random.insideUnitSphere * 0.2f, projectileSpeed, () => human.Damage(damage * damageMultiplier, ownerHuman));
+                    projectilePool.Eject().Launch(human.transform.position + Random.insideUnitSphere * 0.2f, projectileSpeed, () => human.Damage(damage, ownerHuman));
                 }
 
                 if (attackVFX)
@@ -148,7 +141,7 @@ public class Weapon
 
                 AppManager.Instance.PlayHaptic(MoreMountains.NiceVibrations.HapticTypes.LightImpact);
 
-                availableAttackTime = Time.timeSinceLevelLoad + reloadingTime / reloadingTimeDivider;
+                availableAttackTime = Time.timeSinceLevelLoad + reloadingTime;
 
                 return true;
             }
@@ -168,11 +161,11 @@ public class Weapon
 
         if (projectilePool == null)
         {
-            human.Damage(damageRate * Mathf.Clamp(Time.timeSinceLevelLoad - previousAttackTime, 0, reloadingTime) * damageMultiplier, ownerHuman);
+            human.Damage(damageRate * Mathf.Clamp(Time.timeSinceLevelLoad - previousAttackTime, 0, reloadingTime), ownerHuman);
         }
         else
         {
-            projectilePool.Eject().Launch(human.transform.position + Random.insideUnitSphere * 0.2f, projectileSpeed, () => human.Damage(damage * damageMultiplier, ownerHuman));
+            projectilePool.Eject().Launch(human.transform.position + Random.insideUnitSphere * 0.2f, projectileSpeed, () => human.Damage(damage, ownerHuman));
         }
 
         if (attackVFX)
@@ -189,24 +182,6 @@ public class Weapon
         {
             AttackImmediate(human);
         }
-    }
-
-    public void SetDamageMultiplier(float multiplier)
-    {
-        if (animationRelated)
-        {
-            damageMultiplier = multiplier;
-        }
-        else
-        {
-            reloadingTimeDivider = multiplier;
-        }
-    }
-
-    public void ResetDamageMultiplier()
-    {
-        damageMultiplier = 1f;
-        reloadingTimeDivider = 1f;
     }
 
     public void Lower()

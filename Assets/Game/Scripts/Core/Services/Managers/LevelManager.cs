@@ -60,9 +60,9 @@ public class LevelManager : Service<LevelManager>
     {
         if (!_isLevelStarted)
         {
-            _isLevelStarted = true;
-
             StartCoroutine(LevelStartingCoroutine());
+
+            print($" --- Event: level start [val: {LevelNumber}]");
 
 #if !UNITY_EDITOR
 
@@ -83,6 +83,15 @@ public class LevelManager : Service<LevelManager>
             _levelFinishTime = Time.timeSinceLevelLoad;
 
             SwitchLevelEntities(false);
+
+            if (_isLevelPassed)
+            {
+                print($" --- Event: level complete [val: {LevelNumber}]");
+            }
+            else
+            {
+                print($" --- Event: level failed [val: {LevelNumber}]");
+            }
 
 #if !UNITY_EDITOR
 
@@ -194,6 +203,8 @@ public class LevelManager : Service<LevelManager>
     private IEnumerator LevelStartingCoroutine()
     {
         // TODO Pre-start code
+
+        _isLevelStarted = true;
 
         _levelStartTime = Time.timeSinceLevelLoad;
 

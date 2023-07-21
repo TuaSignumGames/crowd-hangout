@@ -10,51 +10,32 @@ public class HumanControllerEditor : Editor
 
     private HumanController humanController;
 
-    [MenuItem("Human/Pose/Peek")]
-    static void PeekPose()
+    public override void OnInspectorGUI()
     {
-        HumanController selectedHuman = null;
+        base.OnInspectorGUI();
 
-        foreach (GameObject gameObject in Selection.gameObjects)
+        humanController = (HumanController)target;
+
+        /*
+        if (humanController.poseSettings.updateLerping)
         {
-            selectedHuman = gameObject.GetComponent<HumanController>();
+            humanController.SetConfusedPose(humanController.poseSettings.confuseFactor);
+        }
 
-            if (selectedHuman)
+        if (drawer.DrawButton("Peek Selected Pose"))
+        {
+            switch (humanController.poseSettings.selectedPose)
             {
-                selectedHuman.poseSettings.additionalPoses.Add(selectedHuman.PeekPose());
+                case HumanPoseType.Default: humanController.poseSettings.defaultPose = humanController.PeekPose(); break;
+                case HumanPoseType.FrontConfuse: humanController.poseSettings.frontConfusePose = humanController.PeekPose(); break;
+                case HumanPoseType.BackConfuse: humanController.poseSettings.backConfusePose = humanController.PeekPose(); break;
             }
         }
-    }
+        */
 
-    [MenuItem("Human/Pose/Peek From Animator")]
-    static void PeekPoseFromAnimator()
-    {
-        HumanController selectedHuman = null;
-
-        foreach (GameObject gameObject in Selection.gameObjects)
+        if (drawer.DrawButton("Reset Pose"))
         {
-            selectedHuman = gameObject.transform.parent.GetComponent<HumanController>();
-
-            if (selectedHuman)
-            {
-                selectedHuman.poseSettings.additionalPoses.Add(selectedHuman.PeekPose());
-            }
-        }
-    }
-
-    [MenuItem("Human/Pose/Reset")]
-    static void ResetPose()
-    {
-        HumanController selectedHuman = null;
-
-        foreach (GameObject gameObject in Selection.gameObjects)
-        {
-            selectedHuman = gameObject.GetComponent<HumanController>();
-
-            if (selectedHuman)
-            {
-                selectedHuman.SetPose(selectedHuman.poseSettings.defaultPose);
-            }
+            humanController.SetPose(humanController.poseSettings.defaultPose);
         }
     }
 }

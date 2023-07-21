@@ -4,12 +4,22 @@ using UnityEngine;
 
 public class WorldManager : MonoBehaviour
 {
-    public static WorldManager Instance;
+    public static HumanController humanPrefab;
+
+    public static EnvironmentSettings environmentSettings;
+
+    public static List<HumanController> yellowTeamHumans;
+    public static List<HumanController> redTeamHumans;
+
+    public static List<Weapon> weaponAssortment;
+
+    public static ProgressionSettings gameProgressionSettings;
+    public static BattlePathProgressionSettings battlePathProgressionSettings;
+
+    public static UpgradeSettings weaponUpgradeSettings;
+    public static UpgradeSettings populationUpgradeSettings;
 
     public HumanController _humanPrefab;
-    public List<MaterialSetData> _humanSkinSets;
-    [Space]
-    public List<WeaponSetInfo> _weaponSets;
     [Space]
     public EnvironmentSettings _environmentSettings;
     [Space]
@@ -19,51 +29,13 @@ public class WorldManager : MonoBehaviour
     public UpgradeSettings _weaponUpgradeSettings;
     public UpgradeSettings _populationUpgradeSettings;
 
-    public static HumanController humanPrefab;
-    public static List<MaterialSetData> humanSkinSets;
-
-    public static List<WeaponSetInfo> weaponSets;
-
-    public static Pool<Material> humanMaterialPool;
-
-    public static List<HumanController> yellowTeamHumans;
-    public static List<HumanController> redTeamHumans;
-
-    public static List<Weapon> weaponAssortment;
-
-    public static EnvironmentSettings environmentSettings;
-
-    public static ProgressionSettings gameProgressionSettings;
-    public static BattlePathProgressionSettings battlePathProgressionSettings;
-
-    public static UpgradeSettings weaponUpgradeSettings;
-    public static UpgradeSettings populationUpgradeSettings;
-
-    private static int themeIndex;
-    private static int humanSkinSetIndex;
-
     private static UpgradeInfo actualUpgradeInfo;
-
-    public static ThemeInfo CurrentTheme => environmentSettings.themes[themeIndex];
-
-    public static int ThemeIndex => themeIndex;
-    public static int HumanSkinSetIndex => humanSkinSetIndex;
 
     private void Awake()
     {
-        Instance = this;
+        humanPrefab = _humanPrefab;
 
         environmentSettings = _environmentSettings;
-
-        humanPrefab = _humanPrefab;
-        humanSkinSets = _humanSkinSets;
-
-        weaponSets = _weaponSets;
-
-        themeIndex = GameManager.Instance.creativeMode ? CreativeManager.Instance.ThemeIndex : 0;
-        humanSkinSetIndex = GameManager.Instance.creativeMode ? CreativeManager.Instance.HumanSkinSetIndex : 0;
-
-        humanMaterialPool = new Pool<Material>(humanSkinSets[humanSkinSetIndex].materials);
 
         yellowTeamHumans = new List<HumanController>();
         redTeamHumans = new List<HumanController>();
@@ -75,10 +47,6 @@ public class WorldManager : MonoBehaviour
 
         weaponUpgradeSettings = _weaponUpgradeSettings;
         populationUpgradeSettings = _populationUpgradeSettings;
-
-        RenderSettings.skybox = environmentSettings.themes[themeIndex].skyboxMaterial;
-
-        environmentSettings.particles.InitializePools(5);
 
         //int iterations = 50;
 
@@ -109,9 +77,9 @@ public class WorldManager : MonoBehaviour
         return humanPrefab.weaponSettings.Count - 1;
     }
 
-    public static void Upgrade(CollectibleType upgradeTarget)
+    public static void Upgrade(LevelElementType upgradeTarget)
     {
-        if (upgradeTarget == CollectibleType.Weapon)
+        if (upgradeTarget == LevelElementType.CollectibleWeapon)
         {
             actualUpgradeInfo = weaponUpgradeSettings.GetUpgradeInfo(GameManager.WeaponUpgradeIndex++);
 
@@ -120,7 +88,7 @@ public class WorldManager : MonoBehaviour
             HumanController.selectedHuman.SetWeapon(GetWeaponID(actualUpgradeInfo.value));
         }
 
-        if (upgradeTarget == CollectibleType.Human)
+        if (upgradeTarget == LevelElementType.CollectibleHuman)
         {
             actualUpgradeInfo = populationUpgradeSettings.GetUpgradeInfo(GameManager.PopulationUpgradeIndex++);
 
@@ -134,30 +102,6 @@ public class WorldManager : MonoBehaviour
         print($" - Crytical stage: {GameManager.CryticalStageIndex}");
 
         //LevelGenerator.Instance.GenerateComposition();
-    }
-
-    public static HumanController GetClosestHuman(HumanTeam team, Vector3 position)
-    {
-        HumanController[] requestedTeamHumans = team == HumanTeam.Yellow ? yellowTeamHumans.ToArray() : redTeamHumans.ToArray();
-
-        HumanController closestHuman = null;
-
-        float actualHumanSqrDistance = 0;
-        float closestHumanSqrDistance = float.MaxValue;
-
-        for (int i = 0; i < requestedTeamHumans.Length; i++)
-        {
-            actualHumanSqrDistance = (requestedTeamHumans[i].transform.position - position).sqrMagnitude;
-
-            if (actualHumanSqrDistance < closestHumanSqrDistance)
-            {
-                closestHuman = requestedTeamHumans[i];
-
-                closestHumanSqrDistance = actualHumanSqrDistance;
-            }
-        }
-
-        return closestHuman;
     }
 
     public static HumanController[] GetHumansAhead(HumanTeam team, float x)
@@ -177,57 +121,8 @@ public class WorldManager : MonoBehaviour
         return selectedHumans.ToArray();
     }
 
-    public static HumanController[] GetHumansBefore(HumanTeam team, float x)
-    {
-        HumanController[] requestedTeamHumans = team == HumanTeam.Yellow ? yellowTeamHumans.ToArray() : redTeamHumans.ToArray();
-
-        List<HumanController> selectedHumans = new List<HumanController>();
-
-        for (int i = 0; i < requestedTeamHumans.Length; i++)
-        {
-            if (requestedTeamHumans[i].transform.position.x < x)
-            {
-                selectedHumans.Add(requestedTeamHumans[i]);
-            }
-        }
-
-        return selectedHumans.ToArray();
-    }
-
-    public static string[] GetHumanSkinSetTitles()
-    {
-        string[] titles = new string[humanSkinSets.Count];
-
-        for (int i = 0; i < titles.Length; i++)
-        {
-            titles[i] = humanSkinSets[i].title;
-        }
-
-        return titles;
-    }
-
-    public static string[] GetWeaponSetTitles()
-    {
-        string[] titles = new string[weaponSets.Count];
-
-        for (int i = 0; i < titles.Length; i++)
-        {
-            titles[i] = weaponSets[i].title;
-        }
-
-        return titles;
-    }
-
     private void OnValidate()
     {
-        if (_weaponSets.Count > 0)
-        {
-            for (int i = 0; i < _weaponSets.Count; i++)
-            {
-                _weaponSets[i].GetTitle();
-            }
-        }
-
         if (_gameProgressionSettings.progressionStages.Count > 0)
         {
             for (int i = 0; i < _gameProgressionSettings.progressionStages.Count; i++)

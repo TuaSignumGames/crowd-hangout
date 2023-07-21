@@ -17,14 +17,16 @@ namespace SupersonicWisdomSDK
         #region --- Members ---
 
         private readonly SwSettings _settings;
+        private readonly SwStoreKeys _storeKeys;
 
         #endregion
 
 
         #region --- Construction ---
 
-        public SwStage1DeepLinkHandler(SwSettings settings, ISwWebRequestClient webRequestClient) : base(settings, webRequestClient)
+        public SwStage1DeepLinkHandler(SwSettings settings, ISwWebRequestClient webRequestClient, SwStoreKeys storeKeys) : base(settings, webRequestClient)
         {
+            _storeKeys = storeKeys;
             _settings = settings;
         }
 
@@ -60,7 +62,7 @@ namespace SupersonicWisdomSDK
                 // In case of deep link with new testId param, remove old config (overkill) to cancel previous A/B config 
                 if (SwInfra.KeyValueStore.HasKey(SwStage1DeepLinkConstants.TestIdStorageKey) && !SwInfra.KeyValueStore.GetString(SwStage1DeepLinkConstants.TestIdStorageKey).Equals(newTestId))
                 {
-                    SwInfra.KeyValueStore.DeleteKey(SwStoreKeys.InitialConfig);
+                    SwInfra.KeyValueStore.DeleteKey(_storeKeys.Config);
                 }
 
                 // In case of deep link with testId as empty string param delete any previous cached testId

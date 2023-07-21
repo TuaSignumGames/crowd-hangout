@@ -9,7 +9,7 @@ namespace SupersonicWisdomSDK
 
         private bool _shouldInvokeTick;
         private float _lastTick;
-        private float _tickIntervalSeconds;
+        private float _tickInterval;
 
         #endregion
 
@@ -26,13 +26,13 @@ namespace SupersonicWisdomSDK
 
         #region --- Public Methods ---
 
-        public static SwStopWatch Create(GameObject gameObject, string name = "", bool pauseWhenUnityOutOfFocus = false, float tickIntervalSeconds = 0)
+        public static SwStopWatch Create(GameObject gameObject, string name = "", bool pauseWhenUnityOutOfFocus = false, float tickInterval = 0)
         {
             var instance = gameObject.AddComponent<SwStopWatch>();
             instance.Name = string.IsNullOrEmpty(name) ? instance.Name : name;
             instance.Duration = Mathf.Infinity;
             instance.PauseWhenUnityOutOfFocus = pauseWhenUnityOutOfFocus;
-            instance._tickIntervalSeconds = tickIntervalSeconds;
+            instance._tickInterval = tickInterval;
 
             return instance;
         }
@@ -49,7 +49,7 @@ namespace SupersonicWisdomSDK
             // _lastTick equals to the last elapsed time that the progress of Elapsed passed another time chunk _tickInterval.
             // As long as `Elapsed - _lastTick < _tickInterval` we know that we are in the middle a time chunk.
             // So when `Elapsed - _lastTick >= _tickInterval` it's time to reset _lastTick and set _shouldInvokeTick to true.
-            if (Elapsed - _lastTick >= _tickIntervalSeconds)
+            if (Elapsed - _lastTick >= _tickInterval)
             {
                 _lastTick = Elapsed;
                 _shouldInvokeTick = true;

@@ -4,8 +4,8 @@ namespace SupersonicWisdomSDK
     {
         #region --- Public Methods ---
 
-        string GetAdvertisingId();
-        string GetOrganizationAdvertisingId();
+        string GetAdvertisingId ();
+        string GetOrganizationAdvertisingId ();
 
         #endregion
     }

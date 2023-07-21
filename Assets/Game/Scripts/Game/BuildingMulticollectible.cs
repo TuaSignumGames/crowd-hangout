@@ -110,13 +110,6 @@ public class BuildingMulticollectible : HumanMulticollectible
         }
     }
 
-    protected override void OnTriggerEnter(Collider other)
-    {
-        base.OnTriggerEnter(other);
-
-        PlayerController.Humanball.DropHumans(0.5f);
-    }
-
     [System.Serializable]
     public class BuildingSettings
     {
@@ -184,10 +177,7 @@ public class BuildingMulticollectible : HumanMulticollectible
                 humanCollectibles[i].Entity.transform.position = transform.position + new Vector3(Random.Range(-1.5f, 1.5f), 0.2f, 0);
             }
 
-            if (humanCountMarker != null)
-            {
-                humanCountMarker.SetValue(humanCollectibles.Length.ToString());
-            }
+            humanCountMarker.SetValue(humanCollectibles.Length.ToString());
         }
 
         public void DropElements()

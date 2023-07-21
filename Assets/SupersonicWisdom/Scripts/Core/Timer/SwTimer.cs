@@ -19,8 +19,6 @@ namespace SupersonicWisdomSDK
         #region --- Members ---
 
         private bool _isNextUpdateAfterAppResume;
-        private bool _isPaused;
-        private bool _wasPaused;
 
         #endregion
 
@@ -33,26 +31,9 @@ namespace SupersonicWisdomSDK
         }
 
         public bool DidFinish { get; private set; }
-
-        public bool IsPaused
-        {
-            get
-            {
-                return _isPaused;
-            }
-            private set
-            {
-                if (_isPaused && !value)
-                {
-                    _wasPaused = true;
-                }
-                
-                _isPaused = value;
-            }
-        }
+        public bool IsPaused { get; private set; }
 
         public bool PauseWhenUnityOutOfFocus { get; set; }
-        ///  Duration in seconds
         public float Duration { get; set; }
         public float Elapsed { get; set; }
 
@@ -74,13 +55,14 @@ namespace SupersonicWisdomSDK
                 {
                     // On this case unity has just resumed so for timers with PauseWhenUnityOutOfFocus == true
                     // The delta time should be very close to zero regardless of Time.unscaledDeltaTime value
-                    return _isNextUpdateAfterAppResume || _wasPaused ? Mathf.Epsilon : Time.unscaledDeltaTime;
+                    return _isNextUpdateAfterAppResume ? Mathf.Epsilon : Time.unscaledDeltaTime;
                 }
 
                 // For timers with PauseWhenUnityOutOfFocus == false
                 // The first update of Elapsed (when Elapsed == 0) should ignore
                 // current delta unscaledDeltaTime since it can be very long
-                return Elapsed == 0 || _wasPaused ? Mathf.Epsilon : Time.unscaledDeltaTime;
+                return Elapsed == 0 ? Mathf.Epsilon : Time.unscaledDeltaTime;
+                ;
             }
         }
 
@@ -132,11 +114,11 @@ namespace SupersonicWisdomSDK
 
         #region --- Public Methods ---
 
-        public static SwTimer Create(GameObject gameObject, string name = "", float durationSeconds = 0, bool pauseWhenUnityOutOfFocus = false)
+        public static SwTimer Create(GameObject gameObject, string name = "", float duration = 0, bool pauseWhenUnityOutOfFocus = false)
         {
             var instance = gameObject.AddComponent<SwTimer>();
             instance.Name = string.IsNullOrEmpty(name) ? instance.Name : name;
-            instance.Duration = durationSeconds;
+            instance.Duration = duration;
             instance.PauseWhenUnityOutOfFocus = pauseWhenUnityOutOfFocus;
 
             return instance;
@@ -144,7 +126,7 @@ namespace SupersonicWisdomSDK
 
         public ISwTimer PauseTimer ()
         {
-            if (!IsEnabled || IsPaused) return this;
+            if (IsPaused) return this;
 
             SwInfra.Logger.Log($"SwTimer | PauseTimer | {Name}");
             Pause();
@@ -176,7 +158,6 @@ namespace SupersonicWisdomSDK
             SwInfra.Logger.Log($"SwTimer | StopTimer | {Name}");
             Reset();
 
-            OnStoppedEvent?.Invoke();
             return this;
         }
         
@@ -223,8 +204,8 @@ namespace SupersonicWisdomSDK
                 Elapsed = Duration;
 
                 DidFinish = true;
-                IsEnabled = false;
                 OnFinishEvent?.Invoke();
+                StopTick();
                 SwInfra.Logger.Log($"SwTimer | OnFinishEvent | {Name}");
             }
             else
@@ -237,8 +218,6 @@ namespace SupersonicWisdomSDK
                     OnTickEvent?.Invoke(Elapsed, Duration - Elapsed);
                 }
             }
-            
-            _wasPaused = false;
         }
 
         private void ResumeTick ()
@@ -249,10 +228,9 @@ namespace SupersonicWisdomSDK
 
         private void StopTick ()
         {
-            if (!IsEnabled) return;
-            
             SwInfra.Logger.Log($"SwTimer | StopTick | {Name}");
             IsEnabled = false;
+            OnStoppedEvent?.Invoke();
         }
 
         #endregion

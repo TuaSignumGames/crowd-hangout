@@ -2,18 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CollectibleType { Human, Weapon }
-
 [System.Serializable]
 public class CollectibleSettings
 {
     public List<CollectibleData> humanCollectibles;
-    public AnimationCurve populationCurve;
-    [Space]
     public List<WeaponMulticollectible> weaponCollectibles;
-    [Space]
-    public MagnetCollectible magnetCollectible;
-    public PropellerCollectible propellerCollectible;
+    public AnimationCurve populationCurve;
 
     private List<HumanMulticollectible> availableHumanCollectiblePrefabs;
 

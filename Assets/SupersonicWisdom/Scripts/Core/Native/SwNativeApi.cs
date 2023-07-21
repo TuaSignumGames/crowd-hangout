@@ -3,14 +3,12 @@ using UnityEngine;
 
 namespace SupersonicWisdomSDK
 {
-    internal abstract class SwNativeApi : ISwNativeApi
+    internal abstract class SwNativeApi : ISwAdvertisingIdsGetter
     {
         #region --- Members ---
 
         protected static OnSessionEnded OnSessionEndedCallbacks;
         protected static OnSessionStarted OnSessionStartedCallbacks;
-        protected static OnWebResponse OnWebResponseCallbacks;
-        protected static OnConnectivityStatusChanged OnConnectivityStatusChangedCallbacks;
 
         protected readonly SwNativeBridge NativeBridge;
 
@@ -40,19 +38,9 @@ namespace SupersonicWisdomSDK
             return NativeBridge.GetAdvertisingId();
         }
 
-        public virtual string GetConnectionStatus()
-        {
-            return NativeBridge.GetConnectionStatus();
-        }
-
-        public virtual string GetOrganizationAdvertisingId()
+        public virtual string GetOrganizationAdvertisingId ()
         {
             return NativeBridge.GetOrganizationAdvertisingId();
-        }
-        
-        public virtual string GetAppInstallSource()
-        {
-            return NativeBridge.GetAppInstallSource();
         }
 
         public virtual void InitializeSession(SwEventMetadataDto metadata)
@@ -71,39 +59,29 @@ namespace SupersonicWisdomSDK
         }
 
         public abstract void AddSessionEndedCallback(OnSessionEnded callback);
-
         public abstract void AddSessionStartedCallback(OnSessionStarted callback);
-
-        public abstract void AddServerCallbacks(OnWebResponse callback);
-        
-        public abstract void RemoveSessionEndedCallback(OnSessionEnded callback);
-
-        public abstract void RemoveSessionStartedCallback(OnSessionStarted callback);
-        
-        public abstract void RemoveServerCallbacks(OnWebResponse callback);
-
         public abstract IEnumerator Init(SwNativeConfig configuration);
-
-        public abstract bool IsSupported();
-
-        public abstract void SendRequest(string requestJsonString);
+        public abstract bool IsSupported ();
+        public abstract void RemoveSessionEndedCallback(OnSessionEnded callback);
+        public abstract void RemoveSessionStartedCallback(OnSessionStarted callback);
 
         public abstract bool ToggleBlockingLoader(bool shouldPresent);
 
         public abstract void RequestRateUsPopup();
 
-        public abstract void AddConnectivityCallbacks(OnConnectivityStatusChanged callback);
-        
-        public abstract void RemoveConnectivityCallbacks(OnConnectivityStatusChanged callback);
+        #endregion
 
-        public virtual void RemoveAllSessionCallbacks()
+
+        #region --- Private Methods ---
+
+        protected virtual void RemoveAllSessionCallbacks ()
         {
             ClearDelegates();
         }
 
-        public abstract void ClearDelegates();
+        protected abstract void ClearDelegates ();
 
-        public virtual void TrackEvent(string eventName, string customsJson, string extraJson)
+        internal virtual void TrackEvent(string eventName, string customsJson, string extraJson)
         {
             NativeBridge.TrackEvent(eventName, customsJson, extraJson);
         }

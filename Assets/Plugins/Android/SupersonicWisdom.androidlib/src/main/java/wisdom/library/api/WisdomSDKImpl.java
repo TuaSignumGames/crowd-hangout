@@ -7,10 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 
 import wisdom.library.IdentifiersGetter;
-import wisdom.library.PackageManagement;
-import wisdom.library.api.listener.IWisdomConnectivityListener;
 import wisdom.library.api.listener.IWisdomInitListener;
-import wisdom.library.api.listener.IWisdomRequestListener;
 import wisdom.library.api.listener.IWisdomSessionListener;
 import wisdom.library.data.framework.events.EventsQueue;
 import wisdom.library.data.framework.local.ConversionDataLocalApi;
@@ -23,7 +20,7 @@ import wisdom.library.data.framework.network.core.WisdomNetworkDispatcher;
 import wisdom.library.data.framework.network.utils.NetworkUtils;
 import wisdom.library.data.framework.watchdog.ApplicationLifecycleService;
 import wisdom.library.data.framework.local.EventMetadataLocalApi;
-import wisdom.library.data.framework.network.api.INetwork;
+import wisdom.library.data.framework.network.api.IWisdomNetwork;
 import wisdom.library.data.repository.ConversionDataRepository;
 import wisdom.library.data.repository.datasource.ConversionDataLocalDataSource;
 import wisdom.library.data.repository.datasource.EventsLocalDataSource;
@@ -78,8 +75,7 @@ class WisdomSDKImpl implements IWisdomSDK {
     private ApplicationLifecycleServiceRegistrar mAppLifecycleServiceRegistrar;
 
     private WisdomNetworkDispatcher mDispatcher;
-    private INetwork mNetwork;
-    private NetworkUtils mNetworkUtils;
+    private IWisdomNetwork mNetwork;
 
     private EventsRemoteApi mEventsRemoteApi;
     private EventsRemoteDataSource mEventsRemoteDataSource;
@@ -111,16 +107,13 @@ class WisdomSDKImpl implements IWisdomSDK {
 
     private BlockingFullScreenLoader fullScreenLoader;
     private Handler unityMainThreadHandler;
-    private WisdomRequestManager mRequestManager;
     
     private Activity mActivity;
-    private PackageManagement mPackageManagement;
 
     @Override
     public void init(Activity initialActivity, WisdomConfigurationDto config) {
         SdkLogger.setup(config.isLoggingEnabled);
 
-        SharedPreferences sharedPref = initialActivity.getPreferences(Context.MODE_PRIVATE);
         unityMainThreadHandler = new Handler();
         mApplication = initialActivity.getApplication();
         mPrefs = initialActivity.getSharedPreferences(WISDOM_PREFS_NAME, Context.MODE_PRIVATE);
@@ -135,9 +128,9 @@ class WisdomSDKImpl implements IWisdomSDK {
         mAppLifecycleServiceRegistrar.registerWatchdog(mBgWatchdog);
         mAppLifecycleServiceRegistrar.startService();
 
-        mNetworkUtils = new NetworkUtils(mApplication);
+        NetworkUtils networkUtils = new NetworkUtils(mApplication);
         mDispatcher = new WisdomNetworkDispatcher();
-        mNetwork = new WisdomNetwork(mDispatcher, config.connectTimeout, config.readTimeout, mNetworkUtils);
+        mNetwork = new WisdomNetwork(mDispatcher, config.connectTimeout, config.readTimeout, networkUtils);
 
         ListStoredEventJsonMapper listJsonMapper = new ListStoredEventJsonMapper();
 
@@ -167,14 +160,9 @@ class WisdomSDKImpl implements IWisdomSDK {
         mConversionDatManager = new ConversionDataManager(mConversionDataRepository);
 
         fullScreenLoader = new BlockingFullScreenLoader(initialActivity, config.streamingAssetsFolderPath + "/" + config.blockingLoaderResourceRelativePath, config.blockingLoaderViewportPercentage);
-        
-        mPackageManagement = new PackageManagement(initialActivity.getApplicationContext());
-        
-        mEventsReporter = new EventsReporter(mEventsRepository);
-        mSessionManager = new SessionManager(mEventsReporter, mEventMetadataManager, mConversionDatManager, mEventsQueue, sharedPref);
-        
-        mRequestManager = new WisdomRequestManager(mNetwork, mNetworkUtils);
 
+        mEventsReporter = new EventsReporter(mEventsRepository);
+        mSessionManager = new SessionManager(mEventsReporter, mEventMetadataManager, mConversionDatManager, mEventsQueue);
 
         IdentifiersGetter.fetch(initialActivity, new SwCallback<IdentifiersGetter.GetterResults>() {
             @Override
@@ -245,7 +233,7 @@ class WisdomSDKImpl implements IWisdomSDK {
         String sessionId = mSessionManager.getCurrentSessionId();
         String megaSessionId = mSessionManager.getMegaSessionId();
         String metaDataJson = (mEventMetadataManager.get());
-
+        
         JSONObject eventJson = SwUtils.createEvent(eventName, sessionId, megaSessionId, mConversionDatManager.getConversionData(), metaDataJson, customsJson, extraJson);
 
         mEventsReporter.reportEvent(eventJson);
@@ -272,40 +260,6 @@ class WisdomSDKImpl implements IWisdomSDK {
     }
     
     @Override
-    public void sendRequest(String request) {
-        mRequestManager.sendRequest(request);
-    }
-
-    @Override
-    public void registerWebRequestListener(IWisdomRequestListener listener) {
-        mRequestManager.registerWebRequestListener(listener);
-    }
-    
-    @Override
-    public void unregisterWebRequestListener(IWisdomRequestListener listener) {
-        mRequestManager.unregisterWebRequestListener(listener);
-    }
-
-    @Override
-    public void registerConnectivityListener(IWisdomConnectivityListener listener) {
-        mNetworkUtils.registerToNetworkChanges(listener);
-    }
-
-    @Override
-    public void unregisterConnectivityListener(IWisdomConnectivityListener listener) {
-        mNetworkUtils.unregisterToNetworkChanges(listener);
-    }
-
-    @Override
-    public String getConnectionStatus() {
-        JSONObject connectionStatusJson = new JSONObject();
-        SwUtils.addToJson(connectionStatusJson, NetworkUtils.KEY_IS_AVAILABLE, mNetworkUtils.isAvailable);
-        SwUtils.addToJson(connectionStatusJson, NetworkUtils.KEY_IS_FLIGHT_MODE, mNetworkUtils.isFlightMode());
-        
-        return connectionStatusJson.toString();
-    }
-
-    @Override
     public String getAdvertisingIdentifier() {
         return IdentifiersGetter.getAdvertisingId();
     }
@@ -314,9 +268,6 @@ class WisdomSDKImpl implements IWisdomSDK {
     public String getAppSetIdentifier() {
         return IdentifiersGetter.getAppSetId();
     }
-    
-    @Override
-    public String getAppInstallSource() { return mPackageManagement.getAppInstallerSource(); }
 
     @Override
     public void destroy() {
@@ -406,4 +357,3 @@ class WisdomSDKImpl implements IWisdomSDK {
         }
     }
 }
-

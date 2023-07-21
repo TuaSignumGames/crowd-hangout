@@ -8,13 +8,13 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "SwWisdomRequest.h"
-#import "SwConnectivityManager.h"
+#import "SwNetworkUtils.h"
 
 @interface SwWisdomRequestExecutorTask : NSObject <NSURLSessionDelegate, NSURLSessionTaskDelegate>
 
 @property(assign) UIBackgroundTaskIdentifier bgTaskId;
 
-- (id)initWithRequest:(SwWisdomRequest *)request andWithNetworkUtils:(SwConnectivityManager *)connectivity;
+- (id)initWithRequest:(SwWisdomRequest *)request andWithNetworkUtils:(SwNetworkUtils *)utils;
 - (void)executeRequestAsync;
 - (NSInteger)executeRequest;
 

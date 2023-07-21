@@ -10,7 +10,6 @@ public class PlayerController : MonoBehaviour
 
     public BallSettings ballSettings;
     public RopeSettings ropeSettings;
-    public PowerUpSettings powerUpSettings;
     [Space]
     public TextMarker humanCountMarker;
 
@@ -20,6 +19,8 @@ public class PlayerController : MonoBehaviour
     private Crowd humanballCrowd;
 
     private RaycastHit hitInfo;
+
+    private GameObject peekedGameObject;
 
     private Transform targetBlockTransform;
 
@@ -36,23 +37,17 @@ public class PlayerController : MonoBehaviour
     {
         raycastDirection = new Vector2(Mathf.Cos(ropeSettings.throwingAngle * Mathf.Deg2Rad), Mathf.Sin(ropeSettings.throwingAngle * Mathf.Deg2Rad));
 
-        ball = ballSettings.processor;
+        ball = new HumanballProcessor(ballSettings, LevelGenerator.Instance.TotalHumansCount);
         rope = new RopeProcessor(ropeSettings);
-
-        ball.Initialize(ballSettings, LevelGenerator.Instance.TotalHumansCount * 2);
 
         ball.AssignRope(rope);
         rope.AssignBall(ball);
 
-        powerUpSettings.propeller.Initialize();
-
         Humanball = ball;
 
         humanCountMarker.Initialize();
-        powerUpSettings.progressMarker.Initialize();
 
         ball.Structure.OnLayerIncremented += (a) => humanCountMarker.IncrementDistance(0.2f);
-        ball.Structure.OnLayerIncremented += (a) => powerUpSettings.progressMarker.IncrementDistance(0.2f);
 
         HumanController.InitializeAnimatorHashes();
 
@@ -79,18 +74,11 @@ public class PlayerController : MonoBehaviour
             {
                 if (InputManager.touchPresent && !ball.isAccidented)
                 {
-                    if (powerUpSettings.propeller.IsActive)
+                    if (targetBlockTransform)
                     {
-                        ball.Fly(new Vector3(1f, InputManager.normalizedSlideDisplacement.y * powerUpSettings.propeller.controlSensitivity).normalized, powerUpSettings.propeller.flightSpeed);
-                    }
-                    else
-                    {
-                        if (targetBlockTransform)
+                        if (rope.Connect(targetBlockTransform.position))
                         {
-                            if (rope.Connect(targetBlockTransform.position))
-                            {
-                                ball.Swing();
-                            }
+                            ball.Swing();
                         }
                     }
                 }
@@ -107,120 +95,61 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        ball.OnUpdate();
-
-        if (powerUpSettings.propeller.IsActive)
-        {
-            powerUpSettings.propeller.Update();
-        }
+        ball.Update();
 
         humanCountMarker.Update();
-        powerUpSettings.progressMarker.Update();
     }
 
     private void LateUpdate()
     {
-        if (isBattleMode)
-        {
-
-        }
-        else
+        if (true)
         {
             if (InputManager.touch)
             {
-                if (powerUpSettings.propeller.IsActive)
-                {
+                peekedGameObject = CameraController.Instance.Raycast().transform?.gameObject;
 
-                }
-                else
+                if (peekedGameObject)
                 {
-                    if (ball.IsGrounded || ball.ExternalForceArea != null)
+                    if (peekedGameObject.layer == 12)
                     {
-                        if (ball.IsGrounded)
-                        {
-                            ball.Jump(LevelGenerator.Instance.GetBlockPair(ball.transform.position).Height / 2f);
-                        }
-                    }
-                    else
-                    {
-                        ball.isAccidented = false;
-
-                        if (!rope.IsConnected)
-                        {
-                            targetBlockTransform = RaycastBlock(raycastDirection);
-                        }
+                        print(peekedGameObject.name); // TODO Test BattlePath elements peeking 
                     }
                 }
+            }
+        }
+        if (!isBattleMode)
+        {
+            if (InputManager.touch)
+            {
+                ball.isAccidented = false;
+
+                if (!rope.IsConnected)
+                {
+                    targetBlockTransform = RaycastBlock(raycastDirection);
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                float targetCoordY = LevelGenerator.Instance.GetBlockPair(Humanball.Transform.position).Position.y;
+
+                print($"Target height: {targetCoordY}");
+
+                Humanball.Jump(targetCoordY - Humanball.Transform.position.y);
             }
 
             rope.Update();
         }
 
-        if (powerUpSettings.IsAnyPowerUpActive())
-        {
-            if (powerUpSettings.magnet.IsActive)
-            {
-                if (powerUpSettings.progressMarker.SetValue(powerUpSettings.magnet.GetNormalizedTime()) >= 1f)
-                {
-                    SetMagnet(false);
-                }
-            }
-
-            if (powerUpSettings.propeller.IsActive)
-            {
-                if (powerUpSettings.progressMarker.SetValue(powerUpSettings.propeller.GetNormalizedTime()) >= 1f)
-                {
-                    SetPropeller(false);
-                }
-            }
-        }
-
-        ball.OnLateUpdate();
-    }
-
-    public void SetMagnet(bool enabled)
-    {
-        powerUpSettings.magnet.SetActive(enabled);
-        powerUpSettings.progressMarker.SetActive(enabled);
-
-        LevelGenerator.Instance.MultiplyCollectibleRadiuses(enabled ? powerUpSettings.magnet.colliderMultiplier : 1f / powerUpSettings.magnet.colliderMultiplier);
-    }
-
-    public void SetPropeller(bool enabled)
-    {
-        powerUpSettings.propeller.SetActive(enabled);
-        powerUpSettings.progressMarker.SetActive(enabled);
-
-        if (rope.IsLaunched)
-        {
-            targetBlockTransform = null;
-
-            ball.Release();
-            rope.Disconnect();
-        }
-
-        ball.Structure.SetHumanColliderAsTriggers(enabled);
-
-        ball.SetPropellerMode(enabled);
-        ball.Fly(Vector3.right, powerUpSettings.propeller.flightSpeed);
-    }
-
-    public void DisableAllPowerUps()
-    {
-        SetMagnet(false);
-        SetPropeller(false);
+        ball.LateUpdate();
     }
 
     public void SwitchToBattleMode()
     {
         ball.Rigidbody.isKinematic = true;
 
-        DisableAllPowerUps();
-
         rope.Disconnect();
-        //rope.Update();
-
-        ropeSettings.lineTransform.gameObject.SetActive(false);
+        rope.Update();
 
         humanCountMarker.SetActive(false);
 
@@ -235,9 +164,7 @@ public class PlayerController : MonoBehaviour
     {
         ball.Rigidbody.gameObject.SetActive(false);
 
-        rope.SetActive(false);
-
-        humanCountMarker.SetActive(false);
+        rope.Disconnect();
 
         LevelManager.Instance.OnLevelFinished(false);
     }
@@ -274,19 +201,16 @@ public class PlayerController : MonoBehaviour
     [System.Serializable]
     public class BallSettings
     {
-        public HumanballProcessor processor;
         public Rigidbody rigidbody;
         [Space]
         public float speed;
         public float acceleration;
-        public AnimationCurve angularSpeedCurve;
         [Space]
         public float bumpImpulse;
         public float bumpDampingFactor;
         [Space]
         public Transform suspensionContainer;
         public Transform structureContainer;
-        public Transform attributesContainer;
         [Space]
         public SpringData elasticitySettings;
         public PulseData pulsingSettings;

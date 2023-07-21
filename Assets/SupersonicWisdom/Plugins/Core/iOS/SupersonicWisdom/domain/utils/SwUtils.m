@@ -102,35 +102,6 @@
     return dict ?: @{};
 }
 
-+ (NSDictionary *)dataToDictionary:(NSData *) data {
-    if ([data isKindOfClass: [NSDictionary class]]) return (NSDictionary *) data;
-
-    NSDictionary *dict;
-    
-    if(!data) {
-        return @{};
-    }
-    
-    NSError *error;
-    id jsonObject;
-    
-    jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-    if(error){
-        error = [NSError errorWithDomain:@"Sw" code:1 userInfo:@{@"exception":error}];
-        [SWSDKLogger logMessage:@"Error parsing JSON: %@", data];
-    }
-    else{
-        if ([jsonObject isKindOfClass:[NSDictionary class]]) {
-            dict = (NSDictionary *)jsonObject;
-        }
-        else{
-            [SWSDKLogger logMessage:@"Error parsing JSON: %@", jsonObject];
-        }
-    }
-    
-    return dict ?: @{};
-}
-
 + (NSDictionary *)mergeDictionaries:(NSDictionary *)dict1 other:(NSDictionary *)dict2{
     if(dict1 == nil && dict2 != nil){
         return dict2;

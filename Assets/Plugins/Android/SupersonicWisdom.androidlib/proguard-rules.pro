@@ -22,13 +22,8 @@
 
 -keeppackagenames # This will prevent collisions with other 3rd parties after obfuscation. For example, the same we had with Fyber. Reference: https://supersonicstudio.monday.com/boards/883112163/pulses/2144806504
 
-# Unity Android notifications
--keep class com.unity.androidnotifications.** { *; }
-
 -keep class wisdom.library.api.listener.IWisdomSessionListener { *; }
 -keep class wisdom.library.api.listener.IWisdomInitListener { *; }
--keep class wisdom.library.api.listener.IWisdomRequestListener { *; }
--keep class wisdom.library.api.listener.IWisdomConnectivityListener { *; }
 -keep class wisdom.library.api.WisdomSDK { *; }
 -keep class wisdom.library.WisdomInitProvider { *; }
 -keep class wisdom.library.api.dto.WisdomConfigurationDto {*;}

@@ -14,7 +14,6 @@
 #import "SwBackgroundWatchdogRegistrar.h"
 #import "SwEventsRepository.h"
 #import "SwWisdomConfigurationDto.h"
-#import "SwWisdomSessionCallback.h"
 
 @interface SwSDK : NSObject <SwWisdomSessionDelegate>
 
@@ -25,13 +24,9 @@
 - (void)initializeSession:(NSString *)metadataJson;
 - (void)registerSessionDelegate:(id<SwWisdomSessionDelegate>)delegate;
 - (void)unregisterSessionDelegate:(id<SwWisdomSessionDelegate>)delegate;
-- (void)registerConnectivityDelegate:(id<SwConnectivityStatusCallback>)delegate;
-- (void)unregisterConnectivityDelegate:(id<SwConnectivityStatusCallback>)delegate;
 - (void)setEventMetadata:(NSString *)metadataJson;
 - (void)updateEventMetadata:(NSString *)metadataJson;
 - (void)trackEvent:(NSString *)eventName customsJson:(NSString *)customsJson extraJson:(NSString *)extraJson;
-- (void)sendRequest:(NSString *)requestJsonString withResponseCallback:(OnSwResponse)callback;
-- (NSString *)getConnectionStatus;
 - (void)destroy;
 
 @end

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 
 #if UNITY_IOS
@@ -25,13 +24,6 @@ namespace SupersonicWisdomSDK
 #endif
         }
 
-        public override void SendRequest(string requestJsonString)
-        {
-#if UNITY_IOS
-            sendRequest(requestJsonString);
-#endif
-        }
-
         public override void InitializeSession(SwEventMetadataDto metadata)
         {
 #if UNITY_IOS
@@ -53,13 +45,6 @@ namespace SupersonicWisdomSDK
 #endif
         }
 
-        public override void RegisterWebRequestListener(OnWebResponse callback)
-        {
-#if UNITY_IOS
-            registerWebRequestCallback(callback);
-#endif
-        }
-
         public override void UnregisterSessionStartedCallback(OnSessionStarted callback)
         {
 #if UNITY_IOS
@@ -71,13 +56,6 @@ namespace SupersonicWisdomSDK
         {
 #if UNITY_IOS
             unregisterSessionEndedCallback(callback);
-#endif
-        }
-
-        public override void UnregisterWebRequestListener(OnWebResponse callback)
-        {
-#if UNITY_IOS
-            unregisterWebRequestCallback(callback);
 #endif
         }
 
@@ -109,7 +87,7 @@ namespace SupersonicWisdomSDK
 #if UNITY_IOS && !UNITY_EDITOR
             return UnityEngine.iOS.Device.vendorIdentifier;
 #else
-            return string.Empty; // Unsupported symbol
+            return ""; // Unsupported symbol
 #endif
         }
 
@@ -118,13 +96,8 @@ namespace SupersonicWisdomSDK
 #if UNITY_IOS && !UNITY_EDITOR
             return UnityEngine.iOS.Device.advertisingIdentifier;
 #else
-            return string.Empty; // Unsupported symbol
-#endif
-        }
-
-        public override string GetAppInstallSource()
-        {
             return ""; // Unsupported symbol
+#endif
         }
 
         public override void TrackEvent(string eventName, string customsJson, string extraJson)
@@ -150,29 +123,6 @@ namespace SupersonicWisdomSDK
 #endif
         }
 
-        public override void RegisterConnectivityStatusChanged(OnConnectivityStatusChanged callback)
-        {
-#if UNITY_IOS && !UNITY_EDITOR
-            registerConnectivityListener(callback);
-#endif
-        }
-
-        public override void UnregisterConnectivityStatusChanged(OnConnectivityStatusChanged callback)
-        {
-#if UNITY_IOS && !UNITY_EDITOR
-            unregisterConnectivityListener(callback);
-#endif
-        }
-
-        public override string GetConnectionStatus()
-        {
-#if UNITY_IOS && !UNITY_EDITOR
-            return getConnectionStatus();
-#else
-            return string.Empty;
-#endif
-        }
-
 #if UNITY_IOS
         [DllImport("__Internal")]
         private static extern void initSdk(SwNativeConfig configuration);
@@ -190,25 +140,10 @@ namespace SupersonicWisdomSDK
         private static extern void registerSessionEndedCallback(OnSessionEnded callback);
 
         [DllImport("__Internal")]
-        private static extern void registerWebRequestCallback(OnWebResponse callback);
-
-        [DllImport("__Internal")]
-        private static extern void registerConnectivityListener(OnConnectivityStatusChanged callback);
-        
-        [DllImport("__Internal")]
         private static extern void unregisterSessionStartedCallback(OnSessionStarted callback);
 
         [DllImport("__Internal")]
         private static extern void unregisterSessionEndedCallback(OnSessionEnded callback);
-
-        [DllImport("__Internal")]
-        private static extern void unregisterWebRequestCallback(OnWebResponse callback);
-        
-        [DllImport("__Internal")]
-        private static extern void unregisterConnectivityListener(OnConnectivityStatusChanged callback);
-        
-        [DllImport("__Internal")]
-        private static extern string getConnectionStatus();
 
         [DllImport("__Internal")]
         protected internal static extern bool toggleBlockingLoader(bool shouldPresent);
@@ -224,9 +159,6 @@ namespace SupersonicWisdomSDK
 
         [DllImport("__Internal")]
         private static extern void destroy();
-        
-        [DllImport("__Internal")]
-        private static extern void sendRequest(string requestJson);
 #endif
     }
 }

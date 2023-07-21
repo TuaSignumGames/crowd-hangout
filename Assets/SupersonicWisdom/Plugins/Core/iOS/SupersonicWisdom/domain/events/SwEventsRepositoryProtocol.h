@@ -5,13 +5,13 @@
 //  Created by Andrey Michailov on 17/11/2020.
 //
 
-#import "SwNetworkCallbacks.h"
+#import "SwEventsRemoteStorageDelegate.h"
 
 @protocol SwEventsRepositoryProtocol <NSObject>
 
 @required
-- (void)sendEventAsync:(NSDictionary *)event withResponseCallback:(OnNetworkResponse)callback;
-- (void)sendEventsAsync:(NSArray *)events withResponseCallback:(OnNetworkResponse)callback;
+- (void)sendEventAsync:(NSDictionary *)event withResponseCallback:(OnEventsStoredRemotely)callback;
+- (void)sendEventsAsync:(NSArray *)events withResponseCallback:(OnEventsStoredRemotely)callback;
 
 - (NSInteger)storeEvent:(NSDictionary *)event;
 - (NSInteger)storeEvents:(NSArray *)events;

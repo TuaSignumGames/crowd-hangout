@@ -1,12 +1,10 @@
-using SupersonicWisdomSDK.Editor;
-
 namespace SupersonicWisdomSDK
 {
     internal static class SwNativeApiFactory
     {
         #region --- Public Methods ---
 
-        public static ISwNativeApi GetInstance()
+        public static SwNativeApi GetInstance ()
         {
             if (SwUtils.IsRunningOnAndroid())
             {
@@ -16,11 +14,6 @@ namespace SupersonicWisdomSDK
             if (SwUtils.IsRunningOnIos())
             {
                 return new SwNativeIosApi(new SwNativeIosBridge());
-            }
-
-            if (SwUtils.IsRunningOnEditor())
-            {
-                return new SwNativeEditorApi(null);
             }
 
             return new SwNativeUnsupportedApi(null);

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace SupersonicWisdomSDK
 {
     [Serializable]
-    public class SwAbConfig
+    internal class SwAbConfig
     {
         #region --- Members ---
 

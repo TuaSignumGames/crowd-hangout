@@ -3,11 +3,14 @@ using System.IO;
 #endif
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
+using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 #if UNITY_IOS
 using System.Runtime.InteropServices;
@@ -557,52 +560,21 @@ namespace SupersonicWisdomSDK
         }
 
         private static readonly Lazy<byte[]> LazyAppIconBytes = new Lazy<byte[]>(() => Resources.Load<TextAsset>(SwConstants.AppIconResourcesPath)?.bytes);
-        private static float _prevTimeScale;
-        private static bool _prevAutoRotateToPortrait;
-        private static bool _prevAutorotateToPortraitUpsideDown;
 
-        public static void LockUI()
+        public static void LockUI ()
         {
-            LockUnityUI();
+            Object.FindObjectOfType<EventSystem>().enabled = false;
+            Time.timeScale = 0;
             LockScreenRotation();
         }
 
-        public static void UnlockUI()
+        private static void LockScreenRotation ()
         {
-            UnlockUnityUI();
-            RevertLockScreenRotation();
-        }
-
-        private static void LockUnityUI()
-        {
-            _prevTimeScale = Time.timeScale;
-
-            Time.timeScale = 0;
-            Object.FindObjectOfType<EventSystem>().enabled = false;
-        }
-
-        private static void LockScreenRotation()
-        {
-            _prevAutoRotateToPortrait = Screen.autorotateToPortrait;
-            _prevAutorotateToPortraitUpsideDown = Screen.autorotateToPortraitUpsideDown;
-            
             Screen.autorotateToPortrait = false;
             Screen.autorotateToPortraitUpsideDown = false;
         }
 
-        private static void UnlockUnityUI()
-        {
-            Object.FindObjectOfType<EventSystem>().enabled = true;
-            Time.timeScale = _prevTimeScale;
-        }
-
-        private static void RevertLockScreenRotation()
-        {
-            Screen.autorotateToPortrait = _prevAutoRotateToPortrait;
-            Screen.autorotateToPortraitUpsideDown = _prevAutorotateToPortraitUpsideDown;
-        }
-
-        public static bool IsLandscapeLayout()
+        public static bool IsLandscapeLayout ()
         {
 #if UNITY_EDITOR
             return Screen.height <= Screen.width;

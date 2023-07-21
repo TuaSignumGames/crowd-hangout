@@ -107,7 +107,7 @@ namespace SupersonicWisdomSDK
 
                 if (paramsDictionary.Any())
                 {
-                    DeepLinkParams.SwMerge(true, paramsDictionary);
+                    DeepLinkParams.SwMerge(paramsDictionary);
                     DeepLinkParamsClone = new Dictionary<string, string>(DeepLinkParams);
                 }
 

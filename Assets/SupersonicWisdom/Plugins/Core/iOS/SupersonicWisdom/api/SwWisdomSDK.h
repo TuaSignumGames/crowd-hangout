@@ -12,7 +12,7 @@
 #import "SwSDK.h"
 #import "SwWisdomConfigurationDto.h"
 
-@interface SwWisdomSDK : NSObject <SwWisdomSessionCallback, SwConnectivityStatusCallback>
+@interface SwWisdomSDK : NSObject <SwWisdomSessionCallback>
 
 + (void)initSdkWithConfig:(SwWisdomConfigurationDto *)configuration;
 + (BOOL)toggleBlockingLoader:(BOOL)shouldPresent;
@@ -22,8 +22,6 @@
 + (void)setEventMetadata:(NSString *)metadataJson;
 + (void)updateEventMetadata:(NSString *)metadataJson;
 + (void)trackEvent:(NSString *)eventName customsJson:(NSString *)customsJson extraJson:(NSString *)extraJson;
-+ (void)sendRequest:(NSString *)requestJsonString;
-+ (NSString *)getConnectionStatus;
 + (void)destroy;
 
 @end

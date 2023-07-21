@@ -7,7 +7,7 @@
 
 #import "SwEventReportOperation.h"
 #import "SwStoredEvent.h"
-#import "SwConnectivityManager.h"
+#import "SwNetworkUtils.h"
 #import "SwConstants.h"
 
 @implementation SwEventReportOperation
@@ -63,7 +63,7 @@
         return;
     }
     
-    [eventsRepository sendEventsAsync:events withResponseCallback:^(NSString *key, BOOL successfully, NSInteger responseCode, NSData *reponseBody) {
+    [eventsRepository sendEventsAsync:events withResponseCallback:^(BOOL successfully, NSInteger responseCode) {
         if ([self isCancelled]) {
             [self completeOperation];
             return;

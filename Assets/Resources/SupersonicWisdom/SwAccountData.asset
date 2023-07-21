@@ -20,16 +20,6 @@ MonoBehaviour:
     - adMobId: 
       bundleId: com.tua.crowdhangout
       facebookAppId: 799041178308084
-      gameAnalyticsKey: e4221e5058574b8c31e84444c25bbd31
-      gameAnalyticsSecret: 52a964f7729239f2a773d74c6a9f334941bbff71
-      id: 8f9d80b6-a266-42f7-a6a6-394f8303ff35
-      isAppKey: 
-      os: android
-      platform: google_play
-      storeId: com.tua.crowdhangout
-    - adMobId: 
-      bundleId: com.tua.crowdhangout
-      facebookAppId: 799041178308084
       gameAnalyticsKey: edc37a72f08c3b7896133405867c725e
       gameAnalyticsSecret: 55bf6ab5884ba6e4545b1bb1909dbda70dc548f5
       id: 38d33468-abad-4d31-b7d5-420b863fbbd6
@@ -37,6 +27,65 @@ MonoBehaviour:
       os: ios
       platform: app_store
       storeId: id6448892607
+    - adMobId: 
+      bundleId: com.tua.crowdhangout
+      facebookAppId: 799041178308084
+      gameAnalyticsKey: e4221e5058574b8c31e84444c25bbd31
+      gameAnalyticsSecret: 52a964f7729239f2a773d74c6a9f334941bbff71
+      id: 8f9d80b6-a266-42f7-a6a6-394f8303ff35
+      isAppKey: 
+      os: android
+      platform: google_play
+      storeId: com.tua.crowdhangout
     id: b87d4ace-b9b6-4803-9038-cb3808f4ddd4
     name: Crowd Hangout
+  - games:
+    - adMobId: 
+      bundleId: com.tua.evoflips
+      facebookAppId: 658651305812616
+      gameAnalyticsKey: da346ccb5930d3c40f2aa7913061d747
+      gameAnalyticsSecret: f4a304dd04750d9472d347266ede94af9e8ebe44
+      id: eaf99e24-46c8-4551-bd8d-190605dcfd38
+      isAppKey: 
+      os: android
+      platform: google_play
+      storeId: com.tua.evoflips
+    id: 5607a1cb-46b1-47b8-8b24-da50241f6858
+    name: Evo Flips
+  - games:
+    - adMobId: 
+      bundleId: com.tua.tinktink
+      facebookAppId: 1159854334789711
+      gameAnalyticsKey: 5524adc3d8374ea3c38f5901478f6fae
+      gameAnalyticsSecret: 04d7122db513b54b1aaca4da5082b51d0477346f
+      id: a76e81f4-1403-4feb-b252-9fae33b98671
+      isAppKey: 
+      os: ios
+      platform: app_store
+      storeId: id1585658453
+    - adMobId: 
+      bundleId: com.tua.tinktink
+      facebookAppId: 1159854334789711
+      gameAnalyticsKey: 31764bb2a3cb0638ad03c1e90631d68b
+      gameAnalyticsSecret: cc1ead92ae2d570da953f856c3776b6a53a911da
+      id: 9fcbf9fb-e20a-48b5-a9db-cfd0dea638ea
+      isAppKey: 
+      os: android
+      platform: google_play
+      storeId: com.tua.tinktink
+    id: c654d111-64af-469a-87f3-a677a1d82832
+    name: Tink Tink!
+  - games:
+    - adMobId: 
+      bundleId: com.tua.tinycrafter
+      facebookAppId: 507267177932281
+      gameAnalyticsKey: 84e9728744cdefc7d9625038cadafd99
+      gameAnalyticsSecret: 7b16125e27e7d49264fe1aac3e18ef5ac4ecb6f9
+      id: 432ae2ac-649e-4397-95b4-85bea95008c0
+      isAppKey: 
+      os: android
+      platform: google_play
+      storeId: com.tua.tinycrafter
+    id: 8243d946-7a7f-4739-b863-9fcbdfe63281
+    name: Tiny Crafter
   integrationGuideUrl: https://assets.mobilegamestats.com/docs/supersonic-default-stage-update-integration-guide.pdf

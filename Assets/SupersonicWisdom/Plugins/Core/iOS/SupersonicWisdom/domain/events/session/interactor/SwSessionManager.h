@@ -22,7 +22,6 @@
             EventsRepo:(id<SwEventsRepositoryProtocol>)eventsRepo
        MetadataManager:(id<SwEventMetadataManagement>)metadataRepo
  ConversionDataManager:(id<SwConversionDataManagement>)conversionDataManager
-            EventQueue:(id<SwEventsQueueProtocol>)queue
-           UserDefault:(NSUserDefaults *)prefs;
+            EventQueue:(id<SwEventsQueueProtocol>)queue;
 
 @end

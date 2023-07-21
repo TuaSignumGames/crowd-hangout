@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 
 namespace SupersonicWisdomSDK
@@ -26,18 +27,6 @@ namespace SupersonicWisdomSDK
             OnSessionStartedCallbacks?.Invoke(sessionId);
         }
 
-        [AOT.MonoPInvokeCallback(typeof(OnWebResponse))]
-        public static void OnWebResponse(string response)
-        {
-            OnWebResponseCallbacks?.Invoke(response);
-        }
-        
-        [AOT.MonoPInvokeCallback(typeof(OnConnectivityStatusChanged))]
-        public static void OnConnectivityStatusChanged(string connectionStatus)
-        {
-            OnConnectivityStatusChangedCallbacks?.Invoke(connectionStatus);
-        }
-
         public override void AddSessionEndedCallback(OnSessionEnded callback)
         {
             OnSessionEndedCallbacks += callback;
@@ -52,7 +41,6 @@ namespace SupersonicWisdomSDK
         {
             NativeBridge.UnregisterSessionStartedCallback(OnSessionStartedCallbacks);
             NativeBridge.UnregisterSessionEndedCallback(OnSessionEndedCallbacks);
-            NativeBridge.UnregisterWebRequestListener(OnWebResponseCallbacks);
             base.Destroy();
         }
 
@@ -61,8 +49,6 @@ namespace SupersonicWisdomSDK
             yield return NativeBridge.InitSdk(configuration);
             NativeBridge.RegisterSessionStartedCallback(OnSessionStarted);
             NativeBridge.RegisterSessionEndedCallback(OnSessionEnded);
-            NativeBridge.RegisterWebRequestListener(OnWebResponse);
-            NativeBridge.RegisterConnectivityStatusChanged(OnConnectivityStatusChanged);
         }
 
         public override bool IsSupported ()
@@ -80,21 +66,6 @@ namespace SupersonicWisdomSDK
             OnSessionStartedCallbacks -= callback;
         }
 
-        public override void SendRequest(string requestJsonString)
-        {
-            NativeBridge.SendRequest(requestJsonString);
-        }
-
-        public override void AddServerCallbacks(OnWebResponse callback)
-        {
-            OnWebResponseCallbacks += callback;
-        }
-
-        public override void RemoveServerCallbacks(OnWebResponse callback)
-        {
-            OnWebResponseCallbacks -= callback;
-        }
-
         public override bool ToggleBlockingLoader(bool shouldPresent)
         {
             return NativeBridge.ToggleBlockingLoader(shouldPresent);
@@ -105,22 +76,12 @@ namespace SupersonicWisdomSDK
             NativeBridge.RequestRateUsPopup();
         }
 
-        public override void AddConnectivityCallbacks(OnConnectivityStatusChanged callback)
-        {
-            OnConnectivityStatusChangedCallbacks += callback;
-        }
-
-        public override void RemoveConnectivityCallbacks(OnConnectivityStatusChanged callback)
-        {
-            OnConnectivityStatusChangedCallbacks -= callback;
-        }
-
         #endregion
 
 
         #region --- Private Methods ---
 
-        public override void ClearDelegates()
+        protected override void ClearDelegates ()
         {
             var delegates = OnSessionStartedCallbacks?.GetInvocationList();
 
@@ -142,7 +103,7 @@ namespace SupersonicWisdomSDK
             }
         }
 
-        public override void RemoveAllSessionCallbacks()
+        protected override void RemoveAllSessionCallbacks ()
         {
             base.RemoveAllSessionCallbacks();
             OnSessionStartedCallbacks = null;

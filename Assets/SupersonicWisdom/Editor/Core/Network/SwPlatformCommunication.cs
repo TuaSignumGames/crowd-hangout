@@ -30,17 +30,20 @@ namespace SupersonicWisdomSDK.Editor
         internal static class URLs
         {
             #region --- Constants ---
-            
-            private const string BASE = "https://partners.super-api.supersonic.com/v1/";
-            
-            private const string BASE_PARTNERS = BASE + "partners/";
+
+            internal const string CURRENT_STAGE_API = BASE_WISDOM_PARTNERS + "current-stage";
+            internal const string DOWNLOAD_WISDOM_PACKAGE = BASE_WISDOM_PARTNERS + "download-package";
+            internal const string WISDOM_PACKAGE_MANIFEST = BASE_WISDOM_PARTNERS + "package-manifest";
+
             internal const string LOGIN = BASE_PARTNERS + "login";
 
-            private const string BASE_WISDOM = BASE + "wisdom/";
-            internal const string TITLES = BASE_WISDOM + "titles";
-            internal const string CURRENT_STAGE_API = BASE_WISDOM + "current-stage";
-            internal const string DOWNLOAD_WISDOM_PACKAGE = BASE_WISDOM + "download-package";
-            internal const string WISDOM_PACKAGE_MANIFEST = BASE_WISDOM + "package-manifest";
+            internal const string TITLES = BASE_PARTNERS + "titles?embed=games&limit=0&order=asc&page=0&sort=name&includePrototypes=1";
+            
+            private const string BASE = "https://super-api.supersonic.com/v1/";
+            private const string BASE_PARTNERS = BASE + "partners/";
+            private const string BASE_WISDOM_PARTNERS = BASE + "partners/wisdom/";
+            
+            internal const string WISDOM_UPDATE_CONFIG_URL = "https://assets.mobilegamestats.com/docs/self-update-config-v1.json";
             
             #endregion
         }

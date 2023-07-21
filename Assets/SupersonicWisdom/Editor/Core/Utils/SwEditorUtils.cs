@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,21 +17,18 @@ namespace SupersonicWisdomSDK.Editor
     {
         #region --- Constants ---
 
-        private const string IapAssemblyFullName = "UnityEngine.Purchasing";
-        private const string SupersonicWisdomResourceDirName = "SupersonicWisdom";
-        private const string SupersonicWisdomSettingsAssetResourceFileName = "Settings";
-        private const string UNITY_VERSION_REGEX_PATTERN = @"^(\d+)\.(\d+)\.(\d+)";
-        private const string SUPERSONIC_WISDOM_RESOURCE_DIR_NAME = "SupersonicWisdom";
-        private const string SUPERSONIC_WISDOM_SETTINGS_ASSET_RESOURCE_FILE_NAME = "Settings";
-        private const string SUPERSONIC_WISDOM_ACCOUNT_DATA_ASSET_RESOURCE_FILE_NAME = "SwAccountData";
-        internal const string SW_UPDATE_METADATA_FOLDER_NAME = "sw-update-metadata";
-        internal const string SW_UPDATE_METADATA_HIDDEN_FOLDER = "./" + SwEditorConstants.ASSETS + "/SupersonicWisdom/." + SW_UPDATE_METADATA_FOLDER_NAME;
-        
         public struct Keys
         {
             public const string CHECKSUM = "checksum";
             public const string ELIGIBLE_WISDOM_STAGE = "eligibleWisdomStage";
         }
+        
+        private const string IAP_ASSEMBLY_FULL_NAME = "UnityEngine.Purchasing";
+        private const string SUPERSONIC_WISDOM_RESOURCE_DIR_NAME = "SupersonicWisdom";
+        private const string SUPERSONIC_WISDOM_SETTINGS_ASSET_RESOURCE_FILE_NAME = "Settings";
+        private const string SUPERSONIC_WISDOM_ACCOUNT_DATA_ASSET_RESOURCE_FILE_NAME = "SwAccountData";
+        internal const string SW_UPDATE_METADATA_FOLDER_NAME = "sw-update-metadata";
+        internal const string SW_UPDATE_METADATA_HIDDEN_FOLDER = "./" + SwEditorConstants.ASSETS + "/SupersonicWisdom/." + SW_UPDATE_METADATA_FOLDER_NAME;
         
         public static string SwUpdateMetadataExposedFolder
         {
@@ -143,41 +140,6 @@ namespace SupersonicWisdomSDK.Editor
 
         #region --- Public Methods ---
 
-        public static void UpdateDefines(string entry, bool enabled, params BuildTargetGroup[] groups)
-        {
-            var edited = false;
-            
-            foreach (var group in groups)
-            {
-                var defines = new List<string>(PlayerSettings.GetScriptingDefineSymbolsForGroup(group).Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries));
-
-                if (enabled && !defines.Contains(entry))
-                {
-                    defines.Add(entry);
-                    edited = true;
-                }
-                else if (!enabled && defines.Contains(entry))
-                {
-                    defines.Remove(entry);
-                    edited = true;
-                }
-
-                if (edited)
-                {
-                    PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", defines.ToArray()));
-                }
-            }
-            
-            if (edited)
-            {
-                // Save project settings only when Editor UI is open
-                if (!Application.isBatchMode)
-                {
-                    AssetDatabase.SaveAssets();
-                }
-            }
-        }
-
         public static void CallOnNextUpdate(Action action)
         {
             new CallOnInspectorUpdate(action);
@@ -220,46 +182,6 @@ namespace SupersonicWisdomSDK.Editor
             if (part == 0 || total == 0) return 0;
 
             return part / total * 100f;
-        }
-
-        /// <summary>
-        /// Will return True if the major,minor and patch versions are equal or higher than the versionToCompare.
-        /// </summary>
-        /// <param name="versionToCompare">Unity version to compare with as string</param>
-        /// <param name="major">Major version</param>
-        /// <param name="minor">Minor version</param>
-        /// <param name="patch">Patch version</param>
-        /// <returns></returns>
-        public static bool IsAboveUnityVersion(string versionToCompare, int major, int minor, int patch)
-        {
-            try
-            {
-                var parsedUnityVersion = Regex.Match(versionToCompare, UNITY_VERSION_REGEX_PATTERN).Value.Split('.');
-                int parsedMajor = int.TryParse(parsedUnityVersion[0], out parsedMajor) ? parsedMajor : 0;
-                int parsedMinor = int.TryParse(parsedUnityVersion[1], out parsedMinor) ? parsedMinor : 0;
-                int parsedPatch = int.TryParse(parsedUnityVersion[2], out parsedPatch) ? parsedPatch : 0;
-
-                if (parsedMajor < major)
-                {
-                    return true;
-                }
-                else if (parsedMajor == major)
-                {
-                    if (parsedMinor < minor)
-                    {
-                        return true;
-                    }
-                    else if (parsedMinor == minor)
-                    {
-                        return parsedPatch <= patch;
-                    }
-                }
-            }catch (Exception exception)
-            {
-                SwEditorLogger.LogError(exception);
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -317,14 +239,9 @@ namespace SupersonicWisdomSDK.Editor
 
         #region --- Private Methods ---
 
-        internal static bool IsUnityIapAssetInstalled()
+        internal static bool IsUnityIapAssetInstalled ()
         {
-            return DoesAssemblyExists(SwEditorConstants.IAP_ASSEMBLY_FULL_NAME);
-        }
-
-        internal static bool IsUnityMobileNotificationsAssetInstalled()
-        {
-            return DoesAssemblyExists(SwEditorConstants.UNITY_MOBILE_NOTIFICATIONS_ASSEMBLY_FULL_NAME, SwEditorConstants.UNITY_MOBILE_NOTIFICATIONS_PACKAGE_VERSION);
+            return DoesAssemblyExists(IAP_ASSEMBLY_FULL_NAME);
         }
 
         internal static void OpenIronSourceIntegrationManager ()
@@ -389,20 +306,12 @@ namespace SupersonicWisdomSDK.Editor
             }
         }
 
-        private static bool DoesAssemblyExists(string assemblyFullName, string minVersion = "")
+        private static bool DoesAssemblyExists(string assemblyFullName)
         {
-            var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOr(assembly => assembly.GetName().Name.Equals(assemblyFullName), null);
-            var doesExist = assembly != null;
-            
-            if (!doesExist || string.IsNullOrEmpty(minVersion)) return doesExist;
-
-            var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssembly(assembly);
-            doesExist = SwUtils.ComputeVersionId(packageInfo.version) >= SwUtils.ComputeVersionId(minVersion);
-
-            return doesExist;
+            return AppDomain.CurrentDomain.GetAssemblies().Any(assembly => assembly.GetName().Name.Equals(assemblyFullName));
         }
 
-        private static void OnEditorApplicationUpdate()
+        private static void OnEditorApplicationUpdate ()
         {
             MainThreadActions.Run();
         }

@@ -15,10 +15,9 @@
     NSData *requestBody;
     NSMutableDictionary *requestHeaders;
     id<SwWisdomResponseDelegate>requestResponseDelegate;
-    OnNetworkResponse responseCallback;
+    OnEventsStoredRemotely responseCallback;
     NSTimeInterval connectTimeout;
     NSTimeInterval readTimeout;
-    NSString *requestKey;
 }
 
 - (id)initWithUrl:(NSString *)url method:(HttpMethod)method body:(NSData *)body {
@@ -37,7 +36,7 @@
     requestHeaders[name] = value;
 }
 
-- (void)responseCallback:(OnNetworkResponse)callback {
+- (void)responseCallback:(OnEventsStoredRemotely)callback {
     responseCallback = callback;
 }
 
@@ -73,23 +72,15 @@
     return readTimeout;
 }
 
-- (void)setKey:(NSString *)key {
-    requestKey = key;
-}
-
-- (NSString *)getKey {
-    return requestKey;
-}
-
 - (void)onResponseFailedWithError:(NSString *)error statusCode:(NSInteger)code response:(NSData *)data {
     if (responseCallback) {
-        responseCallback(requestKey, NO, code, data);
+        responseCallback(NO, code);
     }
 }
 
 - (void)onResponseSucceededWithStatusCode:(NSInteger)code response:(NSData *)data {
     if (responseCallback) {
-        responseCallback(requestKey, YES, code, data);
+        responseCallback(YES, code);
     }
 }
 

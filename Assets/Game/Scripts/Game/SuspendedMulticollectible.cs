@@ -46,7 +46,7 @@ public class SuspendedMulticollectible : Multicollectible
 
         base.SetPlacement(blockPair, placementFactor);
 
-        rope.Connect(transform, blockPair.ceilingBlock.transform.position);
+        rope.Connect(transform, blockPair.ceilBlock.transform.position);
     }
 
     public override void UpdatePlacement(BlockPair blockPair)

@@ -20,11 +20,6 @@ public static class SwFileUtils
 
     #region --- Public Methods ---
 
-    public static char DirectorySeparatorChar
-    {
-        get { return Application.platform == RuntimePlatform.WindowsEditor ? Path.AltDirectorySeparatorChar : Path.DirectorySeparatorChar; }
-    }
-
     public static bool DeleteDirectory(string path)
     {
         bool didDelete = false;

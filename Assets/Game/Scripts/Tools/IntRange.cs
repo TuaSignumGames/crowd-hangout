@@ -8,16 +8,11 @@ public struct IntRange
     public int min;
     public int max;
 
-    [HideInInspector]
-    public int length;
-
     public int Value => Random.Range(min, max);
 
     public IntRange(int min, int max)
     {
         this.min = min;
         this.max = max;
-
-        length = max - min;
     }
 }

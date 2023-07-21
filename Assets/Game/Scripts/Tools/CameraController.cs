@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Facebook.Unity.Example;
 using TMPro;
 using UnityEngine;
 
@@ -8,13 +9,16 @@ public class CameraController : MonoBehaviour
     public static CameraController Instance;
 
     public new Camera camera;
-    public Transform displacementContainer;
     [Space]
     public Transform targetTransform;
     public float motionLerpingFactor;
     [Space]
     public float viewDistanceIncrement;
     public float viewTransitionTime;
+
+    private Ray ray;
+
+    private RaycastHit raycastInfo;
 
     private Vector3 targetOffset;
 
@@ -28,8 +32,6 @@ public class CameraController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-
-        enabled = false;
 
         targetOffset = transform.position;
 
@@ -123,6 +125,17 @@ public class CameraController : MonoBehaviour
         Translate(viewData.position, viewData.translationDuration, viewData.translationSpace);
 
         Rotate(viewData.eulerAngles, viewData.rotationDuration, viewData.rotationSpace);
+    }
+
+    public RaycastHit Raycast()
+    {
+        raycastInfo = new RaycastHit();
+
+        ray = camera.ScreenPointToRay(Input.mousePosition);
+
+        Physics.Raycast(ray, out raycastInfo, 400f);
+
+        return raycastInfo;
     }
 
     public void IncreaseViewDistance(int distanceLevel)

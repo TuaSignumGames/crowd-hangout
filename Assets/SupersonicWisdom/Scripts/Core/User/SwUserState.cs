@@ -18,7 +18,6 @@ namespace SupersonicWisdomSDK
         public long todaySessionsCount;
         public long totalSessionsCount;
         public bool isDuringLevel;
-        public long lastLevelStarted;
         [CanBeNull] [NonSerialized] public string SessionId;
 
         #endregion
@@ -35,7 +34,6 @@ namespace SupersonicWisdomSDK
             todaySessionsCount = other.todaySessionsCount;
             totalSessionsCount = other.totalSessionsCount;
             completedLevels = other.completedLevels;
-            lastLevelStarted = other.lastLevelStarted;
             playedLevels = other.playedLevels;
             consecutiveFailedLevels = other.consecutiveFailedLevels;
             consecutiveCompletedLevels = other.consecutiveCompletedLevels;

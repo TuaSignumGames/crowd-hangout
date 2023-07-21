@@ -434,7 +434,7 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 84780433877696199}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 1
@@ -454,15 +454,10 @@ MonoBehaviour:
   collectibleSettings:
     placement: 0
     placementRange:
-      min: 0.5
-      max: 0.6
-      length: 0
+      min: 0.4
+      max: 0.7
     fittingRangeNumber: 0
     verticalShift: 0
-    capsule:
-      capsule: {fileID: 0}
-      debris: []
-      destructionVFX: {fileID: 0}
     collider: {fileID: 84780433877696194}
   multicollectibleSettings:
     elementCountMarker:
@@ -476,30 +471,18 @@ MonoBehaviour:
     capsules: []
     capsuleScatteringSettings:
       impulseRatio: {x: 0, y: 0, z: 0}
-      impulseMagnitudeRange:
-        min: 0
-        max: 0
-        length: 0
       angularMomentumRange:
         min: 0
         max: 0
-        length: 0
       externalImpulseFactor: 0
-      gravityModifier: 1
     collectiblePullingSpeed: 25
     collectiblePullingDelay: 0.6
     collectibleScatteringSettings:
       impulseRatio: {x: 1, y: 1, z: 1}
-      impulseMagnitudeRange:
-        min: 10
-        max: 20
-        length: 0
       angularMomentumRange:
         min: 90
         max: 720
-        length: 0
       externalImpulseFactor: 2.5
-      gravityModifier: 1
   humanContainer: {fileID: 84780432828401576}
   humanPrefab: {fileID: 381102904024632307, guid: e1287779ce7dc4c33b7bd1a904cdc0e8, type: 3}
   suspensionSettings:

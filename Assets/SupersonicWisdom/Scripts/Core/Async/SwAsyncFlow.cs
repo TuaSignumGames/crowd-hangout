@@ -22,6 +22,7 @@ namespace SupersonicWisdomSDK
         public SwAsyncFlow(SwAsyncFlowStep[] steps)
         {
             _steps = steps.OrderBy(step => step.ExecutionIndex).ToList();
+            ;
             _currentIndex = _steps.FirstOrDefault()?.ExecutionIndex ?? 0;
             _maxStepIndex = _steps.LastOrDefault()?.ExecutionIndex ?? 0;
         }
@@ -103,7 +104,7 @@ namespace SupersonicWisdomSDK
 
             if (didFail)
             {
-                SwInfra.Logger.LogError($"{nameof(SwAsyncFlow)} | Run | Error");
+                SwInfra.Logger.LogError("SwAsyncFlow | Run | Error");
                 SwInfra.Logger.LogError(exception.ToString());
             }
 

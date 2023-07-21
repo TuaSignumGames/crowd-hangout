@@ -7,8 +7,8 @@ namespace SupersonicWisdomSDK
     {
         #region --- Constants ---
 
-        public const string APPS_FLYER_DEFAULT_DOMAIN_DEFAULT_VALUE = "appsflyersdk.com";
-        private const string APPS_FLYER_DEFAULT_DOMAIN_KEY = "appsFlyerDomain";
+        private const string AppsFlyerDefaultDomainDefaultValue = "appsflyersdk.com";
+        private const string AppsFlyerDefaultDomainKey = "appsFlyerDomain";
 
         #endregion
 
@@ -21,7 +21,7 @@ namespace SupersonicWisdomSDK
             {
                 return new Dictionary<string, object>
                 {
-                    { APPS_FLYER_DEFAULT_DOMAIN_KEY, APPS_FLYER_DEFAULT_DOMAIN_DEFAULT_VALUE }
+                    { AppsFlyerDefaultDomainKey, AppsFlyerDefaultDomainDefaultValue }
                 };
             }
         }

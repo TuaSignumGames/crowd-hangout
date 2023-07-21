@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SwWisdomResponseDelegate.h"
-#import "SwNetworkCallbacks.h"
+#import "SwEventsRemoteStorageDelegate.h"
 
 @interface SwWisdomRequest : NSObject <SwWisdomResponseDelegate>
 
@@ -18,7 +18,7 @@ typedef enum HttpMethod {
 
 - (id)initWithUrl:(NSString *)url method:(HttpMethod)httpMethod body:(NSData *)body;
 - (void)addHeader:(NSString *)name value:(NSString *)value;
-- (void)responseCallback:(OnNetworkResponse)callback;
+- (void)responseCallback:(OnEventsStoredRemotely)callback;
 - (NSDictionary *)headers;
 - (NSURL *)url;
 - (HttpMethod)httpMethod;
@@ -27,7 +27,5 @@ typedef enum HttpMethod {
 - (NSTimeInterval)getConnectTimeout;
 - (void)setReadTimeout:(NSTimeInterval)timeout;
 - (NSTimeInterval)getReadTimeout;
-- (void)setKey:(NSString *)key;
-- (NSString *)getKey;
 
 @end

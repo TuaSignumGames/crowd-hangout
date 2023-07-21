@@ -1,6 +1,6 @@
 package wisdom.library.data.repository.datasource;
 
-import wisdom.library.data.framework.network.api.IInternalRequestListener;
+import wisdom.library.data.framework.network.listener.IWisdomResponseListener;
 import wisdom.library.data.framework.remote.EventsRemoteApi;
 import wisdom.library.domain.events.IEventsRemoteStorageListener;
 import wisdom.library.domain.events.StoredEvent;
@@ -18,16 +18,16 @@ public class EventsRemoteDataSource {
     }
 
     public void sendEventAsync(JSONObject details, final IEventsRemoteStorageListener listener) {
-        mApi.sendEventAsync(details, new IInternalRequestListener() {
+        mApi.sendEventAsync(details, new IWisdomResponseListener() {
             @Override
-            public void onResponseFailed(String key, int iteration, int code, String error) {
+            public void onResponseFailed(int code, String error) {
                 if (listener != null) {
                     listener.onEventsStoredRemotely(false);
                 }
             }
 
             @Override
-            public void onResponseSuccess(String key, int iteration, String body) {
+            public void onResponseSuccess() {
                 if (listener != null) {
                     listener.onEventsStoredRemotely(true);
                 }
@@ -36,24 +36,26 @@ public class EventsRemoteDataSource {
     }
 
     public int sendEvents(List<StoredEvent> events) {
-        return mApi.sendEvents(events, null);
+        return mApi.sendEvents(events);
     }
 
     public void sendEventsAsync(List<StoredEvent> events, final IEventsRemoteStorageListener listener) {
-        mApi.sendEventsAsync(events, new IInternalRequestListener() {
+        mApi.sendEventsAsync(events, new IWisdomResponseListener() {
             @Override
-            public void onResponseFailed(String key, int iteration, int code, String error) {
+            public void onResponseFailed(int code, String error) {
                 if (listener != null) {
                     listener.onEventsStoredRemotely(false);
                 }
             }
 
             @Override
-            public void onResponseSuccess(String key, int iteration, String body) {
+            public void onResponseSuccess() {
                 if (listener != null) {
                     listener.onEventsStoredRemotely(true);
                 }
             }
         });
     }
+
+
 }
