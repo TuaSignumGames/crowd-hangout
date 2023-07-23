@@ -4,10 +4,9 @@ using UnityEngine;
 
 // TODO
 //
-// -> [ Test BattlePath elements peeking  ] <- 
+// -> [ BattleUnit ] <- 
 //
 //  Scope
-//  -
 //  - 
 
 public enum LevelElementType

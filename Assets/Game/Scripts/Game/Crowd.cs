@@ -81,6 +81,16 @@ public class Crowd
         return this;
     }
 
+    public Crowd Defend()
+    {
+        for (int i = 0; i < members.Count; i++)
+        {
+            members[i].AI.Defend();
+        }
+
+        return this;
+    }
+
     public Crowd Stop()
     {
         for (int i = 0; i < members.Count; i++)

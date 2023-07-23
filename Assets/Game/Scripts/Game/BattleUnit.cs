@@ -4,18 +4,44 @@ using UnityEngine;
 
 public class BattleUnit : MonoBehaviour
 {
-    public HumanTeam team;
     public List<BattleUnitTeamInfo> teamSettings;
-    public int weaponLevel;
+    public Transform[] positions;
+
+    private Crowd garrisonCrew;
 
     private BattleUnitTeamInfo actualTeamInfo;
 
+    public void GenerateGarrison(int weaponLevel)
+    {
+        List<HumanController> garrisonHumans = new List<HumanController>();
+
+        HumanController humanInstance = null;
+
+        for (int i = 0; i < positions.Length; i++)
+        {
+            humanInstance = Instantiate(WorldManager.humanPrefab, positions[i]);
+
+            humanInstance.transform.position = positions[i].position;
+            humanInstance.transform.forward = positions[i].forward;
+
+            garrisonHumans.Add(humanInstance);
+        }
+
+        FormGarrison(garrisonHumans);
+    }
+
+    public void FormGarrison(List<HumanController> humans)
+    {
+        for (int i = 0; i < positions.Length; i++)
+        {
+            humans[i].AI.Defend(positions[i].position);
+        }
+
+        garrisonCrew = new Crowd(humans);
+    }
+
     public void SetTeam(HumanTeam team)
     {
-        this.team = team;
-
-        //actualTeamInfo = teamSettings.Find((t) => t.teamType == team);
-
         for (int i = 0; i < teamSettings.Count; i++)
         {
             teamSettings[i].teamFlag.SetActive(teamSettings[i].teamType == team);

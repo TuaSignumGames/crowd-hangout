@@ -82,7 +82,16 @@ public class ArrayGenerator : MonoBehaviour
 
     private void GenerateCircularArray()
     {
+        _step = 360f / (elementsCount - 1);
 
+        for (int i = 0; i < (generateLast ? elementsCount : elementsCount - 1); i++)
+        {
+            GenerateElement();
+
+            _newElementInstance.transform.position += transform.forward * circularArraySettings.circleRadius;
+
+            _newElementInstance.transform.RotateAround(transform.position, transform.up, _step * i);
+        }
     }
 
     public void CorrectPlacement()

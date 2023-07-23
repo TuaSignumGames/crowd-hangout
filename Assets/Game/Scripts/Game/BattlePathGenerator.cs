@@ -6,7 +6,9 @@ public class BattlePathGenerator : MonoBehaviour
 {
     public BattleUnit battleUnitPrefab;
     [Space]
+    public GameObject entryCellPrefab;
     public GameObject groundCellPrefab;
+    [Space]
     public GameObject[] obstacleCellPrefabs;
     public GameObject[] bossCellPrefabs;
     [Space]
@@ -19,9 +21,19 @@ public class BattlePathGenerator : MonoBehaviour
 
     private BattlePathCellularStage[] stages;
 
-    BattlePathCellType[,] stageTypeMap;
+    private BattlePathCellType[,] stageTypeMap;
 
-    BattlePathCell[,] stageCells;
+    private BattlePathCell[,] stageGridCells;
+
+    private GameObject stageContainer;
+
+    private GameObject entryCellInstance;
+    private GameObject bossCellInstance;
+
+    private Vector3 stagePosition;
+
+    private Vector3 gridCellSize;
+    private Vector3 gridCellOffset;
 
     private Vector2 perlinNoiseOrigin;
 
@@ -34,7 +46,17 @@ public class BattlePathGenerator : MonoBehaviour
 
     public void Generate()
     {
+        if (transform.childCount > 0)
+        {
+            foreach (Transform child in transform.GetChildren())
+            {
+                DestroyImmediate(child.gameObject);
+            }
+        }
+
         stages = new BattlePathCellularStage[stagesCount];
+
+        stagePosition = transform.position;
 
         for (int i = 0; i < stagesCount; i++)
         {
@@ -44,19 +66,18 @@ public class BattlePathGenerator : MonoBehaviour
 
     private BattlePathCellularStage GenerateStage(BattlePathCellType[,] stageTypeMap)
     {
-        stageCells = new BattlePathCell[stageTypeMap.GetLength(0), stageTypeMap.GetLength(1)];
+        stageContainer = new GameObject($"Stage[{transform.childCount}]");
 
-        if (transform.childCount > 0)
-        {
-            foreach (Transform child in transform.GetChildren())
-            {
-                DestroyImmediate(child.gameObject);
-            }
-        }
+        stageContainer.transform.SetParent(transform);
+        stageContainer.transform.position = stagePosition;
 
-        Vector3 cellSize = groundCellPrefab.transform.localScale;
+        stageGridCells = new BattlePathCell[stageTypeMap.GetLength(0), stageTypeMap.GetLength(1)];
 
-        float horizontalOffset = (stageWidth - 1) * cellSize.x / 2f;
+        entryCellInstance = Instantiate(entryCellPrefab, stagePosition, Quaternion.identity, stageContainer.transform);
+
+        gridCellSize = groundCellPrefab.transform.localScale;
+
+        gridCellOffset = new Vector3(entryCellInstance.transform.localScale.x, 0, (stageWidth - 1) * gridCellSize.x / 2f);
 
         for (int y = 0; y < stageLength; y++)
         {
@@ -64,12 +85,18 @@ public class BattlePathGenerator : MonoBehaviour
             {
                 if (GetCellPrefab(stageTypeMap[x, y]))
                 {
-                    stageCells[x, y] = new BattlePathCell(Instantiate(GetCellPrefab(stageTypeMap[x, y]), transform.position + new Vector3(y * cellSize.x, 0, x * -cellSize.z + horizontalOffset), Quaternion.identity, transform), new Vector2Int(x, y), stageTypeMap[x, y]);
+                    stageGridCells[x, y] = new BattlePathCell(Instantiate(GetCellPrefab(stageTypeMap[x, y]), transform.position + new Vector3(y * gridCellSize.x, 0, x * -gridCellSize.z) + gridCellOffset, Quaternion.identity, stageContainer.transform), new Vector2Int(x, y), stageTypeMap[x, y]);
                 }
             }
         }
 
-        return new BattlePathCellularStage(stageCells);
+        bossCellInstance = Instantiate(bossCellPrefabs.GetRandom(), stageContainer.transform);
+
+        bossCellInstance.transform.position = stagePosition + new Vector3(stageLength * gridCellSize.x + (entryCellInstance.transform.localScale.x + bossCellInstance.transform.localScale.x) / 2f, 0, 0);
+
+        stagePosition += new Vector3((entryCellInstance.transform.localScale.x + bossCellInstance.transform.localScale.x) / 2f, 0, 0);
+
+        return new BattlePathCellularStage(stageGridCells);
     }
 
     private void PlaceBattleUnits()
