@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [ BattleUnit ] <- 
+// -> [ BattleUnit range marker placement ] <- 
 //
 //  Scope
 //  - 

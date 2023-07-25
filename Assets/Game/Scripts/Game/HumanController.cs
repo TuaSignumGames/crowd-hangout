@@ -117,7 +117,7 @@ public class HumanController : MonoBehaviour
 
         defaultContainer = LevelGenerator.Instance.transform;
 
-        targetFacingAngle = -90f;
+        //targetFacingAngle = -90f;
 
         isInitialized = true;
     }
@@ -191,7 +191,14 @@ public class HumanController : MonoBehaviour
 
                     if (inBattle)
                     {
-                        transform.eulerAngles = new Vector3(0, Mathf.LerpAngle(transform.eulerAngles.y, targetFacingAngle, motionSettings.turnLerpingFactor), 0);
+                        if (ai.TargetHuman)
+                        {
+                            transform.eulerAngles = new Vector3(0, Mathf.LerpAngle(transform.eulerAngles.y, targetFacingAngle, motionSettings.turnLerpingFactor), 0);
+                        }
+                        else
+                        {
+                            transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
+                        }
                     }
                     else
                     {
@@ -371,6 +378,25 @@ public class HumanController : MonoBehaviour
         targetPointSqrRadius = motionSettings.targetPointRadius * motionSettings.targetPointRadius;
 
         PlayAnimation(HumanAnimationType.Flying);
+
+        inBattle = true;
+    }
+
+    public void PrepareToBattle(Vector3 position, Vector3 direction)
+    {
+        ai = new HumanAI(this);
+
+        motionSimulator.SetGround(position.y - components.animator.transform.localPosition.y);
+
+        motionSimulator.rotationEnabled = false;
+
+        transform.forward = direction;
+
+        FocusOn(transform.position + transform.forward);
+
+        targetPointSqrRadius = motionSettings.targetPointRadius * motionSettings.targetPointRadius;
+
+        PlayAnimation(HumanAnimationType.Running);
 
         inBattle = true;
     }

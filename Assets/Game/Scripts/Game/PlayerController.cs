@@ -18,9 +18,11 @@ public class PlayerController : MonoBehaviour
 
     private Crowd humanballCrowd;
 
+    private BattleUnit pickedBattleUnit;
+
     private RaycastHit hitInfo;
 
-    private GameObject peekedGameObject;
+    private GameObject pickedGameObject;
 
     private Transform targetBlockTransform;
 
@@ -106,17 +108,26 @@ public class PlayerController : MonoBehaviour
         {
             if (InputManager.touch)
             {
-                peekedGameObject = CameraController.Instance.Raycast().transform?.gameObject;
+                pickedGameObject = CameraController.Instance.Raycast().transform?.gameObject;
 
-                if (peekedGameObject)
+                if (pickedGameObject?.layer == 12)
                 {
-                    if (peekedGameObject.layer == 12)
-                    {
-                        print(peekedGameObject.name); // TODO Test BattlePath elements peeking 
-                    }
+                    pickedBattleUnit = pickedGameObject.GetComponent<BattleUnit>();
+
+                    pickedBattleUnit.SetPicked(true);
+                }
+            }
+            else
+            {
+                if (pickedBattleUnit)
+                {
+                    pickedBattleUnit.SetPicked(false);
+
+                    pickedBattleUnit = null;
                 }
             }
         }
+
         if (!isBattleMode)
         {
             if (InputManager.touch)

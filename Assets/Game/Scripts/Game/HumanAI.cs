@@ -111,15 +111,14 @@ public class HumanAI
         isActive = true;
     }
 
+    public void Defend(Transform position)
+    {
+        Defend(position.position);
+    }
+
     public void Defend()
     {
-        behaviourMode = HumanBehaviourType.Defence;
-
-        targetPosition = hostHuman.transform.position;
-
-        isTargetPositionAvailable = true;
-
-        isActive = true;
+        Defend(hostHuman.transform.position);
     }
 
     public void SetEnemy(HumanController human)
