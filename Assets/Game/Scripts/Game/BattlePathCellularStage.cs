@@ -24,8 +24,13 @@ public class BattlePathCellularStage
         gridSize = new Vector2Int(cells.GetLength(0), cells.GetLength(1));
     }
 
-    public BattlePathCell GetCell(int x, int y)
+    public BattlePathCell TryGetCell(int x, int y)
     {
+        if (x < 0 || x > cells.GetLength(0) - 1 || y < 0 || y > cells.GetLength(1) - 1)
+        {
+            return null;
+        }
+
         return cells[x, y];
     }
 

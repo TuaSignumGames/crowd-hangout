@@ -31,6 +31,8 @@ public class BattlePathGenerator : MonoBehaviour
 
     private BattleUnit[] stageBattleUnits;
 
+    private BattlePathCellularStage actualStage;
+
     private BattleUnit battleUnitInstance;
 
     private GameObject stageContainer;
@@ -46,6 +48,8 @@ public class BattlePathGenerator : MonoBehaviour
     private Vector2 perlinNoiseOrigin;
 
     private float perlinValue;
+
+    public BattlePathCellularStage ActualStage => actualStage;
 
     private void Awake()
     {
@@ -74,6 +78,8 @@ public class BattlePathGenerator : MonoBehaviour
 
             GenerateStageBattleUnits(stages[i], 1f, 2);
         }
+
+        actualStage = stages[0];
     }
 
     private BattlePathCellularStage GenerateStage(BattlePathCellType[,] stageTypeMap)
@@ -121,9 +127,9 @@ public class BattlePathGenerator : MonoBehaviour
         {
             battleUnitInstance = Instantiate(battleUnitPrefab, stageContainer.transform);
 
-            battleUnitInstance.transform.position = stageGroundCells.CutRandom().Position;
+            battleUnitInstance.PlaceAt(stageGroundCells.CutRandom());
 
-            battleUnitInstance.GenerateGarrison(HumanTeam.Red, Random.Range(0, 7));
+            battleUnitInstance.GenerateGarrison(HumanTeam.Red, 5);
 
             stageBattleUnits[i] = battleUnitInstance;
         }

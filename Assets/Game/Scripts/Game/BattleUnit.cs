@@ -5,10 +5,12 @@ using UnityEngine;
 public class BattleUnit : MonoBehaviour
 {
     public List<BattleUnitTeamInfo> teamSettings;
-    public Transform[] positions;
+    public BattleUnitRangeSettings rangeSettings;
     [Space]
-    public Transform rangeMarkerContainer;
-    public float elevationHeight;
+    public Transform[] positions;
+
+    private BattlePathCell groundCell;
+    private BattlePathCell stageGridCell;
 
     private Crowd garrisonCrew;
 
@@ -16,12 +18,14 @@ public class BattleUnit : MonoBehaviour
 
     private GameObject rangeMarkerCellOriginal;
 
+    private GameObject[,] rangeGridCells;
+
     private Vector3 rangeMarkerCellPosition;
 
     private float gridCellSize;
 
-    private int rangeMarkerArm;
-    private int rangeMarkerSize;
+    private int range;
+    private int rangeGridSize;
 
     public void GenerateGarrison(HumanTeam team, int weaponLevel)
     {
@@ -56,7 +60,9 @@ public class BattleUnit : MonoBehaviour
             humans[i].AI.Defend(positions[i]);
         }
 
-        GenerateRangeMarker(humans[0].Weapon.attackDistance);
+        range = rangeSettings.weaponRanges[WorldManager.GetWeaponID(humans[0].Weapon.Power)];
+
+        GenerateRangeGrid(range);
 
         garrisonCrew = new Crowd(humans);
     }
@@ -67,49 +73,93 @@ public class BattleUnit : MonoBehaviour
 
         for (int i = 0; i < teamSettings.Count; i++)
         {
-            teamSettings[i].teamFlag.SetActive(teamSettings[i].teamType == team);
-            teamSettings[i].teamFortification.SetActive(teamSettings[i].teamType == team);
+            if (teamSettings[i].teamFlag)
+            {
+                teamSettings[i].teamFlag.SetActive(teamSettings[i].teamType == team);
+            }
+
+            if (teamSettings[i].teamFortification)
+            {
+                teamSettings[i].teamFortification.SetActive(teamSettings[i].teamType == team);
+            }
+
+            if (teamSettings[i].teamRangeMarker)
+            {
+                teamSettings[i].teamRangeMarker.SetActive(teamSettings[i].teamType == team);
+            }
         }
+    }
+
+    public void PlaceAt(BattlePathCell cell)
+    {
+        groundCell = cell;
+
+        transform.position = groundCell.Position;
     }
 
     public void SetPicked(bool isPicked)
     {
-        transform.localPosition = new Vector3(transform.localPosition.x, isPicked ? elevationHeight : 0, transform.localPosition.z);
+        for (int i = 0; i < garrisonCrew.MembersCount; i++)
+        {
+            garrisonCrew.Members[i].enabled = !isPicked;
+        }
 
+        transform.localPosition = new Vector3(transform.localPosition.x, isPicked ? rangeSettings.pickElevationHeight : 0, transform.localPosition.z);
 
+        SetRangeVisible(isPicked);
     }
 
     public void SetRangeVisible(bool enabled)
     {
+        rangeSettings.container.SetActive(enabled);
 
+        if (enabled)
+        {
+            for (int y = 0; y < rangeGridSize; y++)
+            {
+                for (int x = 0; x < rangeGridSize; x++)
+                {
+                    if (rangeGridCells[x, y])
+                    {
+                        stageGridCell = BattlePathGenerator.Instance.ActualStage.TryGetCell(groundCell.Address.x + x - range, groundCell.Address.y + y - range);
+
+                        rangeGridCells[x, y].SetActive(stageGridCell != null && stageGridCell.Type == BattlePathCellType.Ground);
+                    }
+                }
+            }
+        }
     }
 
-    private void GenerateRangeMarker(float radius)
+    private void GenerateRangeGrid(int range)
     {
         rangeMarkerCellOriginal = actualTeamInfo.teamRangeMarker.transform.GetChild(0).gameObject;
 
         gridCellSize = BattlePathGenerator.Instance.groundCellPrefab.transform.localScale.x;
 
-        rangeMarkerArm = Mathf.RoundToInt(radius / gridCellSize);
-        rangeMarkerSize = rangeMarkerArm * 2 + 1;
+        rangeGridSize = range * 2 + 1;
 
-        float sqrRadius = radius * radius;
+        rangeGridCells = new GameObject[rangeGridSize, rangeGridSize];
 
-        for (int y = 0; y < rangeMarkerSize; y++)
+        float sqrRadius = range * range * gridCellSize * gridCellSize;
+
+        for (int y = 0; y < rangeGridSize; y++)
         {
-            for (int x = 0; x < rangeMarkerSize; x++)
+            for (int x = 0; x < rangeGridSize; x++)
             {
-                if (x != rangeMarkerArm && y != rangeMarkerArm)
+                if (x != range || y != range)
                 {
-                    rangeMarkerCellPosition = rangeMarkerCellOriginal.transform.position + new Vector3(x * (gridCellSize - rangeMarkerArm), 0, y * (gridCellSize - rangeMarkerArm));
+                    rangeMarkerCellPosition = rangeMarkerCellOriginal.transform.position + new Vector3((x - range) * gridCellSize, 0, (y - range) * gridCellSize);
 
-                    if ((rangeMarkerCellPosition - rangeMarkerCellOriginal.transform.position).GetPlanarSqrMagnitude(Axis.Y) < sqrRadius)
+                    if ((rangeMarkerCellPosition - rangeMarkerCellOriginal.transform.position).GetPlanarSqrMagnitude(Axis.Y) <= sqrRadius)
                     {
-                        Instantiate(rangeMarkerCellOriginal, rangeMarkerCellPosition, rangeMarkerCellOriginal.transform.rotation, rangeMarkerCellOriginal.transform.parent);
+                        rangeGridCells[x, y] = Instantiate(rangeMarkerCellOriginal, rangeMarkerCellPosition, rangeMarkerCellOriginal.transform.rotation, rangeMarkerCellOriginal.transform.parent);
                     }
                 }
             }
         }
+
+        rangeSettings.container.transform.localPosition = new Vector3(0, -rangeSettings.pickElevationHeight, 0);
+        rangeSettings.container.transform.localEulerAngles = new Vector3(0, 90f, 0);
     }
 
     private void OnValidate()
@@ -137,4 +187,13 @@ public class BattleUnitTeamInfo
     public GameObject teamFlag;
     public GameObject teamFortification;
     public GameObject teamRangeMarker;
+}
+
+[System.Serializable]
+public class BattleUnitRangeSettings
+{
+    public GameObject container;
+    public int[] weaponRanges;
+    [Space]
+    public float pickElevationHeight;
 }

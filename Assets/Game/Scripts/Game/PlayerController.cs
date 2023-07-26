@@ -110,12 +110,19 @@ public class PlayerController : MonoBehaviour
             {
                 pickedGameObject = CameraController.Instance.Raycast().transform?.gameObject;
 
+                // TODO Pick Yellow team BattleUnit's only 
+
                 if (pickedGameObject?.layer == 12)
                 {
                     pickedBattleUnit = pickedGameObject.GetComponent<BattleUnit>();
 
                     pickedBattleUnit.SetPicked(true);
                 }
+            }
+
+            if (InputManager.touchPresent)
+            {
+                // TODO BattleUnit translation 
             }
             else
             {
