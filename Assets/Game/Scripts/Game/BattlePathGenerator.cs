@@ -29,9 +29,9 @@ public class BattlePathGenerator : MonoBehaviour
 
     private List<BattlePathCell> stageGroundCells;
 
-    private BattleUnit[] stageBattleUnits;
-
     private BattlePathCellularStage actualStage;
+
+    private BattlePathCell stageGridPlacementCell;
 
     private BattleUnit battleUnitInstance;
 
@@ -76,8 +76,10 @@ public class BattlePathGenerator : MonoBehaviour
         {
             stages[i] = GenerateStage(GenerateStageMap(stageWidth, stageLength));
 
-            GenerateStageBattleUnits(stages[i], 1f, 2);
+            GenerateEnemyBattleUnits(stages[i], 1f, 2);
         }
+
+        GenerateAllieBattleUnits(stages[0], 1);
 
         actualStage = stages[0];
     }
@@ -85,6 +87,8 @@ public class BattlePathGenerator : MonoBehaviour
     private BattlePathCellularStage GenerateStage(BattlePathCellType[,] stageTypeMap)
     {
         stageContainer = new GameObject($"Stage[{transform.childCount}]");
+
+        BattlePathCellularStage newBattlePathStage = new BattlePathCellularStage();
 
         stageContainer.transform.SetParent(transform);
         stageContainer.transform.position = stagePosition;
@@ -103,7 +107,7 @@ public class BattlePathGenerator : MonoBehaviour
             {
                 if (GetCellPrefab(stageTypeMap[x, y]))
                 {
-                    stageGridCells[x, y] = new BattlePathCell(Instantiate(GetCellPrefab(stageTypeMap[x, y]), stagePosition + new Vector3(y * gridCellSize.x, 0, x * -gridCellSize.z) + gridCellOffset, Quaternion.identity, stageContainer.transform), new Vector2Int(x, y), stageTypeMap[x, y]);
+                    stageGridCells[x, y] = new BattlePathCell(Instantiate(GetCellPrefab(stageTypeMap[x, y]), stagePosition + new Vector3(y * gridCellSize.x, 0, x * -gridCellSize.z) + gridCellOffset, Quaternion.identity, stageContainer.transform), new BattlePathCellAddress(newBattlePathStage, x, y), stageTypeMap[x, y]);
                 }
             }
         }
@@ -114,14 +118,14 @@ public class BattlePathGenerator : MonoBehaviour
 
         stagePosition = bossCellInstance.transform.position + new Vector3((entryCellInstance.transform.localScale.x + bossCellInstance.transform.localScale.x) / 2f, 0, 0);
 
-        return new BattlePathCellularStage(stageGridCells);
+        newBattlePathStage.AddCells(stageGridCells);
+
+        return newBattlePathStage;
     }
 
-    private BattleUnit[] GenerateStageBattleUnits(BattlePathCellularStage stage, float power, int count)
+    private void GenerateAllieBattleUnits(BattlePathCellularStage stage, int count)
     {
-        stageBattleUnits = new BattleUnit[count];
-
-        stageGroundCells = new List<BattlePathCell>(stage.GetCells(BattlePathCellType.Ground, 0, 1f, 0.5f, 1f));
+        stageGroundCells = new List<BattlePathCell>(stage.GetCells(BattlePathCellType.Ground, 0, 1f, 0, 0.25f));
 
         for (int i = 0; i < count; i++)
         {
@@ -129,12 +133,31 @@ public class BattlePathGenerator : MonoBehaviour
 
             battleUnitInstance.PlaceAt(stageGroundCells.CutRandom());
 
+            battleUnitInstance.GenerateGarrison(HumanTeam.Yellow, 5);
+
+            stage.AddBattleUnit(battleUnitInstance);
+        }
+    }
+
+    private void GenerateEnemyBattleUnits(BattlePathCellularStage stage, float power, int count)
+    {
+        stageGroundCells = new List<BattlePathCell>(stage.GetCells(BattlePathCellType.Ground, 0, 1f, 0.5f, 1f));
+
+        for (int i = 0; i < count; i++)
+        {
+            battleUnitInstance = Instantiate(battleUnitPrefab, stageContainer.transform);
+
+            stageGridPlacementCell = stageGroundCells.CutRandom();
+
+            battleUnitInstance.PlaceAt(stageGridPlacementCell);
+
             battleUnitInstance.GenerateGarrison(HumanTeam.Red, 5);
 
-            stageBattleUnits[i] = battleUnitInstance;
-        }
+            battleUnitInstance.DrawRange(stageGridPlacementCell);
+            battleUnitInstance.SetRangeVisible(false);
 
-        return stageBattleUnits;
+            stage.AddBattleUnit(battleUnitInstance);
+        }
     }
 
     private BattlePathCellType[,] GenerateStageMap(int width, int length)

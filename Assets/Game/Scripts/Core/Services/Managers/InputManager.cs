@@ -29,8 +29,13 @@ public class InputManager : Service<InputManager>
     public static float timeSinceTouchPresent => Time.timeSinceLevelLoad - _touchTime;
     public static float timeSinceTouchAbsent => Time.timeSinceLevelLoad - _releaseTime;
 
+    public static Vector3 touchPivot => _touchPivot;
     public static Vector3 touchPosition => Input.mousePosition;
+
     public static Vector3 slideDelta => _slideDelta;
+    public static Vector3 slideDisplacement => Input.mousePosition - _touchPivot;
+    public static Vector3 normalizedSlideDelta => new Vector3(_slideDelta.x / Screen.width, _slideDelta.y / Screen.height, 0);
+    public static Vector3 normalizedSlideDisplacement => new Vector3((Input.mousePosition.x - _touchPivot.x) / Screen.width, (Input.mousePosition.y - _touchPivot.y) / Screen.height, 0);
 
     public static bool touchPresent => _isTouchPresent;
 

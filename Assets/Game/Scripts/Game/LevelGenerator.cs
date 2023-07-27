@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [ BattleUnit translation ] <- 
+// -> [ BattleUnit cell accessibility ] <- 
 //
 //  Scope
 //  - 

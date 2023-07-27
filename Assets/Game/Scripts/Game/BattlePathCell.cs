@@ -14,15 +14,15 @@ public class BattlePathCell
 
     private Vector3 position;
 
-    private Vector2Int address;
+    private BattlePathCellAddress address;
 
     public BattlePathCellType Type => type;
 
     public Vector3 Position => position;
 
-    public Vector2Int Address => address;
+    public BattlePathCellAddress Address => address;
 
-    public BattlePathCell(GameObject gameObject, Vector2Int address, BattlePathCellType type)
+    public BattlePathCell(GameObject gameObject, BattlePathCellAddress address, BattlePathCellType type)
     {
         this.type = type;
         this.address = address;
@@ -32,5 +32,22 @@ public class BattlePathCell
         pillar = gameObject.transform.GetChild(0).GetChild(1).gameObject;
 
         contents = gameObject.transform.GetChild(1).GetGameObjectsInChildren();
+    }
+}
+
+[System.Serializable]
+public struct BattlePathCellAddress
+{
+    public BattlePathCellularStage stage;
+
+    public int x;
+    public int y;
+
+    public BattlePathCellAddress(BattlePathCellularStage stage, int x, int y)
+    {
+        this.stage = stage;
+
+        this.x = x;
+        this.y = y;
     }
 }

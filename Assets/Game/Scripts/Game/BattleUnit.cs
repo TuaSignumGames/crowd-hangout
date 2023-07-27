@@ -9,6 +9,8 @@ public class BattleUnit : MonoBehaviour
     [Space]
     public Transform[] positions;
 
+    private BattlePathCellularStage stage;
+
     private BattlePathCell groundCell;
     private BattlePathCell stageGridCell;
 
@@ -26,6 +28,12 @@ public class BattleUnit : MonoBehaviour
 
     private int range;
     private int rangeGridSize;
+
+    private int weaponID;
+
+    public int WeaponLevel => weaponID;
+
+    public HumanTeam Team => actualTeamInfo.teamType;
 
     public void GenerateGarrison(HumanTeam team, int weaponLevel)
     {
@@ -60,7 +68,9 @@ public class BattleUnit : MonoBehaviour
             humans[i].AI.Defend(positions[i]);
         }
 
-        range = rangeSettings.weaponRanges[WorldManager.GetWeaponID(humans[0].Weapon.Power)];
+        weaponID = WorldManager.GetWeaponID(humans[0].Weapon.Power);
+
+        range = rangeSettings.weaponRanges[weaponID];
 
         GenerateRangeGrid(range);
 
@@ -97,6 +107,26 @@ public class BattleUnit : MonoBehaviour
         transform.position = groundCell.Position;
     }
 
+    public void DrawRange(BattlePathCell cell)
+    {
+        rangeSettings.container.transform.position = cell.Position;
+
+        for (int y = 0; y < rangeGridSize; y++)
+        {
+            for (int x = 0; x < rangeGridSize; x++)
+            {
+                if (rangeGridCells[x, y])
+                {
+                    stageGridCell = cell.Address.stage.TryGetCell(cell.Address.x + x - range, cell.Address.y + y - range);
+
+                    rangeGridCells[x, y].SetActive(stageGridCell != null && stageGridCell.Type == BattlePathCellType.Ground);
+                }
+            }
+        }
+
+        rangeSettings.container.SetActive(true);
+    }
+
     public void SetPicked(bool isPicked)
     {
         for (int i = 0; i < garrisonCrew.MembersCount; i++)
@@ -112,22 +142,6 @@ public class BattleUnit : MonoBehaviour
     public void SetRangeVisible(bool enabled)
     {
         rangeSettings.container.SetActive(enabled);
-
-        if (enabled)
-        {
-            for (int y = 0; y < rangeGridSize; y++)
-            {
-                for (int x = 0; x < rangeGridSize; x++)
-                {
-                    if (rangeGridCells[x, y])
-                    {
-                        stageGridCell = BattlePathGenerator.Instance.ActualStage.TryGetCell(groundCell.Address.x + x - range, groundCell.Address.y + y - range);
-
-                        rangeGridCells[x, y].SetActive(stageGridCell != null && stageGridCell.Type == BattlePathCellType.Ground);
-                    }
-                }
-            }
-        }
     }
 
     private void GenerateRangeGrid(int range)
@@ -158,8 +172,11 @@ public class BattleUnit : MonoBehaviour
             }
         }
 
-        rangeSettings.container.transform.localPosition = new Vector3(0, -rangeSettings.pickElevationHeight, 0);
+        rangeMarkerCellOriginal.SetActive(false);
+
         rangeSettings.container.transform.localEulerAngles = new Vector3(0, 90f, 0);
+
+        rangeSettings.container.transform.SetParent(BattlePathGenerator.Instance.transform);
     }
 
     private void OnValidate()

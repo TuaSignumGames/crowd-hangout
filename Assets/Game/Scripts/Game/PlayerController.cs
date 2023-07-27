@@ -10,8 +10,9 @@ public class PlayerController : MonoBehaviour
 
     public BallSettings ballSettings;
     public RopeSettings ropeSettings;
-    [Space]
     public TextMarker humanCountMarker;
+    [Space]
+    public BattleUnitSettings battleUnitSettings;
 
     private HumanballProcessor ball;
     private RopeProcessor rope;
@@ -19,6 +20,9 @@ public class PlayerController : MonoBehaviour
     private Crowd humanballCrowd;
 
     private BattleUnit pickedBattleUnit;
+
+    private BattlePathCell stageClosestCell;
+    private BattlePathCell previousStageClosestCell;
 
     private RaycastHit hitInfo;
 
@@ -110,27 +114,49 @@ public class PlayerController : MonoBehaviour
             {
                 pickedGameObject = CameraController.Instance.Raycast().transform?.gameObject;
 
-                // TODO Pick Yellow team BattleUnit's only 
-
                 if (pickedGameObject?.layer == 12)
                 {
                     pickedBattleUnit = pickedGameObject.GetComponent<BattleUnit>();
 
-                    pickedBattleUnit.SetPicked(true);
+                    if (pickedBattleUnit.Team == HumanTeam.Yellow)
+                    {
+                        pickedBattleUnit.SetPicked(true);
+
+                        BattlePathGenerator.Instance.ActualStage.SetBattleUnitRanges(true);
+                    }
+                    else
+                    {
+                        pickedBattleUnit = null;
+                    }
                 }
             }
 
             if (InputManager.touchPresent)
             {
-                // TODO BattleUnit translation 
+                if (pickedBattleUnit)
+                {
+                    pickedBattleUnit.transform.position += new Vector3(InputManager.normalizedSlideDelta.y * battleUnitSettings.translationSensitivity.y, 0, -InputManager.normalizedSlideDelta.x * battleUnitSettings.translationSensitivity.x);
+
+                    stageClosestCell = BattlePathGenerator.Instance.ActualStage.GetClosestCell(pickedBattleUnit.transform.position);
+
+                    if (stageClosestCell != previousStageClosestCell)
+                    {
+                        pickedBattleUnit.DrawRange(stageClosestCell);
+
+                        previousStageClosestCell = stageClosestCell;
+                    }
+                }
             }
             else
             {
                 if (pickedBattleUnit)
                 {
+                    pickedBattleUnit.PlaceAt(stageClosestCell);
                     pickedBattleUnit.SetPicked(false);
 
                     pickedBattleUnit = null;
+
+                    BattlePathGenerator.Instance.ActualStage.SetBattleUnitRanges(false);
                 }
             }
         }
@@ -251,5 +277,11 @@ public class PlayerController : MonoBehaviour
         [Space]
         public float throwingSpeed;
         public float throwingAngle;
+    }
+
+    [System.Serializable]
+    public class BattleUnitSettings
+    {
+        public Vector2 translationSensitivity;
     }
 }
