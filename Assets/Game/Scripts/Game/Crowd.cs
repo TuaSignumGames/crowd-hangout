@@ -15,6 +15,9 @@ public class Crowd
     private float currentMemberSqrDistance;
     private float closestMemberSqrDistance;
 
+    private float totalHealthPoints;
+    private float totalHealthCapacity;
+
     private float power;
 
     public HumanController[] Members => members.ToArray();
@@ -23,7 +26,7 @@ public class Crowd
 
     public int MembersCount => members.Count;
 
-    public bool IsGrounded => IsEverybodyGrounded(); //IsAnybodyGrounded();
+    public bool IsGrounded => IsEverybodyGrounded();
 
     public bool IsCombatCapable => members.Count > 0;
 
@@ -106,6 +109,9 @@ public class Crowd
         human.actualCrowd = this;
 
         members.Add(human);
+
+        totalHealthPoints += human.HealthPoints;
+        totalHealthCapacity += human.HealthCapacity;
     }
 
     public void RemoveMember(HumanController human)
@@ -113,6 +119,18 @@ public class Crowd
         human.actualCrowd = null;
 
         members.Remove(human);
+    }
+
+    public float DefineTotalHealthFactor()
+    {
+        totalHealthPoints = 0;
+
+        for (int i = 0; i < members.Count; i++)
+        {
+            totalHealthPoints += members[i].HealthPoints;
+        }
+
+        return totalHealthPoints / totalHealthCapacity;
     }
 
     public HumanController GetClosestMember(Vector3 position)

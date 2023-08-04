@@ -69,6 +69,8 @@ public class HumanAI
                     if (activeRivals.Count > 0)
                     {
                         targetHuman = activeRivals.GetRandom();
+
+                        
                     }
                     else
                     {

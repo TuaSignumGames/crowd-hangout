@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class BattlePathCellularStage
 {
-    private BattlePathCell[,] cells;
+    private GameObject container;
+
+    private BattlePathCell entryCell;
+    private BattlePathCell bossCell;
+
+    private BattlePathCell[,] gridCells;
 
     private List<BattlePathCell> requestedCells;
 
@@ -13,31 +18,73 @@ public class BattlePathCellularStage
 
     private BattlePathCell requestedCell;
 
-    private Vector2Int gridSize;
+    private Vector2 size;
+
+    private Vector2Int gridMatrixSize;
 
     private float cellSqrDistance;
     private float closestCellSqrDistance;
+
+    private float unitCost;
+    private float reward;
 
     private int minAvailableX;
     private int minAvailableY;
     private int maxAvailableX;
     private int maxAvailableY;
 
-    public BattlePathCellularStage()
+    private int orderIndex;
+
+    public Vector2 Size => size;
+
+    public Vector3 Position => container.transform.position;
+
+    public float Reward => reward;
+
+    public int OrderIndex => orderIndex;
+
+    public BattlePathCellularStage(GameObject container, float unitCost, int orderIndex)
     {
+        this.container = container;
+        this.unitCost = unitCost;
+        this.orderIndex = orderIndex;
+
         battleUnits = new List<BattleUnit>();
     }
 
-    public void AddCells(BattlePathCell[,] cells)
+    public void AddCells(BattlePathCell entryCell, BattlePathCell bossCell, BattlePathCell[,] gridCells)
     {
-        this.cells = cells;
+        this.gridCells = gridCells;
 
-        gridSize = new Vector2Int(cells.GetLength(0), cells.GetLength(1));
+        gridMatrixSize = new Vector2Int(gridCells.GetLength(0), gridCells.GetLength(1));
+
+        size = new Vector2(entryCell.Size.x, entryCell.Size.y + bossCell.Size.y + gridCells[0, 0].Size.y * gridCells.GetLength(1));
     }
 
     public void AddBattleUnit(BattleUnit battleUnit)
     {
         battleUnits.Add(battleUnit);
+    }
+
+    public void UpdateBattleUnitObjectives()
+    {
+        for (int i = 0; i < battleUnits.Count; i++)
+        {
+            battleUnits[i].UpdateBehavior();
+        }
+    }
+
+    public void SetBattleUnitRangesActive(bool enabled)
+    {
+        for (int i = 0; i < battleUnits.Count; i++)
+        {
+            battleUnits[i].SetRangeVisible(enabled);
+        }
+    }
+
+    public void SetVisible(bool isVisible)
+    {
+
     }
 
     public BattleUnit GetBattleUnit(HumanTeam team, int weaponLevel)
@@ -68,29 +115,21 @@ public class BattlePathCellularStage
         return requestedBattleUnits.ToArray();
     }
 
-    public void SetBattleUnitRanges(bool enabled)
-    {
-        for (int i = 0; i < battleUnits.Count; i++)
-        {
-            battleUnits[i].SetRangeVisible(enabled);
-        }
-    }
-
     public BattlePathCell TryGetCell(int x, int y)
     {
-        if (x < 0 || x > cells.GetLength(0) - 1 || y < 0 || y > cells.GetLength(1) - 1)
+        if (x < 0 || x > gridCells.GetLength(0) - 1 || y < 0 || y > gridCells.GetLength(1) - 1)
         {
             return null;
         }
 
-        return cells[x, y];
+        return gridCells[x, y];
     }
 
     public BattlePathCell GetClosestCell(Vector3 position)
     {
         closestCellSqrDistance = float.MaxValue;
 
-        foreach (BattlePathCell cell in cells)
+        foreach (BattlePathCell cell in gridCells)
         {
             if (cell != null)
             {
@@ -112,12 +151,12 @@ public class BattlePathCellularStage
     {
         requestedCells = new List<BattlePathCell>();
 
-        minAvailableX = Mathf.RoundToInt(gridSize.x * minX);
-        minAvailableY = Mathf.RoundToInt(gridSize.y * minY);
-        maxAvailableX = Mathf.RoundToInt(gridSize.x * maxX);
-        maxAvailableY = Mathf.RoundToInt(gridSize.y * maxY);
+        minAvailableX = Mathf.RoundToInt(gridMatrixSize.x * minX);
+        minAvailableY = Mathf.RoundToInt(gridMatrixSize.y * minY);
+        maxAvailableX = Mathf.RoundToInt(gridMatrixSize.x * maxX);
+        maxAvailableY = Mathf.RoundToInt(gridMatrixSize.y * maxY);
 
-        foreach (BattlePathCell cell in cells)
+        foreach (BattlePathCell cell in gridCells)
         {
             if (cell != null)
             {

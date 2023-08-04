@@ -62,6 +62,9 @@ public class HumanController : MonoBehaviour
 
     public Weapon Weapon => currentWeapon;
 
+    public float HealthPoints => healthPoints;
+    public float HealthCapacity => healthCapacity;
+
     [HideInInspector] public Transform defaultContainer;
 
     [HideInInspector] public bool isFree = false;
@@ -458,6 +461,11 @@ public class HumanController : MonoBehaviour
         //currentWeapon.ClearProjectiles();
 
         actualCrowd?.RemoveMember(this);
+
+        if (defaultContainer)
+        {
+            transform.SetParent(defaultContainer);
+        }
 
         //enabled = !disableController;
     }

@@ -6,6 +6,7 @@ public class BattleUnit : MonoBehaviour
 {
     public List<BattleUnitTeamInfo> teamSettings;
     public BattleUnitRangeSettings rangeSettings;
+    public BattleUnitUISettings UISettings;
     [Space]
     public Transform[] positions;
 
@@ -18,9 +19,15 @@ public class BattleUnit : MonoBehaviour
 
     private BattleUnitTeamInfo actualTeamInfo;
 
-    private GameObject rangeMarkerCellOriginal;
+    private List<BattlePathCell> rangeCells;
 
-    private GameObject[,] rangeGridCells;
+    private List<BattleUnit> reachableBattleUnits;
+
+    private BattleUnit targetBattleUnit;
+
+    private GameObject rangeMarkerOriginal;
+
+    private GameObject[,] rangeMarkers;
 
     private Vector3 rangeMarkerCellPosition;
 
@@ -31,9 +38,26 @@ public class BattleUnit : MonoBehaviour
 
     private int weaponID;
 
-    public int WeaponLevel => weaponID;
+    public Crowd Garrison => garrisonCrew;
+
+    public BattlePathCell GroundCell => groundCell;
 
     public HumanTeam Team => actualTeamInfo.teamType;
+
+    public int WeaponLevel => weaponID;
+
+    private void LateUpdate()
+    {
+        if (targetBattleUnit)
+        {
+            if (targetBattleUnit.Garrison.MembersCount == 0)
+            {
+                UpdateBehavior();
+            }
+        }
+
+        UISettings.healthBar.SetValue(garrisonCrew.DefineTotalHealthFactor());
+    }
 
     public void GenerateGarrison(HumanTeam team, int weaponLevel)
     {
@@ -59,22 +83,57 @@ public class BattleUnit : MonoBehaviour
     {
         SetTeam(humans[0].team);
 
-        for (int i = 0; i < positions.Length; i++)
-        {
-            humans[i].defaultContainer = positions[i];
-
-            humans[i].PrepareToBattle(positions[i].position, positions[i].forward);
-
-            humans[i].AI.Defend(positions[i]);
-        }
-
         weaponID = WorldManager.GetWeaponID(humans[0].Weapon.Power);
+
+        for (int i = 0; i < rangeSettings.weaponRanges.Length; i++)
+        {
+            UISettings.weaponRangeIcons[i].SetActive(i == weaponID);
+        }
 
         range = rangeSettings.weaponRanges[weaponID];
 
         GenerateRangeGrid(range);
 
+        for (int i = 0; i < positions.Length; i++)
+        {
+            humans[i].defaultContainer = transform.parent;
+
+            humans[i].Weapon.Distance = range * gridCellSize + gridCellSize;
+
+            humans[i].PrepareToBattle(positions[i].position, positions[i].forward);
+        }
+
         garrisonCrew = new Crowd(humans);
+
+        UISettings.healthBar.SetValue(garrisonCrew.DefineTotalHealthFactor());
+    }
+
+    public void UpdateBehavior()
+    {
+        reachableBattleUnits = new List<BattleUnit>();
+
+        for (int i = 0; i < rangeCells.Count; i++)
+        {
+            if (rangeCells[i].BattleUnit && rangeCells[i].BattleUnit.Team == (Team == HumanTeam.Yellow ? HumanTeam.Red : HumanTeam.Yellow) && rangeCells[i].BattleUnit.Garrison.MembersCount > 0)
+            {
+                reachableBattleUnits.Add(rangeCells[i].BattleUnit);
+            }
+        }
+
+        if (reachableBattleUnits.Count > 0)
+        {
+            reachableBattleUnits.Sort((a, b) => (a.transform.position - transform.position).GetPlanarSqrMagnitude(Axis.Y).CompareTo((b.transform.position - transform.position).GetPlanarSqrMagnitude(Axis.Y)));
+
+            targetBattleUnit = reachableBattleUnits[0];
+
+            garrisonCrew.Defend(targetBattleUnit.Garrison);
+        }
+        else
+        {
+            garrisonCrew.Stop();
+
+            targetBattleUnit = null;
+        }
     }
 
     public void SetTeam(HumanTeam team)
@@ -104,22 +163,31 @@ public class BattleUnit : MonoBehaviour
     {
         groundCell = cell;
 
+        groundCell.RegisterBattleUnit(this);
+
         transform.position = groundCell.Position;
     }
 
-    public void DrawRange(BattlePathCell cell)
+    public void UpdateRange(BattlePathCell originCell)
     {
-        rangeSettings.container.transform.position = cell.Position;
+        rangeCells = new List<BattlePathCell>();
+
+        rangeSettings.container.transform.position = originCell.Position;
 
         for (int y = 0; y < rangeGridSize; y++)
         {
             for (int x = 0; x < rangeGridSize; x++)
             {
-                if (rangeGridCells[x, y])
+                if (rangeMarkers[x, y])
                 {
-                    stageGridCell = cell.Address.stage.TryGetCell(cell.Address.x + x - range, cell.Address.y + y - range);
+                    stageGridCell = originCell.Address.stage.TryGetCell(originCell.Address.x + x - range, originCell.Address.y + y - range);
 
-                    rangeGridCells[x, y].SetActive(stageGridCell != null && stageGridCell.Type == BattlePathCellType.Ground);
+                    rangeMarkers[x, y].SetActive(stageGridCell != null && stageGridCell.Type == BattlePathCellType.Ground);
+
+                    if (stageGridCell != null)
+                    {
+                        rangeCells.Add(stageGridCell);
+                    }
                 }
             }
         }
@@ -146,13 +214,13 @@ public class BattleUnit : MonoBehaviour
 
     private void GenerateRangeGrid(int range)
     {
-        rangeMarkerCellOriginal = actualTeamInfo.teamRangeMarker.transform.GetChild(0).gameObject;
+        rangeMarkerOriginal = actualTeamInfo.teamRangeMarker.transform.GetChild(0).gameObject;
 
         gridCellSize = BattlePathGenerator.Instance.groundCellPrefab.transform.localScale.x;
 
         rangeGridSize = range * 2 + 1;
 
-        rangeGridCells = new GameObject[rangeGridSize, rangeGridSize];
+        rangeMarkers = new GameObject[rangeGridSize, rangeGridSize];
 
         float sqrRadius = range * range * gridCellSize * gridCellSize;
 
@@ -162,17 +230,17 @@ public class BattleUnit : MonoBehaviour
             {
                 if (x != range || y != range)
                 {
-                    rangeMarkerCellPosition = rangeMarkerCellOriginal.transform.position + new Vector3((x - range) * gridCellSize, 0, (y - range) * gridCellSize);
+                    rangeMarkerCellPosition = rangeMarkerOriginal.transform.position + new Vector3((x - range) * gridCellSize, 0, (y - range) * gridCellSize);
 
-                    if ((rangeMarkerCellPosition - rangeMarkerCellOriginal.transform.position).GetPlanarSqrMagnitude(Axis.Y) <= sqrRadius)
+                    if ((rangeMarkerCellPosition - rangeMarkerOriginal.transform.position).GetPlanarSqrMagnitude(Axis.Y) <= sqrRadius)
                     {
-                        rangeGridCells[x, y] = Instantiate(rangeMarkerCellOriginal, rangeMarkerCellPosition, rangeMarkerCellOriginal.transform.rotation, rangeMarkerCellOriginal.transform.parent);
+                        rangeMarkers[x, y] = Instantiate(rangeMarkerOriginal, rangeMarkerCellPosition, rangeMarkerOriginal.transform.rotation, rangeMarkerOriginal.transform.parent);
                     }
                 }
             }
         }
 
-        rangeMarkerCellOriginal.SetActive(false);
+        rangeMarkerOriginal.SetActive(false);
 
         rangeSettings.container.transform.localEulerAngles = new Vector3(0, 90f, 0);
 
@@ -213,4 +281,22 @@ public class BattleUnitRangeSettings
     public int[] weaponRanges;
     [Space]
     public float pickElevationHeight;
+}
+
+[System.Serializable]
+public class BattleUnitUISettings
+{
+    public GameObject weaponIconContainer;
+    public GameObject[] weaponRangeIcons;
+    public ProgressBar healthBar;
+
+    public void UpdateWeaponIconDirection()
+    {
+        weaponIconContainer.transform.forward = CameraController.Instance.camera.transform.position - weaponIconContainer.transform.position;
+    }
+
+    public void UpdateHealthBarDirection()
+    {
+        healthBar.Update();
+    }
 }

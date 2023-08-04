@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [ BattleUnit cell accessibility ] <- 
+// -> [ Generate BattleUnits for crews ] <- 
 //
 //  Scope
 //  - 
@@ -32,7 +32,8 @@ public class LevelGenerator : MonoBehaviour
     private List<BlockPair> blockPairs;
     private List<Collectible> collectibles;
 
-    private BattlePath battlePath;
+    //private BattlePath battlePath;
+    private BattlePathGenerator battlePath;
 
     private Transform humanballTransform;
 
@@ -74,7 +75,8 @@ public class LevelGenerator : MonoBehaviour
 
     private bool isLevelGenerated;
 
-    public BattlePath BattlePath => battlePath;
+    //public BattlePath BattlePath => battlePath;
+    public BattlePathGenerator BattlePath => battlePath;
 
     public int TotalHumansCount => totalHumansCount;
 
@@ -96,6 +98,8 @@ public class LevelGenerator : MonoBehaviour
 
     public void Generate()
     {
+        battlePath = BattlePathGenerator.Instance;
+
         stageInfo = WorldManager.gameProgressionSettings.GetStageOf(LevelManager.LevelNumber);
 
         int structureIndex = 5; //stageInfo.availableStructureIndices.GetRandom();
@@ -114,7 +118,9 @@ public class LevelGenerator : MonoBehaviour
 
         PlaceCollectibles();
 
-        GenerateBattlePath(Mathf.Clamp(GameManager.CryticalStageIndex + 6, 10, int.MaxValue), GameManager.CryticalStageIndex);
+        //GenerateBattlePath(Mathf.Clamp(GameManager.CryticalStageIndex + 6, 10, int.MaxValue), GameManager.CryticalStageIndex);
+
+        battlePath.Generate(blockPairs.GetLast().FloorBlockPosition + new Vector3(blockSettings.blockLength / 2f, 0, 0));
 
         print($" -- Compositions Generated: \n Population: {GameManager.PopulationValue} / Top weapon ID: {WorldManager.GetWeaponID(GameManager.TopWeaponPower)} \n\n - Multicollectibles: {humanCollectiblesCount + weaponCollectiblesCount} (Human: {humanCollectiblesCount}[{totalHumansCount}], Weapon: {weaponCollectiblesCount}[{totalWeaponsCount}]) \n - Level power: {levelPower}");
 
@@ -157,7 +163,7 @@ public class LevelGenerator : MonoBehaviour
 
         if (battlePath)
         {
-            GenerateBattlePath(10, 0);
+            //GenerateBattlePath(10, 0);
         }
     }
 
@@ -167,7 +173,7 @@ public class LevelGenerator : MonoBehaviour
         {
             if (isCavePassed)
             {
-                battlePath.Update();
+                //battlePath.Update();
 
                 UpdateBattlePathVisibility(battlePath.DefineStage(PlayerController.Humanball.Transform.position).OrderIndex);
             }
@@ -275,6 +281,7 @@ public class LevelGenerator : MonoBehaviour
         PlaceWeaponCollectibles();
     }
 
+    /*
     private void GenerateBattlePath(int stagesCount, int cryticalStageIndex)
     {
         BattlePathStageInfo battleBathStageInfo = null;
@@ -306,6 +313,7 @@ public class LevelGenerator : MonoBehaviour
 
         battlePath.SetActive(false);
     }
+    */
 
     private void RemoveCollectibles()
     {
@@ -324,7 +332,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void RemoveBattlePath()
     {
-        battlePath.Clear();
+        //battlePath.Clear();
     }
 
     private void PlaceHumanCollectibles()
@@ -512,7 +520,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void CheckForBattlePath()
     {
-        if (humanballTransform.position.x > battlePath.Position.x)
+        if (humanballTransform.position.x > battlePath.transform.position.x)
         {
             isCavePassed = true;
 
@@ -611,10 +619,14 @@ public class LevelGenerator : MonoBehaviour
 
     public void UpdateBattlePathVisibility(int pivotStageIndex)
     {
+        battlePath.UpdateVisibility(pivotStageIndex, battlePathSettings.visibilityRange);
+
+        /*
         for (int i = 0; i < battlePath.stages.Count; i++)
         {
             battlePath.stages[i].SetVisible(i >= Mathf.Clamp(pivotStageIndex + battlePathSettings.visibilityRange.x, 0, battlePath.stages.Count - 1) && i <= Mathf.Clamp(pivotStageIndex + battlePathSettings.visibilityRange.y, 0, battlePath.stages.Count - 1));
         }
+        */
     }
 
     public BlockPair GetBlockPair(Vector3 position)
@@ -630,6 +642,27 @@ public class LevelGenerator : MonoBehaviour
         return blockPairs.GetLast();
     }
 
+    private IEnumerator BattleFinishingCoroutine()
+    {
+        //BattlePath.Instance.PlayerCrew.Stop();
+        //BattlePath.Instance.GuardCrew.Stop();
+
+        Vector3 activeStageCenter = battlePath.ActiveStage.Position + new Vector3(battlePath.ActiveStage.Size.y / 2f, 0, 0);
+
+        yield return new WaitForSeconds(0.1f);
+
+        CameraController.Instance.FocusOn(activeStageCenter, battlePathSettings.finishView);
+
+        yield return new WaitForSeconds(battlePathSettings.finishView.translationDuration + 0.1f);
+
+        //BattlePath.Instance.ActiveStage.PullOutRewardText();
+
+        LevelManager.Instance.OnLevelFinished(true);
+
+        GameManager.Instance.ChangeCurrency(battlePath.ActiveStage.Reward, true);
+    }
+
+    /*
     private IEnumerator BattleFinishingCoroutine()
     {
         //BattlePath.Instance.PlayerCrew.Members[0].isImmortal = true;
@@ -656,4 +689,5 @@ public class LevelGenerator : MonoBehaviour
 
         GameManager.Instance.ChangeCurrency(BattlePath.Instance.ActiveStage.Reward, true);
     }
+    */
 }

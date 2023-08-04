@@ -108,7 +108,7 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (true)
+        if (isBattleMode)
         {
             if (InputManager.touch)
             {
@@ -122,7 +122,7 @@ public class PlayerController : MonoBehaviour
                     {
                         pickedBattleUnit.SetPicked(true);
 
-                        BattlePathGenerator.Instance.ActualStage.SetBattleUnitRanges(true);
+                        BattlePathGenerator.Instance.ActiveStage.SetBattleUnitRangesActive(true);
                     }
                     else
                     {
@@ -137,11 +137,11 @@ public class PlayerController : MonoBehaviour
                 {
                     pickedBattleUnit.transform.position += new Vector3(InputManager.normalizedSlideDelta.y * battleUnitSettings.translationSensitivity.y, 0, -InputManager.normalizedSlideDelta.x * battleUnitSettings.translationSensitivity.x);
 
-                    stageClosestCell = BattlePathGenerator.Instance.ActualStage.GetClosestCell(pickedBattleUnit.transform.position);
+                    stageClosestCell = BattlePathGenerator.Instance.ActiveStage.GetClosestCell(pickedBattleUnit.transform.position);
 
                     if (stageClosestCell != previousStageClosestCell)
                     {
-                        pickedBattleUnit.DrawRange(stageClosestCell);
+                        pickedBattleUnit.UpdateRange(stageClosestCell);
 
                         previousStageClosestCell = stageClosestCell;
                     }
@@ -156,12 +156,12 @@ public class PlayerController : MonoBehaviour
 
                     pickedBattleUnit = null;
 
-                    BattlePathGenerator.Instance.ActualStage.SetBattleUnitRanges(false);
+                    BattlePathGenerator.Instance.ActiveStage.UpdateBattleUnitObjectives();
+                    BattlePathGenerator.Instance.ActiveStage.SetBattleUnitRangesActive(false);
                 }
             }
         }
-
-        if (!isBattleMode)
+        else
         {
             if (InputManager.touch)
             {
@@ -197,9 +197,9 @@ public class PlayerController : MonoBehaviour
 
         humanCountMarker.SetActive(false);
 
-        DropHumansToBattle();
+        //DropHumansToBattle();
 
-        LevelGenerator.Instance.BattlePath.Enter(humanballCrowd);
+        BattlePathGenerator.Instance.EnterBattle(DropCrewsToBattle(WorldManager.GetHumansAhead(HumanTeam.Yellow, BattlePath.Instance.Position.x - LevelGenerator.Instance.blockSettings.blockLength * 2f)));
 
         isBattleMode = true;
     }
@@ -223,6 +223,34 @@ public class PlayerController : MonoBehaviour
 
             human.DropToBattle(ball.Velocity + Random.insideUnitSphere, Vector3.right);
         }
+    }
+
+    private Crowd[] DropCrewsToBattle(HumanController[] humans)
+    {
+        List<Crowd> crews = new List<Crowd>();
+
+        Crowd requiredCrew = null;
+
+        for (int i = 0; i < humans.Length; i++)
+        {
+            requiredCrew = crews.Find((c) => c.Members.GetFirst().Weapon.WeaponID == humans[i].Weapon.WeaponID);
+
+            if (requiredCrew == null)
+            {
+                requiredCrew = new Crowd();
+
+                crews.Add(requiredCrew);
+            }
+
+            requiredCrew.AddMember(humans[i]);
+        }
+
+        for (int i = 0; i < crews.Count; i++)
+        {
+            print($" Crew[{i}] - WeaponID: {crews[i].Members[0].Weapon.WeaponID} / Size: {crews[i].MembersCount}");
+        }
+
+        return crews.ToArray();
     }
 
     private Transform RaycastBlock(Vector2 direction)

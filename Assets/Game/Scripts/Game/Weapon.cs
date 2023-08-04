@@ -51,18 +51,26 @@ public class Weapon
 
     private int ammoPoolSize;
 
+    private int id = -1;
+
     private bool isAttackRequested;
     private bool isTargetReachable;
+
+    public const float aimingDurationLimit = 1.5f;
 
     public float Damage => damageRate * reloadingTime;
 
     public float Power { get { return damageRate; } set { damageRate = value; damage = damageRate * reloadingTime; } }
 
-    public int WeaponID => WorldManager.GetWeaponID(Power);
+    public float Distance { get { return attackDistance; } set { attackDistance = value; sqrAttackDistance = value * value; } }
+
+    public int WeaponID => id == -1 ? WorldManager.GetWeaponID(Power) : id;
 
     public Weapon Arm(HumanController ownerHuman)
     {
         this.ownerHuman = ownerHuman;
+
+        id = WorldManager.GetWeaponID(Power);
 
         damage = damageRate * reloadingTime;
 
@@ -111,6 +119,13 @@ public class Weapon
 
     public bool Attack(HumanController human)
     {
+        if (!isAttackRequested)
+        {
+            isAttackRequested = true;
+
+            availableAttackTime = Time.timeSinceLevelLoad + Random.Range(0, aimingDurationLimit);
+        }
+
         if (Time.timeSinceLevelLoad > availableAttackTime)
         {
             if (ownerHuman.team == HumanTeam.Yellow)
