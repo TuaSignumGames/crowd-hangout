@@ -52,9 +52,12 @@ public class BattlePathGenerator : MonoBehaviour
 
     private float perlinValue;
 
+    private int previousStageIndex = -1;
+
     public BattlePathCellularStage ActiveStage => activeStage;
 
     public Vector3 Position => transform.position;
+    public Vector3 GridCellSize => gridCellSize;
 
     private void Awake()
     {
@@ -75,16 +78,18 @@ public class BattlePathGenerator : MonoBehaviour
 
         stages = new BattlePathCellularStage[stagesCount];
 
-        stagePosition = transform.position;
+        stagePosition = position;
 
         for (int i = 0; i < stagesCount; i++)
         {
             stages[i] = GenerateStage(GenerateStageMap(stageWidth, stageLength), WorldManager.battlePathProgressionSettings.GetStageInfo(i), i);
 
-            GenerateEnemyBattleUnits(stages[i], 1f, 2);
-        }
+            print($" - Stage position: {stagePosition}");
 
-        GenerateAllieBattleUnits(stages[0], 1);
+            GenerateEnemyBattleUnits(stages[i], 1f, 2);
+
+            previousStageIndex++;
+        }
 
         activeStage = stages[0];
     }
@@ -104,7 +109,7 @@ public class BattlePathGenerator : MonoBehaviour
 
     public void EnterBattle(Crowd[] crews)
     {
-        // TODO Generate BattleUnits for crews 
+        GenerateAllieBattleUnits(activeStage, crews);
     }
 
     public void SetActive(bool isActive)
@@ -166,17 +171,17 @@ public class BattlePathGenerator : MonoBehaviour
         return activeStage;
     }
 
-    private void GenerateAllieBattleUnits(BattlePathCellularStage stage, int count)
+    private void GenerateAllieBattleUnits(BattlePathCellularStage stage, Crowd[] crews)
     {
         stageGroundCells = new List<BattlePathCell>(stage.GetCells(BattlePathCellType.Ground, 0, 1f, 0, 0.25f));
 
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < crews.Length; i++)
         {
             battleUnitInstance = Instantiate(battleUnitPrefab, stageContainer.transform);
 
             battleUnitInstance.PlaceAt(stageGroundCells.CutRandom());
 
-            battleUnitInstance.GenerateGarrison(HumanTeam.Yellow, 0);
+            battleUnitInstance.ApplyGarrison(crews[i]);
 
             stage.AddBattleUnit(battleUnitInstance);
         }

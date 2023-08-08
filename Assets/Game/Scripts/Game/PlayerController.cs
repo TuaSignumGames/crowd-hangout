@@ -71,10 +71,12 @@ public class PlayerController : MonoBehaviour
         {
             if (isBattleMode)
             {
+                /*
                 if (humanballCrowd.MembersCount > 0)
                 {
                     ball.Transform.position = humanballCrowd.DefineMidpointXY();
                 }
+                */
             }
             else
             {
@@ -197,9 +199,9 @@ public class PlayerController : MonoBehaviour
 
         humanCountMarker.SetActive(false);
 
-        //DropHumansToBattle();
+        //ball.Transform.position = BattlePathGenerator.Instance.ActiveStage.MidPoint;
 
-        BattlePathGenerator.Instance.EnterBattle(DropCrewsToBattle(WorldManager.GetHumansAhead(HumanTeam.Yellow, BattlePath.Instance.Position.x - LevelGenerator.Instance.blockSettings.blockLength * 2f)));
+        BattlePathGenerator.Instance.EnterBattle(DropCrewsToBattle(WorldManager.GetHumansAhead(HumanTeam.Yellow, BattlePathGenerator.Instance.Position.x - LevelGenerator.Instance.blockSettings.blockLength * 2f)));
 
         isBattleMode = true;
     }
@@ -243,6 +245,8 @@ public class PlayerController : MonoBehaviour
             }
 
             requiredCrew.AddMember(humans[i]);
+
+            humans[i].DropToBattle(ball.Velocity + Random.insideUnitSphere, Vector3.right);
         }
 
         for (int i = 0; i < crews.Count; i++)

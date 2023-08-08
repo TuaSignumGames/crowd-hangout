@@ -17,14 +17,26 @@ public class MotionSimulator
     private Vector3 position;
     private Vector3 eulerAngles;
 
+    private Vector3 animationPositionA;
+    private Vector3 animationPositionB;
+
+    private Vector3 trajectoryDisplacementVector;
+    private Vector3 trajectoryOffset;
+
     private float velocityMultiplierDelta;
 
     private float groundCoordY;
 
+    private float t;
+    private float dt;
+
     private bool useGround;
     private bool useFixedUpdate;
 
+    private bool isAnimated;
     private bool isGrounded;
+
+    private System.Action onAnimationComplete;
 
     public bool enabled = true;
     public bool translationEnabled = true;
@@ -78,29 +90,69 @@ public class MotionSimulator
     {
         if (enabled)
         {
-            if (translationEnabled)
+            if (isAnimated)
             {
-                velocity += useFixedUpdate ? gravityFixedDelta : gravity * Time.deltaTime;
+                t += dt;
 
-                position = transform.position + velocity * velocityMultiplier * Time.fixedDeltaTime;
+                position = Vector3.Lerp(animationPositionA, animationPositionB, t) + trajectoryDisplacementVector * Mathf.Sin(t * 3.1416f);
 
                 transform.position = position;
+
+                if (t >= 1f)
+                {
+                    position = animationPositionB;
+
+                    if (onAnimationComplete != null)
+                    {
+                        onAnimationComplete();
+
+                        onAnimationComplete = null;
+                    }
+
+                    isAnimated = false;
+                }
             }
-
-            if (rotationEnabled)
+            else
             {
-                eulerAngles += angularVelocity * Time.fixedDeltaTime;
+                if (translationEnabled)
+                {
+                    velocity += useFixedUpdate ? gravityFixedDelta : gravity * Time.deltaTime;
 
-                transform.eulerAngles = eulerAngles;
-            }
+                    position = transform.position + velocity * velocityMultiplier * Time.fixedDeltaTime;
 
-            if (useGround)
-            {
-                isGrounded = transform.position.y <= groundCoordY;
+                    transform.position = position;
+                }
 
-                transform.position = new Vector3(transform.position.x, isGrounded ? groundCoordY : transform.position.y, transform.position.z);
+                if (rotationEnabled)
+                {
+                    eulerAngles += angularVelocity * Time.fixedDeltaTime;
+
+                    transform.eulerAngles = eulerAngles;
+                }
+
+                if (useGround)
+                {
+                    isGrounded = transform.position.y <= groundCoordY;
+
+                    transform.position = new Vector3(transform.position.x, isGrounded ? groundCoordY : transform.position.y, transform.position.z);
+                }
             }
         }
+    }
+
+    public void AnimateThrowing(Vector3 position, float parabolaFactor, float duration, System.Action onComplete = null)
+    {
+        t = 0;
+        dt = 1f / duration * Time.fixedDeltaTime;
+
+        animationPositionA = transform.position;
+        animationPositionB = position;
+
+        trajectoryDisplacementVector = new Vector3(0, parabolaFactor, 0);
+
+        onAnimationComplete = onComplete;
+
+        isAnimated = true;
     }
 
     public bool DampVelocity(float dampingDuration)

@@ -18,6 +18,9 @@ public class BattlePathCellularStage
 
     private BattlePathCell requestedCell;
 
+    private Vector3 midPoint;
+    private Vector3 endPoint;
+
     private Vector2 size;
 
     private Vector2Int gridMatrixSize;
@@ -39,6 +42,9 @@ public class BattlePathCellularStage
 
     public Vector3 Position => container.transform.position;
 
+    public Vector3 MidPoint => new Vector3(Position.x + size.y / 2f, Position.y, Position.z);
+    public Vector3 EndPoint => bossCell.Position + new Vector3(bossCell.Size.x / 2f, 0, 0);
+
     public float Reward => reward;
 
     public int OrderIndex => orderIndex;
@@ -58,7 +64,7 @@ public class BattlePathCellularStage
 
         gridMatrixSize = new Vector2Int(gridCells.GetLength(0), gridCells.GetLength(1));
 
-        size = new Vector2(entryCell.Size.x, entryCell.Size.y + bossCell.Size.y + gridCells[0, 0].Size.y * gridCells.GetLength(1));
+        size = new Vector2(entryCell.Size.x, entryCell.Size.y + bossCell.Size.y + BattlePathGenerator.Instance.GridCellSize.x * gridCells.GetLength(1));
     }
 
     public void AddBattleUnit(BattleUnit battleUnit)

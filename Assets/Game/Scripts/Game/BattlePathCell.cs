@@ -28,7 +28,7 @@ public class BattlePathCell
 
     public Vector2 Size => size;
 
-    public Vector3 Position => position;
+    public Vector3 Position => container.transform.position;
 
     public BattlePathCellAddress Address => address;
 

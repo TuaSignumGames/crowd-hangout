@@ -385,6 +385,23 @@ public class HumanController : MonoBehaviour
         inBattle = true;
     }
 
+    public void DropToBattle(Vector3 point, System.Action onLanded = null)
+    {
+        ai = new HumanAI(this);
+
+        motionSimulator.SetGround(point.y - components.animator.transform.localPosition.y);
+
+        motionSimulator.rotationEnabled = false;
+
+        motionSimulator.AnimateThrowing(point, Random.Range(5f, 10f), Random.Range(0.8f, 1.2f), () => motionSimulator.velocity = Vector3.zero);
+
+        targetPointSqrRadius = motionSettings.targetPointRadius * motionSettings.targetPointRadius;
+
+        PlayAnimation(HumanAnimationType.Flying);
+
+        inBattle = true;
+    }
+
     public void PrepareToBattle(Vector3 position, Vector3 direction)
     {
         ai = new HumanAI(this);

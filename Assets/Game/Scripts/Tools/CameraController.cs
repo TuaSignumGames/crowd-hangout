@@ -127,6 +127,15 @@ public class CameraController : MonoBehaviour
         Rotate(viewData.eulerAngles, viewData.rotationDuration, viewData.rotationSpace);
     }
 
+    public void SetView(Vector3 targetPosition, CameraViewData viewData)
+    {
+        InitializeEvaluator(Space.World);
+
+        Translate(targetPosition, viewData.translationDuration, Space.World);
+
+        SetView(viewData);
+    }
+
     public RaycastHit Raycast()
     {
         raycastInfo = new RaycastHit();

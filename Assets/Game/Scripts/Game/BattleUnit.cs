@@ -29,6 +29,8 @@ public class BattleUnit : MonoBehaviour
 
     private GameObject[,] rangeMarkers;
 
+    private Transform requiredPosition;
+
     private Vector3 rangeMarkerCellPosition;
 
     private float gridCellSize;
@@ -37,6 +39,8 @@ public class BattleUnit : MonoBehaviour
     private int rangeGridSize;
 
     private int weaponID;
+
+    private int nextAvailablePositionIndex;
 
     public Crowd Garrison => garrisonCrew;
 
@@ -104,6 +108,39 @@ public class BattleUnit : MonoBehaviour
         }
 
         garrisonCrew = new Crowd(humans);
+
+        UISettings.healthBar.SetValue(garrisonCrew.DefineTotalHealthFactor());
+    }
+
+    public void ApplyGarrison(Crowd crew)
+    {
+        garrisonCrew = crew;
+
+        SetTeam(crew.Members[0].team);
+
+        weaponID = WorldManager.GetWeaponID(crew.Members[0].Weapon.Power);
+
+        for (int i = 0; i < rangeSettings.weaponRanges.Length; i++)
+        {
+            UISettings.weaponRangeIcons[i].SetActive(i == weaponID);
+        }
+
+        range = rangeSettings.weaponRanges[weaponID];
+
+        GenerateRangeGrid(range);
+
+        for (int i = 0; i < crew.MembersCount; i++)
+        {
+            crew.Members[i].defaultContainer = transform.parent;
+
+            crew.Members[i].Weapon.Distance = range * gridCellSize + gridCellSize;
+
+            requiredPosition = positions[(int)Mathf.Repeat(nextAvailablePositionIndex++, positions.Length)];
+
+            crew.Members[i].transform.SetParent(requiredPosition);
+
+            crew.Members[i].DropToBattle(requiredPosition.position);
+        }
 
         UISettings.healthBar.SetValue(garrisonCrew.DefineTotalHealthFactor());
     }

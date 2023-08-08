@@ -4,7 +4,7 @@ using UnityEngine;
 
 // TODO
 //
-// -> [ Generate BattleUnits for crews ] <- 
+// -> [ Fix battle mode issues ] <- 
 //
 //  Scope
 //  - 
@@ -175,7 +175,7 @@ public class LevelGenerator : MonoBehaviour
             {
                 //battlePath.Update();
 
-                UpdateBattlePathVisibility(battlePath.DefineStage(PlayerController.Humanball.Transform.position).OrderIndex);
+                //UpdateBattlePathVisibility(battlePath.DefineStage(PlayerController.Humanball.Transform.position).OrderIndex);
             }
             else
             {
@@ -532,9 +532,13 @@ public class LevelGenerator : MonoBehaviour
     {
         PlayerController.Instance.SwitchToBattleMode();
 
-        CameraController.Instance.SetView(LevelGenerator.Instance.battlePathSettings.battleView);
+        CameraController.Instance.targetTransform = null;
+
+        CameraController.Instance.SetView(BattlePathGenerator.Instance.ActiveStage.MidPoint, battlePathSettings.battleView);
 
         UIManager.Instance.ChangeState(UIState.BattlePath);
+
+        blockSettings.blocksContainer.gameObject.SetActive(false);
 
         print($" Battle started ({Time.timeSinceLevelLoad - LevelManager.LevelStartTime} sec)");
     }
