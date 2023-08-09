@@ -139,7 +139,7 @@ public class PlayerController : MonoBehaviour
                 {
                     pickedBattleUnit.transform.position += new Vector3(InputManager.normalizedSlideDelta.y * battleUnitSettings.translationSensitivity.y, 0, -InputManager.normalizedSlideDelta.x * battleUnitSettings.translationSensitivity.x);
 
-                    stageClosestCell = BattlePathGenerator.Instance.ActiveStage.GetClosestCell(pickedBattleUnit.transform.position);
+                    stageClosestCell = BattlePathGenerator.Instance.ActiveStage.GetClosestAvailableCell(pickedBattleUnit.transform.position);
 
                     if (stageClosestCell != previousStageClosestCell)
                     {
@@ -147,6 +147,8 @@ public class PlayerController : MonoBehaviour
 
                         previousStageClosestCell = stageClosestCell;
                     }
+
+                    BattlePathGenerator.Instance.ActiveStage.SetBattleUnitRangesActive(true);
                 }
             }
             else

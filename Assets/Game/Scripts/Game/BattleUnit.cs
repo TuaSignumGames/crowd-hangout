@@ -149,6 +149,8 @@ public class BattleUnit : MonoBehaviour
     {
         reachableBattleUnits = new List<BattleUnit>();
 
+        UpdateRange(groundCell);
+
         for (int i = 0; i < rangeCells.Count; i++)
         {
             if (rangeCells[i].BattleUnit && rangeCells[i].BattleUnit.Team == (Team == HumanTeam.Yellow ? HumanTeam.Red : HumanTeam.Yellow) && rangeCells[i].BattleUnit.Garrison.MembersCount > 0)
@@ -229,7 +231,7 @@ public class BattleUnit : MonoBehaviour
             }
         }
 
-        rangeSettings.container.SetActive(true);
+        //rangeSettings.container.SetActive(true);
     }
 
     public void SetPicked(bool isPicked)

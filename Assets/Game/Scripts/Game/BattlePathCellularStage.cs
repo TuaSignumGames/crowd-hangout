@@ -153,6 +153,28 @@ public class BattlePathCellularStage
         return requestedCell;
     }
 
+    public BattlePathCell GetClosestAvailableCell(Vector3 position)
+    {
+        closestCellSqrDistance = float.MaxValue;
+
+        foreach (BattlePathCell cell in gridCells)
+        {
+            if (cell != null && cell.Type == BattlePathCellType.Ground && !cell.BattleUnit)
+            {
+                cellSqrDistance = (cell.Position - position).GetPlanarSqrMagnitude(Axis.Y);
+
+                if (cellSqrDistance < closestCellSqrDistance)
+                {
+                    requestedCell = cell;
+
+                    closestCellSqrDistance = cellSqrDistance;
+                }
+            }
+        }
+
+        return requestedCell;
+    }
+
     public BattlePathCell[] GetCells(BattlePathCellType cellType, float minX, float maxX, float minY, float maxY)
     {
         requestedCells = new List<BattlePathCell>();

@@ -450,6 +450,7 @@ public class HumanController : MonoBehaviour
 
         healthBar.SetValue(healthPoints / healthCapacity);
 
+        /*
         if (BattlePath.Instance.IsBattleActive)
         {
             if (agressor && ai.BehaviourMode != HumanBehaviourType.Assault)
@@ -460,6 +461,7 @@ public class HumanController : MonoBehaviour
                 RequestBackup(actualTeamInfo.backupRequestRadius);
             }
         }
+        */
 
         if (healthPoints <= 0)
         {
